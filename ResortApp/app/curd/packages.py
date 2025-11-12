@@ -10,8 +10,22 @@ from app.schemas.packages import PackageBookingCreate
 
 # ------------------- Packages -------------------
 
-def create_package(db: Session, title: str, description: str, price: float, image_urls: List[str]):
-    pkg = Package(title=title, description=description, price=price)
+def create_package(
+    db: Session,
+    title: str,
+    description: str,
+    price: float,
+    room_type: str,
+    is_full_property: bool,
+    image_urls: List[str],
+):
+    pkg = Package(
+        title=title,
+        description=description,
+        price=price,
+        room_type=room_type,
+        is_full_property=is_full_property,
+    )
     db.add(pkg)
     db.commit()
     db.refresh(pkg)
@@ -139,6 +153,10 @@ def get_or_create_guest_user(db: Session, email: str, mobile: str, name: str):
         raise ValueError(f"Failed to create or find guest user: {str(e)}")
 
 def book_package(db: Session, booking: PackageBookingCreate):
+    package = db.query(Package).filter(Package.id == booking.package_id).first()
+    if not package:
+        raise HTTPException(status_code=404, detail="Package not found.")
+
     # Find or create guest user based on email and mobile
     guest_user_id = None
     # Normalize email and mobile - convert empty strings to None, handle None safely
@@ -185,9 +203,35 @@ def book_package(db: Session, booking: PackageBookingCreate):
         # If a guest with the same email and mobile exists, use their established name
         guest_name_to_use = existing_booking.guest_name
 
+    # Determine which rooms should be booked for this package
+    if package.is_full_property:
+        room_query = db.query(Room)
+        room_ids_to_book = [room.id for room in room_query.all()]
+        if not room_ids_to_book:
+            raise HTTPException(status_code=400, detail="No rooms are available to fulfill the full property package.")
+    else:
+        if not booking.room_ids:
+            raise HTTPException(status_code=400, detail="Please select at least one room for this package.")
+        room_ids_to_book = list({int(room_id) for room_id in booking.room_ids})
+
+    # If the package specifies a room type, ensure all selected rooms match that type
+    if package.room_type and not package.is_full_property:
+        rooms_for_type_validation = db.query(Room).filter(Room.id.in_(room_ids_to_book)).all()
+        if len(rooms_for_type_validation) != len(room_ids_to_book):
+            raise HTTPException(status_code=404, detail="One or more selected rooms could not be found.")
+        invalid_rooms = [
+            room.number for room in rooms_for_type_validation
+            if (room.type or "").lower() != package.room_type.lower()
+        ]
+        if invalid_rooms:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Selected rooms do not match the required room type '{package.room_type}'. Invalid rooms: {', '.join(invalid_rooms)}"
+            )
+
     # CRITICAL FIX: Check for conflicts BEFORE creating the booking
     # This prevents invalid bookings from being created in the database
-    for room_id in booking.room_ids:
+    for room_id in room_ids_to_book:
         # Check for conflicts with package bookings
         package_conflict = (
             db.query(PackageBookingRoom)
@@ -261,7 +305,7 @@ def book_package(db: Session, booking: PackageBookingCreate):
     db.refresh(db_booking)
 
     # Assign multiple rooms (conflicts already checked, safe to proceed)
-    for room_id in booking.room_ids:
+    for room_id in room_ids_to_book:
         # Update the room's status to 'Booked'
         room_to_update = db.query(Room).filter(Room.id == room_id).first()
         if room_to_update:

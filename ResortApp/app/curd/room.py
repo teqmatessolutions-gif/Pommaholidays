@@ -62,6 +62,7 @@ def get_all_rooms(db: Session, skip: int = 0, limit: int = 100):
                 "price": room.price,
                 "status": status,
                 "image_url": room.image_url,
+                "features": room.features or [],
             }
         )
 

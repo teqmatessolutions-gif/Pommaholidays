@@ -8,6 +8,7 @@ from app.models.room import Room
 from app.models.booking import Booking, BookingRoom
 import shutil
 import os
+import json
 from uuid import uuid4
 from datetime import date
 
@@ -33,6 +34,7 @@ def create_room_test(
     status: str = Form("Available"),
     adults: int = Form(2),
     children: int = Form(0),
+    features: str = Form("[]"),
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -49,6 +51,14 @@ def create_room_test(
                 print(f"Error saving image: {e}")
                 raise HTTPException(status_code=500, detail=f"Error saving image: {str(e)}")
 
+        try:
+            parsed_features = json.loads(features) if features else []
+            if not isinstance(parsed_features, list):
+                raise ValueError("Features must be a list")
+            parsed_features = [str(item) for item in parsed_features]
+        except (ValueError, json.JSONDecodeError) as parse_error:
+            raise HTTPException(status_code=400, detail=f"Invalid features format: {parse_error}")
+
         db_room = Room(
             number=number,
             type=type,
@@ -56,7 +66,8 @@ def create_room_test(
             status=status,
             adults=adults,
             children=children,
-            image_url=f"/static/rooms/{filename}" if filename else None
+            image_url=f"/static/rooms/{filename}" if filename else None,
+            features=parsed_features
         )
         db.add(db_room)
         db.commit()
@@ -131,6 +142,7 @@ def create_room(
     status: str = Form("Available"),
     adults: int = Form(2),
     children: int = Form(0),
+    features: str = Form("[]"),
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -147,6 +159,14 @@ def create_room(
                 print(f"Error saving image: {e}")
                 raise HTTPException(status_code=500, detail=f"Error saving image: {str(e)}")
 
+        try:
+            parsed_features = json.loads(features) if features else []
+            if not isinstance(parsed_features, list):
+                raise ValueError("Features must be a list")
+            parsed_features = [str(item) for item in parsed_features]
+        except (ValueError, json.JSONDecodeError) as parse_error:
+            raise HTTPException(status_code=400, detail=f"Invalid features format: {parse_error}")
+
         db_room = Room(
             number=number,
             type=type,
@@ -154,7 +174,8 @@ def create_room(
             status=status,
             adults=adults,
             children=children,
-            image_url=f"/static/rooms/{filename}" if filename else None
+            image_url=f"/static/rooms/{filename}" if filename else None,
+            features=parsed_features
         )
         db.add(db_room)
         db.commit()
@@ -253,6 +274,7 @@ def update_room(
     status: str = Form(None),
     adults: int = Form(None),
     children: int = Form(None),
+    features: str = Form(None),
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -273,6 +295,15 @@ def update_room(
         db_room.adults = adults
     if children is not None:
         db_room.children = children
+    if features is not None:
+        try:
+            parsed_features = json.loads(features) if features else []
+            if not isinstance(parsed_features, list):
+                raise ValueError("Features must be a list")
+            parsed_features = [str(item) for item in parsed_features]
+        except (ValueError, json.JSONDecodeError) as parse_error:
+            raise HTTPException(status_code=400, detail=f"Invalid features format: {parse_error}")
+        db_room.features = parsed_features
 
     # Handle new image upload if provided
     if image:

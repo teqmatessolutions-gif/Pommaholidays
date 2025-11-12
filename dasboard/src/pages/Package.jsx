@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 import DashboardLayout from "../layout/DashboardLayout";
@@ -135,7 +135,7 @@ const Packages = () => {
   const [bookingToCheckIn, setBookingToCheckIn] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingFilter, setBookingFilter] = useState({ guestName: "", status: "all", checkIn: "", checkOut: "" });
-  const [createForm, setCreateForm] = useState({ title: "", description: "", price: "", images: [] });
+  const [createForm, setCreateForm] = useState({ title: "", description: "", price: "", room_type: "", is_full_property: false, images: [] });
   const [imagePreviews, setImagePreviews] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]); // Store the actual File objects
   const [selectedPackageImages, setSelectedPackageImages] = useState(null); // For image gallery modal
@@ -150,6 +150,30 @@ const Packages = () => {
     children: 0,
     room_ids: []
   });
+  const roomTypes = useMemo(() => {
+    const types = allRooms.map(room => room.type).filter(Boolean);
+    return Array.from(new Set(types));
+  }, [allRooms]);
+  const selectedPackageForBooking = useMemo(() => {
+    const id = parseInt(bookingForm.package_id, 10);
+    if (Number.isNaN(id)) return null;
+    return packages.find(pkg => pkg.id === id) || null;
+  }, [bookingForm.package_id, packages]);
+  
+  // Filter only available rooms
+  const availableRooms = useMemo(() => {
+    return rooms.filter(r => r.status == "Available");
+  }, [rooms]);
+  
+  const bookingSelectableRooms = useMemo(() => {
+    if (!selectedPackageForBooking) return availableRooms;
+    if (selectedPackageForBooking.is_full_property) return availableRooms;
+    if (selectedPackageForBooking.room_type) {
+      const requiredType = selectedPackageForBooking.room_type.toLowerCase();
+      return availableRooms.filter(room => (room.type || "").toLowerCase() === requiredType);
+    }
+    return availableRooms;
+  }, [availableRooms, selectedPackageForBooking]);
 
   const fetchData = async () => {
     try {
@@ -204,11 +228,15 @@ const Packages = () => {
     }
   }, [bookingForm.check_in, bookingForm.check_out, allRooms, bookings]);
 
-  // Filter only available rooms
-  const availableRooms = rooms.filter(r => r.status == "Available");
-
   // Create Package Form handlers
-  const handleCreateChange = e => setCreateForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleCreateChange = e => {
+    const { name, value, type, checked } = e.target;
+    setCreateForm(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+      ...(name === "is_full_property" && (type === "checkbox" ? checked : !!value) ? { room_type: "" } : {})
+    }));
+  };
   const handleCreateImageChange = e => {
     const files = Array.from(e.target.files);
     setSelectedFiles(prev => [...prev, ...files]);
@@ -225,10 +253,14 @@ const Packages = () => {
       data.append("title", createForm.title);
       data.append("description", createForm.description);
       data.append("price", createForm.price);
+      if (createForm.room_type) {
+        data.append("room_type", createForm.room_type);
+      }
+      data.append("is_full_property", createForm.is_full_property ? "true" : "false");
       selectedFiles.forEach(img => data.append("images", img));
       await api.post("/packages/", data, { headers: { "Content-Type": "multipart/form-data" } });
       toast.success("Package created successfully!");
-      setCreateForm({ title: "", description: "", price: "", images: [] });
+      setCreateForm({ title: "", description: "", price: "", room_type: "", is_full_property: false, images: [] });
       setImagePreviews([]);
       setSelectedFiles([]);
       fetchData();
@@ -255,8 +287,29 @@ const Packages = () => {
   };
 
   // Booking handlers
-  const handleBookingChange = e => setBookingForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleBookingChange = e => {
+    const { name, value } = e.target;
+    setBookingForm(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === "package_id" ? { room_ids: [] } : {})
+    }));
+  };
   const handleRoomSelect = roomId => {
+    if (selectedPackageForBooking?.is_full_property) {
+      toast.error("Full property packages automatically include all rooms. Room selection is disabled.");
+      return;
+    }
+    const room = allRooms.find(r => r.id === roomId);
+    if (!room) return;
+    if (selectedPackageForBooking?.room_type) {
+      const normalizedRoomType = (room.type || "").toLowerCase();
+      const requiredType = selectedPackageForBooking.room_type.toLowerCase();
+      if (normalizedRoomType !== requiredType) {
+        toast.error(`This package is limited to ${selectedPackageForBooking.room_type} rooms.`);
+        return;
+      }
+    }
     setBookingForm(prev => ({
       ...prev,
       room_ids: prev.room_ids.includes(roomId)
@@ -267,12 +320,23 @@ const Packages = () => {
   const handleBookingSubmit = async e => {
     e.preventDefault();
     try {
+      const packageIdInt = parseInt(bookingForm.package_id, 10);
+      if (Number.isNaN(packageIdInt)) {
+        toast.error("Please select a package before booking.");
+        return;
+      }
+      const bookingPackage = selectedPackageForBooking;
+      const isFullProperty = bookingPackage?.is_full_property;
+      if (!isFullProperty && bookingForm.room_ids.length === 0) {
+        toast.error("Select at least one room for this package.");
+        return;
+      }
       const bookingData = {
         ...bookingForm,
-        package_id: parseInt(bookingForm.package_id),
+        package_id: packageIdInt,
         adults: parseInt(bookingForm.adults),
         children: parseInt(bookingForm.children),
-        room_ids: bookingForm.room_ids.map(id => parseInt(id))
+        room_ids: isFullProperty ? [] : bookingForm.room_ids.map(id => parseInt(id, 10))
       };
       if (editingBooking) {
         await api.put(`/packages/bookings/${editingBooking.id}`, bookingData);
@@ -503,6 +567,18 @@ const Packages = () => {
                 )}
                 <div className="p-6 flex flex-col flex-grow">
                   <h4 className="font-bold text-xl mb-2 text-gray-800">{pkg.title}</h4>
+                  <div className="flex items-center flex-wrap gap-2 mb-3">
+                    {pkg.is_full_property && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700">
+                        Full Property
+                      </span>
+                    )}
+                    {pkg.room_type && !pkg.is_full_property && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700">
+                        Room Type: {pkg.room_type}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-gray-600 text-base mb-4 flex-grow">{pkg.description}</p>
                   <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-200">
                     <p className="text-green-600 font-bold text-2xl">₹{pkg.price.toLocaleString()}</p>
@@ -526,6 +602,39 @@ const Packages = () => {
             <input type="text" name="title" placeholder="Package Title" value={createForm.title} onChange={handleCreateChange} className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all" required />
             <textarea name="description" placeholder="Package Description" value={createForm.description} onChange={handleCreateChange} className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all" rows="4" required />
             <input type="number" name="price" placeholder="Price (₹)" value={createForm.price} onChange={handleCreateChange} className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all" required />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Room Type (optional)</label>
+                <select
+                  name="room_type"
+                  value={createForm.room_type}
+                  onChange={handleCreateChange}
+                  disabled={createForm.is_full_property}
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">Any Room Type</option>
+                  {roomTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+                {createForm.is_full_property && (
+                  <p className="text-xs text-gray-500 mt-1">Room type is ignored when full property is selected.</p>
+                )}
+              </div>
+              <label className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 cursor-pointer hover:border-indigo-500 transition-all">
+                <input
+                  type="checkbox"
+                  name="is_full_property"
+                  checked={createForm.is_full_property}
+                  onChange={handleCreateChange}
+                  className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">Book Entire Property</p>
+                  <p className="text-xs text-gray-500">All rooms will be reserved when this package is booked.</p>
+                </div>
+              </label>
+            </div>
             <label className="block">
               <span className="text-gray-600 font-medium">Package Images (Select multiple):</span>
               <input type="file" multiple accept="image/*" onChange={handleCreateImageChange} className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all" />
@@ -589,18 +698,34 @@ const Packages = () => {
                   </span>
                 )}
               </label>
-              {!bookingForm.check_in || !bookingForm.check_out ? (
+              {selectedPackageForBooking?.is_full_property ? (
+                <div className="text-center py-6 px-4 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200">
+                  <p className="font-semibold">Full property package selected</p>
+                  <p className="text-xs mt-1">All rooms will be reserved automatically. No need to select rooms manually.</p>
+                </div>
+              ) : !bookingForm.check_in || !bookingForm.check_out ? (
                 <div className="text-center py-8 text-gray-500 text-sm bg-gray-50 rounded-lg border">
                   <p>Please select check-in and check-out dates first</p>
                   <p className="text-xs mt-1">Available rooms will be shown here</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-lg border">
-                  {availableRooms.length > 0 ? (
-                    availableRooms.map(room => (
-                      <div key={room.id} onClick={() => handleRoomSelect(room.id)} className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
-                                           ${bookingForm.room_ids.includes(room.id) ? 'bg-indigo-500 text-white border-indigo-600' : 'bg-white border-gray-300 hover:border-indigo-500'}
-                      `}>
+                  {selectedPackageForBooking?.room_type && (
+                    <p className="col-span-full text-xs text-gray-500 mb-1">
+                      Only {selectedPackageForBooking.room_type} rooms can be selected for this package.
+                    </p>
+                  )}
+                  {bookingSelectableRooms.length > 0 ? (
+                    bookingSelectableRooms.map(room => (
+                      <div
+                        key={room.id}
+                        onClick={() => handleRoomSelect(room.id)}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                          bookingForm.room_ids.includes(room.id)
+                            ? 'bg-indigo-500 text-white border-indigo-600'
+                            : 'bg-white border-gray-300 hover:border-indigo-500'
+                        }`}
+                      >
                         <p className="font-semibold">Room {room.number}</p>
                         <p className={`text-sm ${bookingForm.room_ids.includes(room.id) ? 'text-indigo-200' : 'text-gray-600'}`}>{room.type}</p>
                         <p className={`text-xs ${bookingForm.room_ids.includes(room.id) ? 'text-indigo-200' : 'text-gray-500'}`}>₹{room.price}/night</p>

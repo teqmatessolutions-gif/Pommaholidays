@@ -23,8 +23,36 @@ import UserHistory from "./pages/UserHistory.jsx";
 import EmployeeManagement from "./pages/EmployeeManagement.jsx";
 
 function App() {
+  // For Pomma admin, use /pommaadmin as basename
+  // This ensures all routes work under /pommaadmin/ path with pommodb
+  const getBasename = () => {
+    // Check if we're running in Pomma context (using pommodb)
+    // If PUBLIC_URL is set to /pommaadmin, use /pommaadmin
+    if (process.env.PUBLIC_URL === '/pommaadmin') {
+      return '/pommaadmin';
+    }
+    // Otherwise, detect from current path
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      // If accessing from /pommaadmin, use /pommaadmin as basename
+      if (path.startsWith('/pommaadmin')) {
+        return '/pommaadmin';
+      }
+      // If accessing from /admin but using pommodb (Pomma build), use /pommaadmin
+      if (path.startsWith('/admin')) {
+        // Check if this is Pomma build by checking API URL
+        // For Pomma admin, always use /pommaadmin
+        return '/pommaadmin';
+      }
+    }
+    // Default to /pommaadmin for Pomma admin
+    return '/pommaadmin';
+  };
+
+  const basename = getBasename();
+
   return (
-    <Router basename="/admin">
+    <Router basename={basename}>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={

@@ -6,6 +6,7 @@ class RoomBase(BaseModel):
     price: float
     adults: int = 2      # new field
     children: int = 0    # new field
+    features: list[str] = []
 
 class RoomCreate(RoomBase):
     pass

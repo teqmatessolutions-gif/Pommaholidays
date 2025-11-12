@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -9,6 +9,8 @@ class Package(Base):
     title = Column(String, nullable=False)
     description = Column(String)
     price = Column(Float, nullable=False)
+    room_type = Column(String, nullable=True)
+    is_full_property = Column(Boolean, default=False)
 
     # Relationships
     images = relationship("PackageImage", back_populates="package", cascade="all, delete-orphan")

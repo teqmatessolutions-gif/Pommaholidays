@@ -1,8 +1,7 @@
 // src/services/api.js
 import axios from "axios";
 
-const resolveBaseURL = () => {
-  // For Pomma admin, always use pommodb via /pommaapi/api
+export const getApiBaseUrl = () => {
   if (process.env.REACT_APP_API_BASE_URL) {
     return process.env.REACT_APP_API_BASE_URL;
   }
@@ -11,21 +10,23 @@ const resolveBaseURL = () => {
     const origin = window.location.origin;
     const path = window.location.pathname || "";
 
-    // Use pommodb for /pommaadmin path (Pomma admin)
+    if (path.startsWith("/admin")) {
+      return `${origin}/resortapi/api`;
+    }
+
     if (path.startsWith("/pommaadmin")) {
       return `${origin}/pommaapi/api`;
     }
   }
 
-  // Default to pommodb for Pomma admin in production
   return process.env.NODE_ENV === "production"
-    ? "https://www.teqmates.com/pommaapi/api"
+    ? "https://www.teqmates.com/resortapi/api"
     : "http://localhost:8000/api";
 };
 
 // Set your backend API base URL
 const API = axios.create({
-  baseURL: resolveBaseURL(),
+  baseURL: getApiBaseUrl(),
   timeout: 30000, // 30 second timeout
 });
 
@@ -40,29 +41,6 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401 (Unauthorized) - token expired or invalid
-    if (error.response?.status === 401) {
-      console.error("Unauthorized:", error.response?.data);
-      localStorage.removeItem("token");
-      // Redirect to login page within the same app
-      // For Pomma admin, redirect to /pommaadmin/ for login
-      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-      if (currentPath.startsWith('/pommaadmin')) {
-        // Redirect to /pommaadmin/ for login (Pomma admin)
-        window.location.href = '/pommaadmin';
-      } else if (currentPath.startsWith('/admin')) {
-        // Redirect to /admin/ for login (Resort admin)
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/';
-      }
-      return Promise.reject({
-        ...error,
-        message: "Session expired. Please login again.",
-        isUnauthorized: true,
-      });
-    }
-    
     // Handle timeout errors
     if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
       console.error("Request timeout:", error.config?.url);

@@ -28,10 +28,17 @@ async def create_package_api(
     title: str = Form(...),
     description: str = Form(...),
     price: float = Form(...),
+    room_type: str = Form(None),
+    is_full_property: str = Form("false"),
     images: List[UploadFile] = File([]),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    def parse_bool(value):
+        if isinstance(value, bool):
+            return value
+        return str(value).lower() in {"true", "1", "yes", "on"}
+
     image_urls = []
     for img in images:
         # Generate unique filename
@@ -43,7 +50,15 @@ async def create_package_api(
         normalized_path = file_path.replace('\\', '/')
         image_urls.append(f"/{normalized_path}")
 
-    return crud_package.create_package(db, title, description, price, image_urls)
+    return crud_package.create_package(
+        db=db,
+        title=title,
+        description=description,
+        price=price,
+        room_type=room_type.strip() if room_type and room_type.strip() else None,
+        is_full_property=parse_bool(is_full_property),
+        image_urls=image_urls
+    )
 
 
 
@@ -81,7 +96,8 @@ def book_package_api(
             
             # Calculate package charges (package price per night per room)
             package_price = package.price if package else 0
-            package_charges = package_price * stay_nights * len(booking.room_ids) if booking.room_ids else package_price * stay_nights
+            rooms_count = len(result.rooms) if getattr(result, "rooms", None) else 0
+            package_charges = package_price * stay_nights * rooms_count if rooms_count else package_price * stay_nights
             
             # Get room details with prices
             rooms_data = []
@@ -159,7 +175,8 @@ def book_package_guest_api(
                     
                     # Calculate package charges (package price per night per room)
                     package_price = package.price if package else 0
-                    package_charges = package_price * stay_nights * len(booking.room_ids) if booking.room_ids else package_price * stay_nights
+                    rooms_count = len(result.rooms) if getattr(result, "rooms", None) else 0
+                    package_charges = package_price * stay_nights * rooms_count if rooms_count else package_price * stay_nights
                     
                     # Get room details with prices
                     rooms_data = []

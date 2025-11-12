@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, Fragment } from "react";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, m } from "framer-motion";
 import { 
   Home,
@@ -28,6 +28,15 @@ import { CreditCard } from "lucide-react";
 
 // Define professional, high-end themes with a focus on harmony and readability.
 const themes = {
+  'nature-green': {
+    '--bg-primary': '#f0f9f4', // Very light mint green
+    '--bg-secondary': '#ffffff',
+    '--text-primary': '#1a5f3f', // Dark green
+    '--text-secondary': '#4a7c59', // Medium green
+    '--accent-bg': '#d4e8dd', // Light green accent
+    '--accent-text': '#1a5f3f',
+    '--bubble-color': 'rgba(52, 211, 153, 0.25)', // Soft green bubbles
+  },
   'platinum': {
     '--bg-primary': '#f4f7f9',
     '--bg-secondary': '#ffffff',
@@ -58,13 +67,16 @@ const themes = {
 };
 
 // Helper function to apply the theme's CSS variables to the document root
-const applyTheme = (themeName) => {
+const applyTheme = (themeName, setTheme) => {
   const selectedTheme = themes[themeName];
   if (selectedTheme) {
     Object.keys(selectedTheme).forEach(key => {
       document.documentElement.style.setProperty(key, selectedTheme[key]);
     });
     localStorage.setItem('dashboard-theme', themeName);
+    if (setTheme) {
+      setTheme(themeName);
+    }
   }
 };
 
@@ -87,7 +99,15 @@ const getUserPermissions = () => {
 };
 
 export const ProtectedRoute = ({ children, requiredPermission }) => {
-  const { role, permissions } = getUserPermissions();
+  const { role, permissions, user } = getUserPermissions();
+
+  // Check if user is authenticated
+  const token = localStorage.getItem("token");
+  if (!token || !user || role === 'guest') {
+    // Redirect to login page if not authenticated
+    // Use Navigate to redirect within React Router
+    return <Navigate to="/" replace />;
+  }
 
   // Admin has access to everything.
   // Otherwise, check if the user's permissions array includes the required permission.
@@ -102,20 +122,25 @@ export const ProtectedRoute = ({ children, requiredPermission }) => {
 export default function DashboardLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const [currentTheme, setCurrentTheme] = useState('platinum'); // Default theme
+  const navigate = useNavigate();
+  const [currentTheme, setCurrentTheme] = useState('nature-green'); // Default theme
+  const [logoError, setLogoError] = useState(false);
 
   // State and ref for managing scroll position
   const navRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
+  
+  // Use full URL for logo to ensure accessibility from both /admin and /pommaadmin
+  const logoSrc = "https://www.teqmates.com/pommaholidays/logo.png";
 
   // Load theme from localStorage on initial render
   useEffect(() => {
     const savedTheme = localStorage.getItem('dashboard-theme');
     if (savedTheme && themes[savedTheme]) {
       setCurrentTheme(savedTheme);
-      applyTheme(savedTheme);
+      applyTheme(savedTheme, setCurrentTheme);
     } else {
-      applyTheme('platinum');
+      applyTheme('nature-green', setCurrentTheme);
     }
   }, []);
 
@@ -273,32 +298,54 @@ export default function DashboardLayout({ children }) {
           }`}
           style={{ backgroundColor: 'var(--bg-secondary)' }}
         >
-          {/* Header section with logo, app name, and menu toggle */}
-          <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--accent-bg)' }}>
-            {/* Left side: App Logo and Name */}
-            <div className="flex items-center gap-4">
-              <img src="./logo.jpeg" className="h-10 w-10 rounded-full" alt="Logo" />
-              {!collapsed && (
-                <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)'}}>ResortApp</span>
+          {/* Header section with logo - Full Width */}
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b relative" style={{ borderColor: 'var(--accent-bg)' }}>
+            {/* Logo - Full Width of Navigation */}
+            <div className="flex items-center justify-center flex-1 min-w-0 w-full pr-10">
+              {!logoError ? (
+                <img 
+                  src={logoSrc}
+                  className="w-full h-auto max-h-16 sm:max-h-20 md:max-h-24 object-contain" 
+                  alt="Pomma Holidays Logo"
+                  onError={() => setLogoError(true)}
+                  style={{ 
+                    filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1))'
+                  }}
+                />
+              ) : (
+                <div className="w-full flex items-center justify-center py-2">
+                  <div className="bg-gradient-to-r from-green-600 via-green-500 to-teal-500 text-white px-4 py-2 rounded-lg shadow-lg">
+                    <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">POMMA HOLIDAYS</span>
+                  </div>
+                </div>
               )}
             </div>
             {/* Right side: Menu Toggle */}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-2 rounded-full transition-colors duration-200"
-              style={{ color: 'var(--text-secondary)' }}
+              className="p-2 rounded-full transition-colors duration-200 flex-shrink-0 absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 z-10"
+              style={{ color: 'var(--text-secondary)', backgroundColor: 'var(--bg-secondary)' }}
             >
               <Menu size={20} />
             </button>
           </div>
 
           {/* Theme Switcher UI with image previews */}
-          <div className={`p-4 transition-all duration-300 flex justify-center gap-2 border-b`} style={{ borderColor: 'var(--accent-bg)' }}>
+          <div className={`p-4 transition-all duration-300 flex justify-center gap-2 border-b flex-wrap`} style={{ borderColor: 'var(--accent-bg)' }}>
+              <motion.button
+                  animate={{ scale: currentTheme === 'nature-green' ? 1.15 : 1, y: currentTheme === 'nature-green' ? -2 : 0 }}
+                  whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 1.1 }} transition={{ type: 'spring', stiffness: 300 }}
+                  className={`w-8 h-8 rounded-full overflow-hidden ${currentTheme === 'nature-green' ? 'shadow-lg border-2 border-green-600' : ''}`}
+                  onClick={() => applyTheme('nature-green', setCurrentTheme)}
+                  title="Nature Green"
+              >
+                <img src="https://placehold.co/32x32/f0f9f4/1a5f3f?text=G" alt="Nature Green Theme" className="w-full h-full object-cover"/>
+              </motion.button>
               <motion.button
                   animate={{ scale: currentTheme === 'platinum' ? 1.15 : 1, y: currentTheme === 'platinum' ? -2 : 0 }}
                   whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 1.1 }} transition={{ type: 'spring', stiffness: 300 }}
                   className={`w-8 h-8 rounded-full overflow-hidden ${currentTheme === 'platinum' ? 'shadow-lg border-2 border-gray-400' : ''}`}
-                  onClick={() => applyTheme('platinum')}
+                  onClick={() => applyTheme('platinum', setCurrentTheme)}
                   title="Platinum"
               >
                 <img src="https://placehold.co/32x32/f4f7f9/2c3e50?text=P" alt="Platinum Theme" className="w-full h-full object-cover"/>
@@ -307,7 +354,7 @@ export default function DashboardLayout({ children }) {
                   animate={{ scale: currentTheme === 'onyx' ? 1.15 : 1, y: currentTheme === 'onyx' ? -2 : 0 }}
                   whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 1.1 }} transition={{ type: 'spring', stiffness: 300 }}
                   className={`w-8 h-8 rounded-full overflow-hidden ${currentTheme === 'onyx' ? 'shadow-lg border-2 border-yellow-600' : ''}`}
-                  onClick={() => applyTheme('onyx')}
+                  onClick={() => applyTheme('onyx', setCurrentTheme)}
                   title="Onyx"
               >
                 <img src="https://placehold.co/32x32/1c1c1c/f1c40f?text=O" alt="Onyx Theme" className="w-full h-full object-cover"/>
@@ -316,7 +363,7 @@ export default function DashboardLayout({ children }) {
                   animate={{ scale: currentTheme === 'gilded-age' ? 1.15 : 1, y: currentTheme === 'gilded-age' ? -2 : 0 }}
                   whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 1.1 }} transition={{ type: 'spring', stiffness: 300 }}
                   className={`w-8 h-8 rounded-full overflow-hidden ${currentTheme === 'gilded-age' ? 'shadow-lg border-2 border-yellow-800' : ''}`}
-                  onClick={() => applyTheme('gilded-age')}
+                  onClick={() => applyTheme('gilded-age', setCurrentTheme)}
                   title="Gilded Age"
               >
                 <img src="https://placehold.co/32x32/fdf8f0/d4ac61?text=G" alt="Gilded Age Theme" className="w-full h-full object-cover"/>
@@ -375,25 +422,66 @@ export default function DashboardLayout({ children }) {
 
           {/* Logout section at the bottom */}
           <div className="p-4 border-t" style={{ borderColor: 'var(--accent-bg)' }}>
-            <Link
-              to="/"
-              className="group block flex items-center gap-4 p-3 rounded-xl transition-all duration-200 cursor-pointer hover:opacity-75"
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                // Redirect to /pommaadmin/ for login (Pomma admin)
+                const currentPath = window.location.pathname;
+                if (currentPath.startsWith('/pommaadmin')) {
+                  window.location.href = '/pommaadmin';
+                } else {
+                  // Navigate to login page within the same app
+                  navigate("/", { replace: true });
+                }
+              }}
+              className="group w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-200 cursor-pointer hover:opacity-75"
               style={{
                 backgroundColor: 'transparent',
                 color: 'var(--text-secondary)',
+                border: 'none',
               }}
             >
               <span className="group-hover:scale-110 transition-transform duration-200">
                 <LogOut size={18} />
               </span>
               {!collapsed && <span className="transition-opacity duration-200">Log Out</span>}
-            </Link>
+            </button>
+          </div>
+
+          {/* Powered by TeqMates section */}
+          <div className="p-4 border-t" style={{ borderColor: 'var(--accent-bg)' }}>
+            <a
+              href="https://teqmates.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-2 p-2 rounded-xl transition-all duration-200 cursor-pointer hover:opacity-80"
+              style={{
+                backgroundColor: 'transparent',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              {!collapsed && (
+                <span className="text-xs font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
+                  Powered by
+                </span>
+              )}
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l6 3v8.18c0 4.16-2.5 7.92-6 9.2-3.5-1.28-6-5.04-6-9.2V7.18l6-3z"/>
+                </svg>
+                {!collapsed && (
+                  <span className="text-sm font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>
+                    TeqMates
+                  </span>
+                )}
+              </div>
+            </a>
           </div>
 
           {/* User Info section */}
-          <div className="p-6 border-t z-20" style={{ borderColor: 'var(--accent-bg)' }}>
+          <div className="p-4 sm:p-6 border-t z-20" style={{ borderColor: 'var(--accent-bg)' }}>
             {!collapsed && (
-              <div className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+              <div className="text-xs sm:text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
                 {user ? `Logged in as: ${user.name || user.email || role}` : "Not logged in"}
               </div>
             )}

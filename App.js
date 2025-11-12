@@ -13,6 +13,10 @@ const getApiBaseUrl = () => {
         const origin = window.location.origin;
         const path = window.location.pathname || "";
 
+        if (path.startsWith("/resort")) {
+            return `${origin}/resortapi/api`;
+        }
+
         if (path.startsWith("/pommaholidays")) {
             return `${origin}/pommaapi/api`;
         }
@@ -85,34 +89,34 @@ const themes = {
         id: 'light',
         name: 'Light',
         icon: <Sun className="w-5 h-5" />,
-        bgPrimary: "bg-white",
-        bgSecondary: "bg-green-50",
+        bgPrimary: "bg-neutral-50",
+        bgSecondary: "bg-neutral-200",
         bgCard: "bg-white",
-        textPrimary: "text-[#0f5132]",
-        textSecondary: "text-[#0f5132]",
-        textCardPrimary: "text-[#0f5132]",
-        textCardSecondary: "text-[#0f5132]",
-        textAccent: "text-[#0f5132]",
-        textCardAccent: "text-[#0f5132]",
-        cardBorder: "border-gray-200",
-        textTitleGradient: "from-[#0f5132] via-[#1a7042] to-[#0f5132]",
-        border: "border-gray-200",
-        borderHover: "hover:border-[#0f5132]/50",
-        buttonBg: "bg-[#0f5132]",
+        textPrimary: "text-neutral-900",
+        textSecondary: "text-neutral-600",
+        textCardPrimary: "text-neutral-900",
+        textCardSecondary: "text-neutral-600",
+        textAccent: "text-amber-600",
+        textCardAccent: "text-amber-600",
+        cardBorder: "border-neutral-300",
+        textTitleGradient: "from-amber-600 via-amber-700 to-neutral-900",
+        border: "border-neutral-300",
+        borderHover: "hover:border-amber-500/50",
+        buttonBg: "bg-gradient-to-r from-amber-500 to-amber-600",
         buttonText: "text-white",
-        buttonHover: "hover:bg-[#136640]",
-        placeholderBg: "bg-green-50",
-        placeholderText: "text-[#0f5132]",
+        buttonHover: "hover:from-amber-400 hover:to-amber-500",
+        placeholderBg: "bg-neutral-100",
+        placeholderText: "text-neutral-500",
         chatBg: "bg-white",
-        chatHeaderBg: "bg-green-50",
-        chatInputBorder: "border-gray-200",
-        chatInputBg: "bg-green-50",
-        chatInputPlaceholder: "placeholder-[#0f5132]",
-        chatUserBg: "bg-[#0f5132]",
+        chatHeaderBg: "bg-neutral-100",
+        chatInputBorder: "border-neutral-200",
+        chatInputBg: "bg-neutral-100",
+        chatInputPlaceholder: "placeholder-neutral-500",
+        chatUserBg: "bg-gradient-to-r from-amber-500 to-amber-600",
         chatUserText: "text-white",
-        chatModelBg: "bg-green-50",
-        chatModelText: "text-[#0f5132]",
-        chatLoaderBg: "bg-[#0f5132]",
+        chatModelBg: "bg-neutral-100",
+        chatModelText: "text-neutral-900",
+        chatLoaderBg: "bg-neutral-600",
     },
     ocean: {
         id: 'ocean',
@@ -508,90 +512,16 @@ const BackgroundAnimation = ({ theme }) => {
     return (
         <>
             <style>{`
-                /* Green and White Theme - Pomma Holidays */
+                /* Mountain Shadows Luxury Typography & Colors */
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+                
                 :root {
-                    --color-green-primary: #0f5132;
-                    --color-green-secondary: #1a7042;
-                    --color-green-light: #136640;
-                    --color-green-dark: #0f5132;
-                    --color-white: #ffffff;
-                    --color-text-primary: #0f5132;
-                    --color-text-secondary: #0f5132;
                     --font-display: 'Playfair Display', serif;
                     --font-body: 'Inter', sans-serif;
-                }
-                
-                /* Make all text green by default - but allow exceptions for white text */
-                body {
-                    color: #0f5132;
-                }
-                
-                p, span, div, h1, h2, h3, h4, h5, h6, a, li, td, th, label, input, textarea, select {
-                    color: #0f5132;
-                }
-                
-                /* Keep white text for buttons with green background, overlays, and hero sections */
-                button.text-white,
-                .text-white,
-                .bg-\[#0f5132\] .text-white,
-                .bg-white\/20 .text-white,
-                .bg-white\/10 .text-white,
-                .absolute.inset-0.bg-gradient-to-t.from-black h1,
-                .absolute.inset-0.bg-gradient-to-t.from-black h2,
-                .absolute.inset-0.bg-gradient-to-t.from-black h3,
-                .absolute.inset-0.bg-gradient-to-t.from-black p,
-                .absolute.inset-0.bg-gradient-to-t.from-black span,
-                .absolute.inset-0.bg-gradient-to-t.from-black a,
-                .absolute.inset-0.bg-gradient-to-t.from-black div,
-                /* Ensure ALL green buttons have white text - comprehensive rules */
-                button.bg-\[#0f5132\],
-                button.bg-\[#0f5132\] *,
-                button.bg-\[#0f5132\] span,
-                button.bg-\[#0f5132\] svg,
-                button.bg-\[#0f5132\] path,
-                a.bg-\[#0f5132\],
-                a.bg-\[#0f5132\] *,
-                a.bg-\[#0f5132\] span,
-                a.bg-\[#0f5132\] svg,
-                a.bg-\[#0f5132\] path,
-                /* Green background elements with buttons/links inside */
-                .bg-\[#0f5132\] button,
-                .bg-\[#0f5132\] a,
-                .bg-\[#0f5132\] button *,
-                .bg-\[#0f5132\] a *,
-                .bg-\[#0f5132\] button span,
-                .bg-\[#0f5132\] a span,
-                .bg-\[#0f5132\] button svg,
-                .bg-\[#0f5132\] a svg {
-                    color: #ffffff !important;
-                    fill: #ffffff !important;
-                }
-                
-                /* Hero section text should be white - comprehensive coverage */
-                .absolute.inset-0.bg-gradient-to-t.from-black *,
-                .absolute.inset-0.bg-gradient-to-t.from-black\/90 *,
-                .absolute.inset-0.bg-gradient-to-t.from-black\/60 *,
-                .absolute.inset-0.bg-gradient-to-t.from-black\/30 *,
-                [class*="bg-gradient-to-t"][class*="from-black"] * {
-                    color: #ffffff !important;
-                }
-                
-                /* Ensure hero section buttons with green background have white text */
-                .absolute.inset-0 a.bg-\[#0f5132\],
-                .absolute.inset-0 a.bg-\[#0f5132\] *,
-                .absolute.inset-0 a.bg-\[#0f5132\] span,
-                .absolute.inset-0 a.bg-\[#0f5132\] svg,
-                .absolute.inset-0 button.bg-\[#0f5132\],
-                .absolute.inset-0 button.bg-\[#0f5132\] *,
-                .absolute.inset-0 button.bg-\[#0f5132\] span,
-                .absolute.inset-0 button.bg-\[#0f5132\] svg,
-                [class*="bg-gradient-to-t"] a.bg-\[#0f5132\],
-                [class*="bg-gradient-to-t"] a.bg-\[#0f5132\] *,
-                [class*="bg-gradient-to-t"] a.bg-\[#0f5132\] span,
-                [class*="bg-gradient-to-t"] a.bg-\[#0f5132\] svg {
-                    color: #ffffff !important;
-                    fill: #ffffff !important;
-                    stroke: #ffffff !important;
+                    --color-amber-primary: #f59e0b;
+                    --color-amber-gold: #d97706;
+                    --color-neutral-900: #171717;
+                    --color-neutral-50: #fafafa;
                 }
                 
                 * {
@@ -599,63 +529,28 @@ const BackgroundAnimation = ({ theme }) => {
                 }
                 
                 body {
-                    font-family: var(--font-display), 'Playfair Display', serif;
+                    font-family: var(--font-body);
                     font-weight: 400;
+                    letter-spacing: 0.01em;
                     overflow-x: hidden;
                 }
                 
                 h1, h2, h3, h4, h5, h6 {
-                    font-family: var(--font-display), 'Playfair Display', serif;
+                    font-family: var(--font-display);
                     font-weight: 700;
+                    letter-spacing: -0.02em;
                     max-width: 100%;
                     word-wrap: break-word;
-                    letter-spacing: -0.02em;
-                }
-                
-                /* Apply Playfair Display to all text elements */
-                p, span, div, a, li, td, th, label, input, textarea, select, button {
-                    font-family: var(--font-display), 'Playfair Display', serif;
-                }
-                
-                /* Headings with extra elegance */
-                h1 {
-                    font-weight: 900;
-                    letter-spacing: -0.03em;
-                }
-                
-                h2 {
-                    font-weight: 800;
-                    letter-spacing: -0.02em;
-                }
-                
-                h3 {
-                    font-weight: 700;
-                    letter-spacing: -0.01em;
                 }
                 
                 section {
                     width: 100%;
                     overflow-x: hidden;
-                    max-width: 100vw;
                 }
                 
                 img {
                     max-width: 100%;
                     height: auto;
-                }
-                
-                #packages {
-                    width: 100%;
-                    max-width: 100vw;
-                    overflow-x: hidden;
-                }
-                
-                #packages .package-image {
-                    width: 100%;
-                    max-width: 100%;
-                    height: auto;
-                    object-fit: cover;
-                    display: block;
                 }
                 
                 .container-custom {
@@ -688,12 +583,12 @@ const BackgroundAnimation = ({ theme }) => {
                 }
                 
                 .luxury-card:hover {
-                    box-shadow: 0 20px 25px -5px rgba(15, 81, 50, 0.2), 0 10px 10px -5px rgba(15, 81, 50, 0.1);
+                    box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.2), 0 10px 10px -5px rgba(245, 158, 11, 0.1);
                     transform: translateY(-4px) scale(1.01);
                 }
                 
                 .premium-gradient {
-                    background: linear-gradient(135deg, #0f5132 0%, #1a7042 50%, #136640 100%);
+                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
                 }
                 
                 .premium-text-gradient {
@@ -710,17 +605,17 @@ const BackgroundAnimation = ({ theme }) => {
                 .section-badge {
                     display: inline-block;
                     padding: 0.5rem 1.5rem;
-                    background: rgba(15, 81, 50, 0.1);
-                    color: #0f5132;
+                    background: rgba(245, 158, 11, 0.1);
+                    color: #d97706;
                     font-weight: 600;
                     letter-spacing: 0.1em;
                     border-radius: 9999px;
-                    border: 1px solid rgba(15, 81, 50, 0.2);
+                    border: 1px solid rgba(245, 158, 11, 0.2);
                     backdrop-filter: blur(10px);
                 }
                 
                 .luxury-shadow {
-                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(15, 81, 50, 0.05);
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.05);
                 }
                 
                 .card-image {
@@ -761,12 +656,12 @@ const BackgroundAnimation = ({ theme }) => {
                 .reveal { opacity: 0; transform: translateY(18px) scale(.98); filter: blur(6px); will-change: opacity, transform, filter; }
                 .reveal.in { opacity: 1; transform: none; filter: blur(0); transition: opacity .2s ease, transform .2s ease, filter .2s ease; }
                 @keyframes gentle-glow {
-                    0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(15, 81, 50, 0.3)); }
-                    50% { filter: brightness(1.1) drop-shadow(0 0 30px rgba(15, 81, 50, 0.5)); }
+                    0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(245, 158, 11, 0.3)); }
+                    50% { filter: brightness(1.1) drop-shadow(0 0 30px rgba(245, 158, 11, 0.5)); }
                 }
                 @keyframes gentle-pulse {
-                    0%, 100% { box-shadow: 0 10px 40px rgba(15, 81, 50, 0.3); }
-                    50% { box-shadow: 0 15px 60px rgba(15, 81, 50, 0.6); }
+                    0%, 100% { box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
+                    50% { box-shadow: 0 15px 60px rgba(245, 158, 11, 0.6); }
                 }
                 @keyframes bubble-up { 0% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(20px, -25vh) rotate(45deg); } 50% { transform: translate(-20px, -50vh) rotate(90deg); } 75% { transform: translate(20px, -75vh) rotate(135deg); } 100% { transform: translate(0, -110vh) rotate(180deg); } }
                 @keyframes bubble-down { 0% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(-20px, 25vh) rotate(-45deg); } 50% { transform: translate(20px, 50vh) rotate(-90deg); } 75% { transform: translate(-20px, 75vh) rotate(-135deg); } 100% { transform: translate(0, 110vh) rotate(-180deg); } }
@@ -797,29 +692,11 @@ const formatUrl = (url) => {
 };
 
 export default function App() {
-    // Load Playfair Display font from Google Fonts
-    useEffect(() => {
-        // Check if font link already exists
-        const existingLink = document.querySelector('link[href*="Playfair+Display"]');
-        if (!existingLink) {
-            const link = document.createElement('link');
-            link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap';
-            link.rel = 'stylesheet';
-            link.crossOrigin = 'anonymous';
-            document.head.appendChild(link);
-        }
-    }, []);
     const [rooms, setRooms] = useState([]);
     const [allRooms, setAllRooms] = useState([]); // Store all rooms for filtering
     const [bookings, setBookings] = useState([]); // Store bookings for availability check
     const [services, setServices] = useState([]);
     const [foodItems, setFoodItems] = useState([]);
-    const [foodCategories, setFoodCategories] = useState([]);
-    const [selectedFoodItem, setSelectedFoodItem] = useState(null);
-    const [isFoodDetailsOpen, setIsFoodDetailsOpen] = useState(false);
-    const [selectedPackageDetails, setSelectedPackageDetails] = useState(null);
-    const [isPackageDetailsModalOpen, setIsPackageDetailsModalOpen] = useState(false);
-    const [packageDescriptionExpanded, setPackageDescriptionExpanded] = useState({});
     const [packages, setPackages] = useState([]);
     const [resortInfo, setResortInfo] = useState(null);
     const [galleryImages, setGalleryImages] = useState([]);
@@ -885,7 +762,6 @@ export default function App() {
         adults: 1,
         children: 0,
     });
-    const [selectedPackage, setSelectedPackage] = useState(null);
     const [serviceBookingData, setServiceBookingData] = useState({
         service_id: null,
         guest_name: "",
@@ -953,54 +829,77 @@ export default function App() {
             const endpoints = {
                 rooms: '/rooms/test',  // Use working test endpoint for real room data
                 bookings: '/bookings?limit=500&skip=0', // Reduced limit for better performance - only recent bookings needed
-                foodItems: '/food-items/',
-                foodCategories: '/food-categories/',
-                packages: '/packages/',
+                foodItems: '/food-items',
+                packages: '/packages',
                 resortInfo: '/resort-info/',
                 gallery: '/gallery/',
                 reviews: '/reviews/',
                 banners: '/header-banner/',
-                services: '/services/', // Fetch services (note: plural)
+                services: '/services', // Fetch services (note: plural)
                 signatureExperiences: '/signature-experiences/',
                 planWeddings: '/plan-weddings/',
                 nearbyAttractions: '/nearby-attractions/'
             };
 
             try {
-                const responses = await Promise.all(
-                    Object.values(endpoints).map(endpoint => fetch(`${API_BASE_URL}${endpoint}`))
+                const entries = Object.entries(endpoints);
+                const results = await Promise.all(
+                    entries.map(async ([key, endpoint]) => {
+                        try {
+                            const response = await fetch(`${API_BASE_URL}${endpoint}`);
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status} for ${response.url}`);
+                            }
+                            const payload = await response.json();
+                            return [key, payload];
+                        } catch (fetchError) {
+                            console.error(`Failed to fetch ${key}:`, fetchError);
+                            return [key, null];
+                        }
+                    })
                 );
 
-                for (const res of responses) {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status} for ${res.url}`);
-                    }
-                }
+                const dataMap = Object.fromEntries(results);
+                const failedKeys = results.filter(([, value]) => value === null).map(([key]) => key);
 
-                const data = await Promise.all(responses.map(res => res.json()));
-
-                const [
-                    roomsData, bookingsData, foodItemsData, foodCategoriesData, packagesData,
-                    resortInfoData, galleryData, reviewsData, bannerData, servicesData,
-                    signatureExperiencesData, planWeddingsData, nearbyAttractionsData
-                ] = data;
+                const roomsData = Array.isArray(dataMap.rooms) ? dataMap.rooms : [];
+                const bookingsData = Array.isArray(dataMap.bookings?.bookings)
+                    ? dataMap.bookings.bookings
+                    : Array.isArray(dataMap.bookings)
+                        ? dataMap.bookings
+                        : [];
+                const foodItemsData = Array.isArray(dataMap.foodItems) ? dataMap.foodItems : [];
+                const packagesData = Array.isArray(dataMap.packages) ? dataMap.packages : [];
+                const resortInfoList = Array.isArray(dataMap.resortInfo) ? dataMap.resortInfo : [];
+                const galleryData = Array.isArray(dataMap.gallery) ? dataMap.gallery : [];
+                const reviewsData = Array.isArray(dataMap.reviews) ? dataMap.reviews : [];
+                const bannerData = Array.isArray(dataMap.banners) ? dataMap.banners : [];
+                const servicesData = Array.isArray(dataMap.services) ? dataMap.services : [];
+                const signatureExperiencesData = Array.isArray(dataMap.signatureExperiences) ? dataMap.signatureExperiences : [];
+                const planWeddingsData = Array.isArray(dataMap.planWeddings) ? dataMap.planWeddings : [];
+                const nearbyAttractionsData = Array.isArray(dataMap.nearbyAttractions) ? dataMap.nearbyAttractions : [];
 
                 setAllRooms(roomsData);
-                // Don't set rooms here - only show after dates are selected
-                // setRooms will be set in useEffect when dates are chosen
-                setBookings(bookingsData.bookings || []); // Store bookings for availability filtering
-                setServices(servicesData || []); // Fetch services from backend
-                setFoodItems(foodItemsData || []);
-                setFoodCategories(foodCategoriesData || []);
+                setBookings(bookingsData); // Store bookings for availability filtering
+                setServices(servicesData); // Fetch services from backend
+                setFoodItems(foodItemsData);
                 setPackages(packagesData);
-                setResortInfo(resortInfoData.length > 0 ? resortInfoData[0] : null);
+                setResortInfo(resortInfoList.length > 0 ? resortInfoList[0] : null);
                 setGalleryImages(galleryData);
                 setReviews(reviewsData);
-                setBannerData(bannerData.filter(b => b.is_active));
-                setSignatureExperiences(signatureExperiencesData || []);
-                setPlanWeddings(planWeddingsData || []);
-                setNearbyAttractions(nearbyAttractionsData || []);
+                setBannerData(bannerData.filter(b => b?.is_active));
+                setSignatureExperiences(signatureExperiencesData);
+                setPlanWeddings(planWeddingsData);
+                setNearbyAttractions(nearbyAttractionsData);
 
+                if (failedKeys.length === entries.length) {
+                    setError("Failed to load resort data. Please ensure the backend server is running and accessible.");
+                } else {
+                    if (failedKeys.length > 0) {
+                        console.warn("Some resort endpoints failed to load:", failedKeys);
+                    }
+                    setError(null);
+                }
             } catch (err) {
                 console.error("Failed to fetch resort data:", err);
                 setError("Failed to load resort data. Please ensure the backend server is running and accessible.");
@@ -1069,21 +968,7 @@ export default function App() {
         return () => observer.disconnect();
     }, [galleryImages, packages]);
 
-    const handleOpenPackageDetails = (packageId) => {
-        const packageDetails = packages.find(pkg => pkg.id === packageId) || null;
-        setSelectedPackageDetails(packageDetails);
-        setIsPackageDetailsModalOpen(true);
-    };
-
-    const togglePackageDescription = (packageId) => {
-        setPackageDescriptionExpanded(prev => ({
-            ...prev,
-            [packageId]: !prev[packageId]
-        }));
-    };
-
     const handleOpenPackageBookingForm = (packageId) => {
-        const packageDetails = packages.find(pkg => pkg.id === packageId) || null;
         // Always prioritize dates from bookingData (selected on previous page) over packageBookingData
         setPackageBookingData(prev => {
             const checkIn = (bookingData.check_in && bookingData.check_in.trim() !== '') 
@@ -1096,32 +981,13 @@ export default function App() {
             return {
                 ...prev, 
                 package_id: packageId,
-                room_ids: [],
                 check_in: checkIn,
                 check_out: checkOut
             };
         });
-        setSelectedPackage(packageDetails);
         setIsPackageBookingFormOpen(true);
         setBookingMessage({ type: null, text: "" });
     };
-
-    useEffect(() => {
-        if (!packageBookingData.package_id) {
-            setSelectedPackage(null);
-            return;
-        }
-        const pkgId = Number(packageBookingData.package_id);
-        if (!Number.isInteger(pkgId) || pkgId <= 0) {
-            setSelectedPackage(null);
-            return;
-        }
-        const packageDetails = packages.find(pkg => pkg.id === pkgId) || null;
-        setSelectedPackage(packageDetails);
-        if (packageDetails?.is_full_property) {
-            setPackageBookingData(prev => prev.room_ids.length === 0 ? prev : { ...prev, room_ids: [] });
-        }
-    }, [packageBookingData.package_id, packages]);
 
     const handleOpenServiceBookingForm = (serviceId) => {
         setServiceBookingData({ ...serviceBookingData, service_id: serviceId });
@@ -1163,11 +1029,7 @@ export default function App() {
     const handlePackageBookingChange = (e) => {
         const { name, value } = e.target;
         setPackageBookingData(prev => {
-            let newValue = value;
-            if (name === "package_id") {
-                newValue = value ? parseInt(value, 10) : null;
-            }
-            const updated = { ...prev, [name]: newValue };
+            const updated = { ...prev, [name]: value };
             // If check_in is changed and is after check_out, clear check_out
             if (name === 'check_in' && value && prev.check_out && value >= prev.check_out) {
                 updated.check_out = '';
@@ -1175,9 +1037,6 @@ export default function App() {
             // If check_out is changed and is before check_in, clear check_in
             if (name === 'check_out' && value && prev.check_in && value <= prev.check_in) {
                 updated.check_in = '';
-            }
-            if (name === "package_id") {
-                updated.room_ids = [];
             }
             return updated;
         });
@@ -1189,17 +1048,13 @@ export default function App() {
     };
 
     const handlePackageRoomSelection = useCallback((roomId) => {
-        if (selectedPackage?.is_full_property) {
-            return;
-        }
         setPackageBookingData(prev => {
-            const normalizedId = Number(roomId);
-            const newRoomIds = prev.room_ids.includes(normalizedId)
-                ? prev.room_ids.filter(id => id !== normalizedId)
-                : [...prev.room_ids, normalizedId];
+            const newRoomIds = prev.room_ids.includes(roomId)
+                ? prev.room_ids.filter(id => id !== roomId)
+                : [...prev.room_ids, roomId];
             return { ...prev, room_ids: newRoomIds };
         });
-    }, [selectedPackage]);
+    }, []);
 
     const handleFoodOrderChange = (e, foodItemId) => {
         const { value } = e.target;
@@ -1259,31 +1114,15 @@ export default function App() {
 
     // Package booking availability - optimized with useMemo
     const [packageRoomAvailability, setPackageRoomAvailability] = useState({});
-    const packageSelectableRooms = useMemo(() => {
-        if (!selectedPackage || selectedPackage.is_full_property) {
-            return allRooms;
-        }
-        if (selectedPackage.room_type) {
-            const targetType = selectedPackage.room_type.toLowerCase();
-            return allRooms.filter(room => (room.type || "").toLowerCase() === targetType);
-        }
-        return allRooms;
-    }, [allRooms, selectedPackage]);
     
     const packageRoomAvailabilityMemo = useMemo(() => {
-        if (
-            !packageBookingData.check_in ||
-            !packageBookingData.check_out ||
-            packageSelectableRooms.length === 0 ||
-            !isPackageBookingFormOpen ||
-            selectedPackage?.is_full_property
-        ) {
+        if (!packageBookingData.check_in || !packageBookingData.check_out || allRooms.length === 0 || !isPackageBookingFormOpen) {
             return {};
         }
         
         // Calculate availability for each room for package booking (memoized for performance)
         const availability = {};
-        packageSelectableRooms.forEach(room => {
+        allRooms.forEach(room => {
             const hasConflict = bookings.some(booking => {
                 const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
                 if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
@@ -1293,7 +1132,7 @@ export default function App() {
                 const requestedCheckIn = new Date(packageBookingData.check_in);
                 const requestedCheckOut = new Date(packageBookingData.check_out);
                 
-                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.room && r.room.id === room.id);
+                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.id === room.id);
                 if (!isRoomInBooking) return false;
                 
                 return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
@@ -1302,7 +1141,7 @@ export default function App() {
             availability[room.id] = !hasConflict;
         });
         return availability;
-    }, [packageBookingData.check_in, packageBookingData.check_out, packageSelectableRooms, bookings, isPackageBookingFormOpen, selectedPackage]);
+    }, [packageBookingData.check_in, packageBookingData.check_out, allRooms, bookings, isPackageBookingFormOpen]);
     
     // Update state with debouncing to prevent excessive re-renders
     useEffect(() => {
@@ -1311,16 +1150,6 @@ export default function App() {
         }, 100); // 100ms debounce
         return () => clearTimeout(timer);
     }, [packageRoomAvailabilityMemo]);
-
-    const packageAvailableRooms = useMemo(() => {
-        if (!selectedPackage || selectedPackage.is_full_property) {
-            return [];
-        }
-        if (!packageBookingData.check_in || !packageBookingData.check_out) {
-            return packageSelectableRooms;
-        }
-        return packageSelectableRooms.filter(room => packageRoomAvailability[room.id] !== false);
-    }, [packageSelectableRooms, packageRoomAvailability, packageBookingData.check_in, packageBookingData.check_out, selectedPackage]);
 
     // Handlers for form submissions
     const handleRoomBookingSubmit = async (e) => {
@@ -1409,12 +1238,7 @@ export default function App() {
         setIsBookingLoading(true);
         setBookingMessage({ type: null, text: "" });
 
-        const packageDetails =
-            selectedPackage ||
-            packages.find(pkg => pkg.id === parseInt(packageBookingData.package_id || 0, 10));
-        const isFullPropertyPackage = Boolean(packageDetails?.is_full_property);
-
-        if (!isFullPropertyPackage && packageBookingData.room_ids.length === 0) {
+        if (packageBookingData.room_ids.length === 0) {
             showBannerMessage("error", "Please select at least one room for the package.");
             setIsBookingLoading(false);
             return;
@@ -1436,8 +1260,7 @@ export default function App() {
 
         // --- CAPACITY VALIDATION ---
         const totalGuests = parseInt(packageBookingData.adults) + parseInt(packageBookingData.children);
-        const selectedRoomDetails = (isFullPropertyPackage ? allRooms : rooms)
-            .filter(room => isFullPropertyPackage || packageBookingData.room_ids.includes(room.id));
+        const selectedRoomDetails = packageBookingData.room_ids.map(roomId => rooms.find(r => r.id === roomId)).filter(Boolean);
         const totalCapacity = selectedRoomDetails.reduce((sum, room) => sum + (room.adults || 0) + (room.children || 0), 0);
 
         if (totalGuests > totalCapacity) {
@@ -1477,10 +1300,8 @@ export default function App() {
             }
             
             const payload = {
-                package_id: parseInt(packageBookingData.package_id, 10),
-                room_ids: isFullPropertyPackage
-                    ? []
-                    : packageBookingData.room_ids.map(id => parseInt(id, 10)),
+                package_id: parseInt(packageBookingData.package_id),
+                room_ids: packageBookingData.room_ids.map(id => parseInt(id)),
                 guest_name: packageBookingData.guest_name.trim(),
                 guest_email: packageBookingData.guest_email?.trim() || null,
                 guest_mobile: packageBookingData.guest_mobile.trim(),
@@ -1601,7 +1422,7 @@ export default function App() {
         
         try {
             const API_BASE_URL = getApiBaseUrl();
-            const response = await fetch(`${API_BASE_URL}/food-orders/`, {
+            const response = await fetch(`${API_BASE_URL}/food-orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -1712,44 +1533,14 @@ export default function App() {
 
     if (loading) {
         return (
-            <div className={`flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100`}>
+            <div className={`flex items-center justify-center min-h-screen ${theme.bgPrimary} ${theme.textPrimary}`}>
                 <div className="flex flex-col items-center">
-                    {/* Animated Logo Loader */}
-                    <div className="relative mb-8">
-                        <div className="absolute inset-0 bg-green-500/20 rounded-full blur-2xl animate-pulse"></div>
-                        <div className="relative bg-white/90 rounded-full p-8 shadow-2xl animate-bounce" style={{ animationDuration: '2s', animationIterationCount: 'infinite' }}>
-                            <img 
-                                src="/pommaholidays/logo.png" 
-                                alt="Pomma Holidays Logo" 
-                                className="w-24 h-24 object-contain animate-spin" 
-                                style={{ animationDuration: '3s', animationIterationCount: 'infinite', animationTimingFunction: 'linear' }}
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const fallback = document.createElement('div');
-                                    fallback.className = 'w-24 h-24 flex items-center justify-center text-4xl font-bold text-[#0f5132]';
-                                    fallback.textContent = 'PH';
-                                    e.target.parentNode.appendChild(fallback);
-                                }}
-                            />
-                        </div>
-                    </div>
-                    {/* Loading Text */}
-                    <p className="text-xl font-semibold text-[#0f5132] animate-pulse" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        Loading Pomma Holidays...
-                    </p>
-                    {/* Loading Dots */}
-                    <div className="flex gap-2 mt-4">
-                        <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                        <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
+                    <svg className={`animate-spin h-10 w-10 ${theme.textAccent}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p className="mt-4">Loading resort data...</p>
                 </div>
-                <style>{`
-                    @keyframes bounce {
-                        0%, 100% { transform: translateY(0); }
-                        50% { transform: translateY(-10px); }
-                    }
-                `}</style>
             </div>
         );
     }
@@ -1775,7 +1566,7 @@ export default function App() {
               .animate-bounce-dot > div { animation: bounce-dot 1.4s infinite ease-in-out both; }
             `}</style>
 
-            <div className={`relative ${theme.bgPrimary} ${theme.textPrimary} min-h-screen transition-colors duration-500`}>
+            <div className={`relative ${theme.bgPrimary} ${theme.textPrimary} font-sans min-h-screen transition-colors duration-500`}>
                 <BackgroundAnimation theme={theme} />
                 
                 {/* Banner Message - High z-index to appear above all modals and overlays */}
@@ -1806,40 +1597,21 @@ export default function App() {
                                 aria-label="Close message"
                             >
                                 <X className="w-5 h-5" />
-                                </button>
-                                        </div>
-                                    </div>
-                                )}
-                
-                <header className={`fixed left-0 right-0 z-50 bg-[#0f5132]/80 backdrop-blur-md shadow-md ${bannerMessage.text ? 'top-16' : 'top-0'} transition-all duration-300`}>
-                    <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-10 h-16 sm:h-20 flex items-center justify-between">
-                        <div className="flex items-center gap-2 sm:gap-3 h-full">
-                            {/* Pomma Holidays Logo */}
-                            <div className="flex items-center h-full px-3 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                                <img 
-                                    src="/pommaholidays/logo.png" 
-                                    alt="Pomma Holidays Logo" 
-                                    className="h-8 sm:h-10 md:h-12 object-contain cursor-pointer"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        const fallback = e.target.nextElementSibling;
-                                        if (fallback) fallback.style.display = 'flex';
-                                    }}
-                                    style={{ maxHeight: '48px' }}
-                                    onClick={() => window.location.href = '/pommaholidays/'}
-                                />
-                            </div>
-                            <div className="hidden items-center gap-2">
-                                <BedDouble className="w-8 h-8 text-white" />
-                                <span className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
-                                    Pomma Holidays
-                                </span>
-                            </div>
+                            </button>
                         </div>
-                        <nav className="flex items-center gap-3">
+                    </div>
+                )}
+                
+                <header className={`fixed left-0 right-0 z-50 ${theme.bgCard}/30 backdrop-blur-sm shadow-sm ${bannerMessage.text ? 'top-16' : 'top-0'} transition-all duration-300`}>
+                    <div className="container mx-auto px-4 sm:px-6 md:px-12 py-4 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <BedDouble className={`w-8 h-8 ${theme.textAccent}`} />
+                            <span className={`text-2xl font-bold ${theme.textPrimary} tracking-tight`}>Elysian Retreat</span>
+                        </div>
+                        <nav className="flex items-center space-x-4">
                             <button 
                                 onClick={() => setIsGeneralBookingOpen(true)} 
-                                className="px-5 sm:px-6 py-2 text-sm font-semibold text-white bg-white/20 hover:bg-white/30 rounded-full border border-white/30 transition-all duration-300 hover:scale-105"
+                                className={`px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full shadow-lg hover:from-amber-400 hover:to-amber-500 transition-all duration-300 transform hover:scale-105`}
                             >
                                 Book Now
                             </button>
@@ -1875,29 +1647,27 @@ export default function App() {
                 <div className="relative w-full max-w-5xl">
                     {bannerData.map((banner, index) => (
                         <div key={banner.id} className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-1000 ease-in-out ${index === currentBannerIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                            <div className="mb-4 inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 animate-[fadeInUp_1s_ease-out]">
-                                <span className="text-white text-sm font-semibold tracking-widest uppercase">
+                            <div className="mb-4 inline-block px-6 py-2 bg-amber-500/20 backdrop-blur-sm rounded-full border border-amber-400/30 animate-[fadeInUp_1s_ease-out]">
+                                <span className="text-amber-400 text-sm font-semibold tracking-widest uppercase">
                                     ✦ Luxury Experience ✦
                                 </span>
                             </div>
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight drop-shadow-2xl text-white mb-6 animate-[fadeInUp_1.2s_ease-out]">
-                                {banner.title}
+                                <span className="bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent inline-block animate-[gentle-glow_3s_ease-in-out_infinite]">
+                                    {banner.title}
+                                </span>
                             </h1>
-                            <p className="mt-4 text-xl md:text-2xl text-white max-w-4xl mx-auto leading-relaxed drop-shadow-lg px-4 animate-[fadeInUp_1.4s_ease-out]">
+                            <p className="mt-4 text-xl md:text-2xl text-neutral-100 max-w-4xl mx-auto leading-relaxed drop-shadow-lg px-4 animate-[fadeInUp_1.4s_ease-out]">
                                 {banner.subtitle}
                             </p>
                             <div className="mt-10 flex flex-wrap justify-center gap-4 animate-[fadeInUp_1.6s_ease-out]">
-                                <button 
-                                    onClick={() => setIsGeneralBookingOpen(true)}
-                                    className="group px-10 py-4 bg-[#0f5132] text-white font-bold text-lg rounded-full shadow-2xl hover:bg-[#136640] transition-all duration-300 transform hover:scale-110 border-2 border-white/20" 
-                                    style={{ color: '#ffffff' }}
-                                >
-                                    <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
+                                <a href="#rooms-section" className="group px-10 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg rounded-full shadow-2xl hover:from-amber-400 hover:to-amber-500 transition-all duration-300 transform hover:scale-110 hover:shadow-amber-500/50 animate-[gentle-pulse_2s_ease-in-out_infinite]">
+                                    <span className="flex items-center gap-2">
                                         Book Your Stay
-                                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" style={{ color: '#ffffff', stroke: '#ffffff' }} />
+                                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     </span>
-                                </button>
-                                <a href="#packages" className="px-10 py-4 bg-white text-[#0f5132] font-bold text-lg rounded-full border-2 border-white hover:bg-white/90 transition-all duration-300 shadow-lg">
+                                </a>
+                                <a href="#packages" className="px-10 py-4 bg-white/10 backdrop-blur-sm text-white font-bold text-lg rounded-full border-2 border-white/30 hover:bg-white/20 transition-all duration-300">
                                     View Packages
                                 </a>
                             </div>
@@ -1909,18 +1679,18 @@ export default function App() {
             {/* Luxury Navigation Dots - Only show if multiple banners */}
             {bannerData.length > 1 && (
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
-        {bannerData.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentBannerIndex(index)}
+                {bannerData.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentBannerIndex(index)}
                         className={`transition-all duration-300 ${
-              index === currentBannerIndex
-                                ? "w-12 h-1 bg-white rounded-full"
+                            index === currentBannerIndex
+                                ? "w-12 h-1 bg-amber-400 rounded-full"
                                 : "w-8 h-1 bg-white/40 hover:bg-white/60 rounded-full"
-            }`}
-          />
-        ))}
-      </div>
+                        }`}
+                    />
+                ))}
+            </div>
             )}
         </>
     ) : (
@@ -1931,22 +1701,22 @@ export default function App() {
 </div>
 
                     {/* Exclusive Deals Section - Mountain Shadows Style */}
-                    <section id="packages" className={`bg-gradient-to-b ${theme.bgSecondary} ${theme.bgCard} py-12 sm:py-16 md:py-20 transition-colors duration-500 w-full overflow-x-hidden`} style={{ width: '100%', maxWidth: '100vw' }}>
-                        <div className="w-full max-w-full mx-auto">
+                    <section id="packages" className={`bg-gradient-to-b ${theme.bgSecondary} ${theme.bgCard} py-20 transition-colors duration-500`}>
+                        <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
-                            <div className="text-center mb-8 sm:mb-12 md:mb-16 px-4 sm:px-6 md:px-8">
-                                <span className="inline-block px-4 sm:px-6 py-2 bg-green-100 text-[#0f5132] text-xs sm:text-sm font-semibold tracking-widest uppercase rounded-full mb-3 sm:mb-4">
+                            <div className="text-center mb-16">
+                                <span className={`inline-block px-6 py-2 bg-amber-500/10 ${theme.textAccent} text-sm font-semibold tracking-widest uppercase rounded-full mb-4`}>
                                     ✦ Exclusive Deals ✦
                                 </span>
-                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4" style={{ color: '#0f5132' }}>
+                                <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     EXCLUSIVE DEALS FOR MEMORABLE EXPERIENCES
                                 </h2>
                             </div>
 
-                            {/* Packages - Mountain Shadows Style with Green Theme */}
+                            {/* Packages - Mountain Shadows Style */}
                             {packages.length > 0 ? (
-                                <div className="space-y-6 sm:space-y-8 md:space-y-12 w-full" style={{ width: '100%' }}>
-                                    {/* Featured Large Package - Split Layout (Image Left, Content Right) */}
+                                <div className="space-y-12">
+                                    {/* Featured Large Package */}
                                     {packages[0] && (() => {
                                         const featuredPkg = packages[0];
                                         const imgIndex = packageImageIndex[featuredPkg.id] || 0;
@@ -1954,23 +1724,21 @@ export default function App() {
                                         return (
                                             <div 
                                                 key={featuredPkg.id}
-                                                onClick={() => handleOpenPackageDetails(featuredPkg.id)}
-                                                className={`${theme.bgCard} rounded-2xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl reveal w-full cursor-pointer`}
+                                                className={`${theme.bgCard} rounded-3xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl reveal`}
                                                 style={{ transitionDelay: '80ms' }}
                                             >
                                                 <div className="flex flex-col md:flex-row items-stretch">
-                                                    {/* Large Image Section - Left - Natural Height */}
-                                                    <div className="w-full md:w-1/2 overflow-hidden relative">
-                                                        <img 
+                                                    {/* Large Image Section - Left */}
+                                                    <div className="w-full md:w-1/2 h-80 md:h-[500px] overflow-hidden relative">
+                                                    <img 
                                                             src={currentImage ? getImageUrl(currentImage.image_url) : ITEM_PLACEHOLDER} 
                                                             alt={featuredPkg.title} 
-                                                            className="w-full h-auto object-cover transition-transform duration-700 hover:scale-110" 
+                                                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-110 reveal" 
                                                             loading="lazy"
-                                                            style={{ maxHeight: '600px' }}
                                                             onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                         />
-                                                        {/* Price badge - green theme */}
-                                                        <div className="absolute bottom-4 left-4 bg-white/95 text-[#0f5132] font-extrabold text-2xl md:text-3xl px-4 py-2 rounded-xl shadow-lg">
+                                                        {/* Price badge - large card */}
+                                                        <div className="absolute bottom-4 left-4 bg-white/95 text-amber-700 font-extrabold text-2xl md:text-3xl px-4 py-2 rounded-xl shadow-lg">
                                                             {formatCurrency(featuredPkg.price || 0)}
                                                         </div>
                                                         {/* Image Slider Dots */}
@@ -1992,60 +1760,32 @@ export default function App() {
                                                     
                                                     {/* Content Section - Right */}
                                                     <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center ${theme.bgCard}`}>
-                                                        <h3 className="text-4xl md:text-5xl font-extrabold mb-2 leading-tight" style={{ color: '#0f5132' }}>
+                                                        <h3 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-2 leading-tight`}>
                                                             {featuredPkg.title}
                                                         </h3>
-                                                        <div className="flex flex-wrap items-center gap-3 mb-4">
-                                                            {featuredPkg.is_full_property && (
-                                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
-                                                                    Full Property
-                                                                </span>
-                                                            )}
-                                                            {featuredPkg.room_type && !featuredPkg.is_full_property && (
-                                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
-                                                                    {featuredPkg.room_type} Rooms
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        {/* Description with Read More */}
-                                                        <div className="mb-6">
-                                                            <p className={`text-base md:text-lg leading-relaxed ${packageDescriptionExpanded[featuredPkg.id] ? '' : 'line-clamp-3'}`} style={{ color: '#0f5132' }}>
-                                                                {featuredPkg.description}
-                                                            </p>
-                                                            {featuredPkg.description && featuredPkg.description.length > 150 && (
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        togglePackageDescription(featuredPkg.id);
-                                                                    }}
-                                                                    className="mt-2 text-[#0f5132] font-semibold hover:underline text-sm"
-                                                                >
-                                                                    {packageDescriptionExpanded[featuredPkg.id] ? 'Read Less' : 'Read More'}
-                                                                </button>
-                                                            )}
-                                                        </div>
+                                                        <p className={`text-xl md:text-2xl ${theme.textSecondary} mb-6 font-medium`}>
+                                                            (Luxury Package {featuredPkg.duration || '2 Nights & 3 Days'})
+                                                        </p>
+                                                        <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-amber-600 mb-6"></div>
+                                                        <p className={`text-base md:text-lg ${theme.textSecondary} leading-relaxed mb-6`}>
+                                                            {featuredPkg.description}
+                                                        </p>
                                                         {/* Price Section */}
                                                         <div className="mb-6 pt-4 border-t border-gray-200">
-                                                            <p className="text-sm mb-2" style={{ color: '#0f5132' }}>Starting from</p>
-                                                            <p className="text-3xl md:text-4xl font-extrabold mb-6" style={{ color: '#0f5132' }}>
+                                                            <p className={`text-sm ${theme.textSecondary} mb-2`}>Starting from</p>
+                                                            <p className={`text-3xl md:text-4xl font-extrabold ${theme.textAccent} mb-6`}>
                                                                 {formatCurrency(featuredPkg.price || 0)}
-                                                                <span className="text-lg font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
+                                                                <span className={`text-lg ${theme.textSecondary} font-normal ml-2`}>/package</span>
                                                             </p>
                                                         </div>
                                                         
                                                         <div className="flex items-center justify-between flex-wrap gap-4">
                                                             <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleOpenPackageDetails(featuredPkg.id);
-                                                                }} 
-                                                                className="px-10 py-3 bg-[#0f5132] text-white font-bold text-lg rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300"
-                                                                style={{ color: '#ffffff' }}
+                                                                onClick={() => handleOpenPackageBookingForm(featuredPkg.id)} 
+                                                                className={`px-8 py-3 border-2 ${theme.border} ${theme.textAccent} font-bold rounded-full hover:${theme.bgSecondary} transition-all duration-300 transform hover:scale-105 flex items-center gap-2`}
                                                             >
-                                                                <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
-                                                                    KNOW MORE
-                                                                    <ChevronRight className="w-5 h-5" style={{ color: '#ffffff', stroke: '#ffffff' }} />
-                                                                </span>
+                                                                Book Now
+                                                                <ChevronRight className="w-5 h-5" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -2054,44 +1794,39 @@ export default function App() {
                                         );
                                     })()}
 
-                                    {/* Smaller Packages Grid - Responsive Full Width */}
+                                    {/* Smaller Packages Grid - Only show if more than 1 package */}
                                     {packages.length > 1 && (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 w-full px-0 sm:px-2 md:px-4 lg:px-6" style={{ width: '100%' }}>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {packages.slice(1).map((pkg) => {
                                         const imgIndex = packageImageIndex[pkg.id] || 0;
                                         const currentImage = pkg.images && pkg.images[imgIndex];
                                         return (
                                             <div 
                                                 key={pkg.id} 
-                                                onClick={() => handleOpenPackageDetails(pkg.id)}
-                                                className={`group relative ${theme.bgCard} rounded-none sm:rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border-0 sm:border ${theme.border} cursor-pointer reveal w-full mx-0`}
-                                                style={{ transitionDelay: `${(imgIndex % 5) * 70}ms`, width: '100%', maxWidth: '100%' }}
+                                                onClick={() => handleOpenPackageBookingForm(pkg.id)}
+                                                className={`group relative ${theme.bgCard} rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border ${theme.border} cursor-pointer reveal`}
+                                                style={{ transitionDelay: `${(imgIndex % 5) * 70}ms` }}
                                             >
-                                                        {/* Image Container - Natural Height */}
-                                                    <div className="relative w-full overflow-hidden" style={{ width: '100%' }}>
+                                                        {/* Image Container */}
+                                                    <div className="relative h-64 overflow-hidden">
                                                     <img 
                                                                 src={currentImage ? getImageUrl(currentImage.image_url) : ITEM_PLACEHOLDER} 
                                                         alt={pkg.title} 
-                                                        className="package-image w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110 reveal" 
+                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 reveal" 
                                                         loading="lazy"
-                                                        style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }}
                                                         onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                     />
-                                                    {/* Price badge - always visible - green theme */}
-                                                    <div className="absolute bottom-3 left-3 bg-white/90 text-[#0f5132] font-extrabold text-base sm:text-lg md:text-xl px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-md">
+                                                    {/* Price badge - always visible */}
+                                                    <div className="absolute bottom-3 left-3 bg-white/90 text-amber-700 font-extrabold text-lg px-3 py-1 rounded-lg shadow-md">
                                                         {formatCurrency(pkg.price || 0)}
                                                     </div>
-                                                            {/* Quick Book button overlay - green theme */}
+                                                            {/* Quick Book button overlay */}
                                                             <button
                                                                 type="button"
-                                                                onClick={(e) => { 
-                                                                    e.stopPropagation(); 
-                                                                    handleOpenPackageDetails(pkg.id); 
-                                                                }}
-                                                                className="absolute top-3 right-3 bg-[#0f5132] text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-md hover:bg-[#136640] transition-all duration-300"
-                                                                style={{ color: '#ffffff' }}
+                                                                onClick={(e) => { e.stopPropagation(); handleOpenPackageBookingForm(pkg.id); }}
+                                                                className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md hover:bg-amber-600"
                                                             >
-                                                                View Details
+                                                                Book Now
                                                             </button>
                                                     {/* Image Slider Dots */}
                                                     {pkg.images && pkg.images.length > 1 && (
@@ -2110,63 +1845,33 @@ export default function App() {
                                                     )}
                                                         </div>
 
-                                                        {/* Content - Responsive */}
-                                                        <div className={`p-4 sm:p-5 md:p-6 ${theme.bgCard}`}>
-                                                            <h3 className={`text-lg sm:text-xl md:text-2xl font-extrabold ${theme.textPrimary} mb-2 leading-tight`}>
-                                                                {pkg.title}
-                                                            </h3>
-                                                            <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
-                                                                {pkg.is_full_property && (
-                                                                    <span className="px-2 sm:px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
-                                                                        Full Property
-                                                                    </span>
-                                                                )}
-                                                                {pkg.room_type && !pkg.is_full_property && (
-                                                                    <span className="px-2 sm:px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
-                                                                        {pkg.room_type} Rooms
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            {/* Description with Read More */}
-                                                            <div className="mb-3 sm:mb-4">
-                                                                <p className={`text-sm sm:text-base leading-relaxed ${packageDescriptionExpanded[pkg.id] ? '' : 'line-clamp-2'}`} style={{ color: '#0f5132' }}>
-                                                                    {pkg.description}
-                                                                </p>
-                                                                {pkg.description && pkg.description.length > 100 && (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            togglePackageDescription(pkg.id);
-                                                                        }}
-                                                                        className="mt-2 text-[#0f5132] font-semibold hover:underline text-xs sm:text-sm"
-                                                                    >
-                                                                        {packageDescriptionExpanded[pkg.id] ? 'Read Less' : 'Read More'}
-                                                                    </button>
-                                                                )}
-                                                            </div>
+                                                        {/* Content - Simplified like Mountain Shadows */}
+                                                        <div className={`p-6 ${theme.bgCard}`}>
+                                                            <h3 className={`text-xl md:text-2xl font-extrabold ${theme.textPrimary} mb-2 leading-tight`}>
+                                                            {pkg.title}
+                                                        </h3>
+                                                            <p className={`text-base ${theme.textSecondary} font-medium mb-2`}>
+                                                                (Luxury Package {pkg.duration || '2 Nights & 3 Days'})
+                                                            </p>
                                                             {/* Price */}
-                                                            <div className="mb-3 sm:mb-4 pt-2 sm:pt-3 border-t border-gray-200">
-                                                                <p className="text-xs sm:text-sm mb-1" style={{ color: '#0f5132' }}>Starting from</p>
-                                                                <p className="text-xl sm:text-2xl font-extrabold" style={{ color: '#0f5132' }}>
+                                                            <div className="mb-4 pt-3 border-t border-gray-200">
+                                                                <p className={`text-sm ${theme.textSecondary} mb-1`}>Starting from</p>
+                                                                <p className={`text-2xl font-extrabold ${theme.textAccent || theme.textPrimary}`}>
                                                                     {formatCurrency(pkg.price || 0)}
-                                                                    <span className="text-xs sm:text-sm font-normal" style={{ color: '#0f5132' }}>/package</span>
+                                                                    <span className={`text-sm ${theme.textSecondary} font-normal`}>/package</span>
                                                                 </p>
                                                             </div>
                                                             {/* CTA Row */}
-                                                            <div className="mt-3 sm:mt-4 flex items-center justify-between flex-wrap gap-2 sm:gap-3">
+                                                            <div className="mt-4 flex items-center justify-between">
                                                                 <button
                                                                     type="button"
-                                                                    onClick={(e) => { 
-                                                                        e.stopPropagation(); 
-                                                                        handleOpenPackageDetails(pkg.id); 
-                                                                    }}
-                                                                    className="px-4 sm:px-5 py-2 rounded-md bg-[#0f5132] text-white font-semibold hover:bg-[#136640] transition-all duration-300 text-sm sm:text-base"
-                                                                    style={{ color: '#ffffff' }}
+                                                                    onClick={(e) => { e.stopPropagation(); handleOpenPackageBookingForm(pkg.id); }}
+                                                                    className={`px-5 py-2 rounded-full border-2 ${theme.border} ${theme.textAccent} font-semibold hover:${theme.bgSecondary} transition-all duration-300`}
                                                                 >
-                                                                    KNOW MORE
+                                                                    Book Now
                                                                 </button>
-                                                                <span className="text-xs sm:text-sm" style={{ color: '#0f5132' }}>
-                                                                    Click for details
+                                                                <span className={`text-sm ${theme.textSecondary}`}>
+                                                                    Tap card to book
                                                                 </span>
                                                             </div>
                                                 </div>
@@ -2187,16 +1892,16 @@ export default function App() {
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
                             <div className="text-center mb-16">
-                                <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                <span className="inline-block px-6 py-2 bg-amber-500/10 text-amber-600 text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
                                     ✦ LUXURY ACCOMMODATION ✦
                                 </span>
                                 <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     Sustainable Luxury Cottages with Unforgettable Views
-                        </h2>
+                                </h2>
                                 <p className={`text-lg ${theme.textSecondary} max-w-3xl mx-auto leading-relaxed`}>
                                     Experience the perfect blend of luxury and sustainability in our eco-friendly cottages with panoramic lake and forest views
                                 </p>
-                                        </div>
+                            </div>
 
                             {/* Info Banner - Show when dates not selected */}
                             {(!bookingData.check_in || !bookingData.check_out) && (
@@ -2213,8 +1918,8 @@ export default function App() {
                                             >
                                                 Select Dates
                                             </button>
+                                        </div>
                                     </div>
-                            </div>
                                 </div>
                             )}
 
@@ -2255,7 +1960,7 @@ export default function App() {
                                                 
                                                 {/* Luxury Badge */}
                                                 <div className="absolute top-4 left-4">
-                                                    <span className="px-4 py-2 bg-[#0f5132] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
+                                                    <span className="px-4 py-2 bg-amber-500 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
                                                         Premium Villa
                                                     </span>
                                                 </div>
@@ -2276,7 +1981,7 @@ export default function App() {
                                                 )}
 
                                                 {/* Hover Effect Overlay */}
-                                                <div className="absolute inset-0 bg-[#0f5132]/0 group-hover:bg-[#0f5132]/10 transition-all duration-500" />
+                                                <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/10 transition-all duration-500" />
                                             </div>
 
                                             {/* Content */}
@@ -2290,18 +1995,15 @@ export default function App() {
                                                 </div>
                                                 
                                                 {/* Features */}
-                                                <div className={`flex flex-wrap gap-3 text-sm ${theme.textCardSecondary || theme.textSecondary}`}>
-                                                    {(room.features && room.features.length > 0 ? room.features : ["Curated Amenities"])
-                                                        .slice(0, 5)
-                                                        .map((feature, idx) => (
-                                                            <span
-                                                                key={`${room.id}-feature-${idx}`}
-                                                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold"
-                                                            >
-                                                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                                                {feature}
-                                                            </span>
-                                                        ))}
+                                                <div className={`flex items-center gap-4 text-sm ${theme.textCardSecondary || theme.textSecondary}`}>
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                                                        Lake View
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                                                        Balcony
+                                                    </span>
                                                 </div>
 
                                                 {/* Price */}
@@ -2322,7 +2024,7 @@ export default function App() {
                                                     className={`w-full mt-4 px-6 py-3 font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${
                                                         bookingData.check_in && bookingData.check_out && !roomAvailability[room.id]
                                                             ? 'bg-gray-400 text-gray-700 cursor-not-allowed opacity-50'
-                                                            : 'bg-[#0f5132] text-white hover:bg-[#136640] hover:shadow-[#0f5132]/50'
+                                                            : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-400 hover:to-amber-500 hover:shadow-amber-500/50'
                                                     }`}
                                                 >
                                                     {bookingData.check_in && bookingData.check_out && !roomAvailability[room.id] ? 'Not Available' : 'Book Now'}
@@ -2343,18 +2045,18 @@ export default function App() {
 
                         </div>
                     </section>
-                    
+
                     {/* Premium Experiences Section - Mountain Shadows Style */}
                     <section className={`${theme.bgCard} py-20 transition-colors duration-500`}>
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
                             <div className="text-center mb-16">
-                                <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                <span className="inline-block px-6 py-2 bg-amber-500/10 text-amber-600 text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
                                     ✦ Signature Experiences ✦
                                 </span>
                                 <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     SIGNATURE EXPERIENCES AT THE BEST LUXURY RESORT
-                        </h2>
+                                </h2>
                                 <p className={`text-lg ${theme.textSecondary} max-w-3xl mx-auto leading-relaxed`}>
                                     Guests can enjoy a range of curated in-house activities designed to explore the region's rich flora and fauna
                                 </p>
@@ -2402,7 +2104,7 @@ export default function App() {
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
                             <div className="text-center mb-16">
-                                <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                <span className="inline-block px-6 py-2 bg-amber-500/10 text-amber-600 text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
                                     ✦ Premium Services ✦
                                 </span>
                                 <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
@@ -2431,8 +2133,8 @@ export default function App() {
                                                         onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
-                                                        <ConciergeBell className="w-12 h-12 text-[#0f5132]" />
+                                                    <div className="w-full h-full bg-gradient-to-br from-amber-500/20 via-orange-500/20 to-yellow-500/20 flex items-center justify-center">
+                                                        <ConciergeBell className={`w-12 h-12 ${theme.textAccent}`} />
                                                     </div>
                                                 )}
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
@@ -2466,12 +2168,12 @@ export default function App() {
                             {/* View More Button */}
                             {services.length > 4 && (
                                 <div className="text-center mt-12">
-                                    <button className="px-10 py-4 bg-[#0f5132] text-white font-bold text-lg rounded-full shadow-xl hover:bg-[#136640] transition-all duration-300 transform hover:scale-105">
+                                    <button className="px-10 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-lg rounded-full shadow-xl hover:from-amber-400 hover:to-amber-500 transition-all duration-300 transform hover:scale-105 hover:shadow-amber-500/50">
                                         View All Services
-                                            </button>
-                                        </div>
+                                    </button>
+                                </div>
                             )}
-                                    </div>
+                        </div>
                     </section>
 
                     {/* Premium Cuisine Section - Mountain Shadows Style */}
@@ -2479,7 +2181,7 @@ export default function App() {
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
                             <div className="text-center mb-16">
-                                <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                <span className="inline-block px-6 py-2 bg-amber-500/10 text-amber-600 text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
                                     ✦ Savor the Art ✦
                                 </span>
                                 <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
@@ -2490,157 +2192,49 @@ export default function App() {
                                 </p>
                             </div>
 
-                            {/* Food Categories - Display above food items */}
-                            {foodCategories.length > 0 && (
-                                <div className="mb-8">
-                                    <div className="flex flex-wrap gap-3 justify-center">
-                                        {foodCategories.map((category) => (
-                                            <button
-                                                key={category.id}
-                                                onClick={() => {
-                                                    // Scroll to category section or filter
-                                                    const element = document.getElementById(`food-category-${category.id}`);
-                                                    if (element) {
-                                                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                    }
-                                                }}
-                                                className="px-6 py-3 bg-[#0f5132] text-white font-semibold rounded-full hover:bg-[#136640] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                            >
-                                                {category.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Food Items by Category */}
-                            {foodCategories.length > 0 ? (
-                                <div className="space-y-12">
-                                    {foodCategories.map((category) => {
-                                        const categoryFoods = foodItems.filter(food => food.category_id === category.id);
-                                        if (categoryFoods.length === 0) return null;
-                                        
-                                        return (
-                                            <div key={category.id} id={`food-category-${category.id}`} className="scroll-mt-20">
-                                                {/* Category Header */}
-                                                <div className="mb-6 text-center">
-                                                    <h3 className={`text-2xl md:text-3xl font-extrabold ${theme.textPrimary} mb-2`}>
-                                                        {category.name}
-                                                    </h3>
-                                                    <div className="w-24 h-1 bg-gradient-to-r from-[#0f5132] to-[#1a7042] mx-auto"></div>
-                                                </div>
+                            {/* Food Items Grid */}
+                            {foodItems.length > 0 ? (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                                    {foodItems.map((food) => (
+                                        <div 
+                                            key={food.id}
+                                            className={`group relative ${theme.bgCard} rounded-2xl overflow-hidden luxury-shadow transition-all duration-300 transition-all duration-500 transform hover:-translate-y-2 border ${theme.cardBorder || theme.border}`}
+                                        >
+                                            {/* Image */}
+                                            <div className="relative h-40 overflow-hidden">
+                                                <img 
+                                                    src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${food.images?.[0]?.image_url}` : `http://localhost:8000/${food.images?.[0]?.image_url}`} 
+                                                    alt={food.name} 
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                                                    onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                                 
-                                                {/* Food Items Grid for this Category */}
-                                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {categoryFoods.map((food) => (
-                                                        <div 
-                                                            key={food.id}
-                                                            onClick={() => {
-                                                                setSelectedFoodItem(food);
-                                                                setIsFoodDetailsOpen(true);
-                                                            }}
-                                                            className={`group relative ${theme.bgCard} rounded-2xl overflow-hidden luxury-shadow transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border ${theme.cardBorder || theme.border}`}
-                                                        >
-                                                            {/* Image */}
-                                                            <div className="relative h-40 overflow-hidden">
-                                                                <img 
-                                                                    src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${food.images?.[0]?.image_url}` : `http://localhost:8000/${food.images?.[0]?.image_url}`} 
-                                                                    alt={food.name} 
-                                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                                                                    onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                                                />
-                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                                                
-                                                                {/* Category Badge */}
-                                                                <div className="absolute top-3 left-3">
-                                                                    <span className="px-3 py-1 bg-[#0f5132] text-white text-xs font-bold rounded-full shadow-lg">
-                                                                        {category.name}
-                                                                    </span>
-                                                                </div>
-                                                                
-                                                                {/* Availability Badge */}
-                                                                <div className="absolute top-3 right-3">
-                                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${food.available ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                                                        {food.available ? "Available" : "Unavailable"}
-                                                                    </span>
-                                                                </div>
-                                                                
-                                                                {/* Click Indicator */}
-                                                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                                                                    Click for details
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Content */}
-                                                            <div className="p-5">
-                                                                <h3 className={`text-lg font-bold ${theme.textCardPrimary || theme.textPrimary} group-hover:${theme.textCardAccent || theme.textAccent} transition-colors mb-2 line-clamp-2`}>
-                                                                    {food.name}
-                                                                </h3>
-                                                                <p className={`text-sm ${theme.textCardSecondary || theme.textSecondary} line-clamp-2`}>
-                                                                    {food.description}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                {/* Availability Badge */}
+                                                <div className="absolute top-4 right-4">
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${food.available ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                                                        {food.available ? "Available" : "Unavailable"}
+                                                    </span>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
+
+                                            {/* Content */}
+                                            <div className="p-5">
+                                                <h3 className={`text-xl font-bold ${theme.textCardPrimary || theme.textPrimary} group-hover:${theme.textCardAccent || theme.textAccent} transition-colors mb-2 line-clamp-2`}>
+                                                    {food.name}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
-                                // Fallback: Show all food items if no categories
-                                foodItems.length > 0 ? (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                                        {foodItems.map((food) => (
-                                            <div 
-                                                key={food.id}
-                                                onClick={() => {
-                                                    setSelectedFoodItem(food);
-                                                    setIsFoodDetailsOpen(true);
-                                                }}
-                                                className={`group relative ${theme.bgCard} rounded-2xl overflow-hidden luxury-shadow transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border ${theme.cardBorder || theme.border}`}
-                                            >
-                                                {/* Image */}
-                                                <div className="relative h-40 overflow-hidden">
-                                                    <img 
-                                                        src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${food.images?.[0]?.image_url}` : `http://localhost:8000/${food.images?.[0]?.image_url}`} 
-                                                        alt={food.name} 
-                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                                                        onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                                    
-                                                    {/* Availability Badge */}
-                                                    <div className="absolute top-4 right-4">
-                                                        <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${food.available ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                                            {food.available ? "Available" : "Unavailable"}
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    {/* Click Indicator */}
-                                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                                                        Click for details
-                                                    </div>
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="p-5">
-                                                    <h3 className={`text-xl font-bold ${theme.textCardPrimary || theme.textPrimary} group-hover:${theme.textCardAccent || theme.textAccent} transition-colors mb-2 line-clamp-2`}>
-                                                        {food.name}
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className={`text-center py-12 ${theme.textSecondary}`}>No food items available at the moment.</p>
-                                )
+                                <p className={`text-center py-12 ${theme.textSecondary}`}>No food items available at the moment.</p>
                             )}
 
                             {/* View More Button */}
                             {foodItems.length > 8 && (
                                 <div className="text-center mt-12">
-                                    <button className="px-10 py-4 bg-white text-[#0f5132] font-bold text-lg rounded-full border-2 border-[#0f5132] hover:bg-green-50 transition-all duration-300">
+                                    <button className="px-10 py-4 bg-white text-amber-600 font-bold text-lg rounded-full border-2 border-amber-600 hover:bg-amber-50 transition-all duration-300">
                                         View Full Menu
                                     </button>
                                 </div>
@@ -2653,16 +2247,16 @@ export default function App() {
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                             {/* Section Header */}
                             <div className="text-center mb-16">
-                                <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                <span className="inline-block px-6 py-2 bg-amber-500/10 text-amber-600 text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
                                     ✦ Captured Moments ✦
                                 </span>
                                 <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     EXPLORE THE TIMELESS BEAUTY
-                         </h2>
+                                </h2>
                                 <p className={`text-lg ${theme.textSecondary} max-w-3xl mx-auto leading-relaxed`}>
                                     Witness the charm of our resort's stunning views and unforgettable experiences
                                 </p>
-                                         </div>
+                            </div>
 
                             {/* Gallery Grid */}
                             {galleryImages.length > 0 ? (
@@ -2688,8 +2282,8 @@ export default function App() {
                                                         {image.caption}
                                                     </p>
                                                 )}
-                                     </div>
-                             </div>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
@@ -2697,9 +2291,9 @@ export default function App() {
                             )}
 
                             {/* View More Button removed: grid now wraps into multiple rows automatically */}
-                         </div>
+                        </div>
                     </section>
-
+                    
                     {/* Plan Your Wedding Section - Dynamic with Slider */}
                     {planWeddings.length > 0 && planWeddings.some(w => w.is_active) && (
                         <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
@@ -2725,8 +2319,8 @@ export default function App() {
                                     <div className={`relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-all duration-1000 ease-in-out ${index === currentWeddingIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                                         <div className="max-w-5xl mx-auto text-center text-white">
                                             {/* Badge */}
-                                            <div className="mb-6 inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 animate-[fadeInUp_1s_ease-out]">
-                                                <span className="text-white text-sm font-semibold tracking-widest uppercase">
+                                            <div className="mb-6 inline-block px-6 py-2 bg-amber-500/20 backdrop-blur-sm rounded-full border border-amber-400/30 animate-[fadeInUp_1s_ease-out]">
+                                                <span className="text-amber-400 text-sm font-semibold tracking-widest uppercase">
                                                     ✦ Perfect Venue ✦
                                                 </span>
                                             </div>
@@ -2734,10 +2328,10 @@ export default function App() {
                                             {/* Main Title */}
                                             <h2 className="text-3xl md:text-5xl lg:text-7xl font-extrabold mb-6 animate-[fadeInUp_1.2s_ease-out] drop-shadow-2xl leading-tight">
                                                 {wedding.title.split(' ').slice(0, 3).join(' ')}<br/>
-                                                <span className="text-white">
+                                                <span className="bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent">
                                                     {wedding.title.split(' ').slice(3).join(' ') || 'WEDDING DESTINATION'}
                                                 </span>
-                        </h2>
+                                            </h2>
 
                                             {/* Description */}
                                             <p className="text-base md:text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 animate-[fadeInUp_1.4s_ease-out] drop-shadow-lg">
@@ -2745,7 +2339,7 @@ export default function App() {
                                             </p>
                                         </div>
                                     </div>
-                            </div>
+                                </div>
                             ))}
                             
                             {/* Navigation Dots */}
@@ -2757,15 +2351,15 @@ export default function App() {
                                             onClick={() => setCurrentWeddingIndex(index)}
                                             className={`transition-all duration-300 ${
                                                 index === currentWeddingIndex
-                                                    ? "w-12 h-1 bg-white rounded-full"
+                                                    ? "w-12 h-1 bg-amber-400 rounded-full"
                                                     : "w-8 h-1 bg-white/40 hover:bg-white/60 rounded-full"
                                             }`}
                                             aria-label={`Go to slide ${index + 1}`}
                                         />
                                     ))}
-                        </div>
+                                </div>
                             )}
-                    </section>
+                        </section>
                     )}
 
                     {/* Nearby Attractions Section - Mountain Shadows Style */}
@@ -2773,79 +2367,51 @@ export default function App() {
                         <section className={`bg-gradient-to-b ${theme.bgCard} ${theme.bgSecondary} py-20 transition-colors duration-500`}>
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                                 <div className="text-center mb-16">
-                                    <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
+                                    <span className={`inline-block px-6 py-2 bg-amber-500/10 ${theme.textAccent} text-sm font-semibold tracking-widest uppercase rounded-full mb-4`}>
                                     ✦ Explore ✦
                                 </span>
                                     <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     NEARBY ATTRACTIONS
-                        </h2>
-                                    </div>
+                                </h2>
+                            </div>
 
                                 {/* Split Layout - Image Left, Text Right or vice versa */}
                                 <div className="space-y-12">
-                                    {nearbyAttractions.filter(attr => attr.is_active).map((attraction, index) => {
-                                        // Generate Google Maps URL from map_link if available, or search by title
-                                        const getGoogleMapsUrl = () => {
-                                            if (attraction.map_link) {
-                                                return attraction.map_link.startsWith('http') 
-                                                    ? attraction.map_link 
-                                                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.map_link)}`;
-                                            }
-                                            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.title)}`;
-                                        };
-                                        
-                                        return (
-                                            <div 
-                                                key={attraction.id} 
-                                                className={`${theme.bgCard} rounded-3xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl`}
-                                            >
-                                                <div className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-stretch min-h-[500px]`}>
-                                                    {/* Image Section - Match card height */}
-                                                    <div className="w-full md:w-1/2 relative overflow-hidden" style={{ minHeight: '500px' }}>
-                                                        <img 
-                                                            src={getImageUrl(attraction.image_url)} 
-                                                            alt={attraction.title} 
-                                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-110" 
-                                                            onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                                        />
-                                                    </div>
-                                                    
-                                                    {/* Content Section */}
-                                                    <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between ${theme.bgCard}`} style={{ minHeight: '500px' }}>
-                                                        <div>
-                                                            <h3 className={`text-3xl md:text-4xl font-extrabold ${theme.textPrimary} mb-4 leading-tight`}>
-                                                                {attraction.title}
-                                                            </h3>
-                                                            <div className="w-20 h-1 bg-gradient-to-r from-[#0f5132] to-[#1a7042] mb-6"></div>
-                                                            <p className={`text-base md:text-lg ${theme.textSecondary} leading-relaxed`}>
-                                                                {attraction.description}
-                                                            </p>
-                                                        </div>
-                                                        {/* Google Maps Button */}
-                                                        <div className="mt-6 pt-6 border-t border-gray-200">
-                                                            <a
-                                                                href={getGoogleMapsUrl()}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-2 px-6 py-3 bg-[#0f5132] text-white font-semibold rounded-full hover:bg-[#136640] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                                            >
-                                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                                                </svg>
-                                                                View on Google Maps
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                    {nearbyAttractions.filter(attr => attr.is_active).map((attraction, index) => (
+                                        <div 
+                                            key={attraction.id} 
+                                            className={`${theme.bgCard} rounded-3xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl`}
+                                        >
+                                            <div className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-stretch`}>
+                                                {/* Image Section */}
+                                                <div className="w-full md:w-1/2 h-80 md:h-96 overflow-hidden">
+                                                    <img 
+                                                        src={getImageUrl(attraction.image_url)} 
+                                                        alt={attraction.title} 
+                                                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" 
+                                                onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
+                                            />
                                             </div>
-                                        );
-                                    })}
-                                </div>
+                                                
+                                                {/* Content Section */}
+                                                <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center ${theme.bgCard}`}>
+                                                    <h3 className={`text-3xl md:text-4xl font-extrabold ${theme.textPrimary} mb-4 leading-tight`}>
+                                                        {attraction.title}
+                                                    </h3>
+                                                    <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-amber-600 mb-6"></div>
+                                                    <p className={`text-base md:text-lg ${theme.textSecondary} leading-relaxed`}>
+                                                        {attraction.description}
+                                                    </p>
+                                                </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
+                        </div>
                     </section>
                     )}
 
-                    
+
                     {/* Reviews Section */}
                     <section>
                         <h2 className={`group ${sectionTitleStyle}`}>
@@ -2907,7 +2473,7 @@ export default function App() {
                             </div>
                             <form onSubmit={handleSendMessage} className={`p-4 border-t ${theme.chatInputBorder} ${theme.chatHeaderBg} flex items-center`}>
                                 <input type="text" value={userMessage} onChange={(e) => setUserMessage(e.target.value)} placeholder="Ask me anything..."
-                                    className={`flex-1 p-3 rounded-full ${theme.chatInputBg} ${theme.textPrimary} ${theme.chatInputPlaceholder} focus:outline-none focus:ring-2 focus:ring-[#0f5132]`} />
+                                    className={`flex-1 p-3 rounded-full ${theme.chatInputBg} ${theme.textPrimary} ${theme.chatInputPlaceholder} focus:outline-none focus:ring-2 focus:ring-amber-500`} />
                                 <button type="submit" className={`ml-2 p-3 rounded-full ${theme.buttonBg} ${theme.buttonText} ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={!userMessage.trim() || isChatLoading}>
                                     <Send className="w-5 h-5" />
                                 </button>
@@ -2936,7 +2502,7 @@ export default function App() {
                                             onChange={handleRoomBookingChange} 
                                             min={new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                     <div className="space-y-2 w-1/2">
@@ -2948,7 +2514,7 @@ export default function App() {
                                             onChange={handleRoomBookingChange} 
                                             min={bookingData.check_in || new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                 </div>
@@ -3019,7 +2585,7 @@ export default function App() {
                                             onChange={handleRoomBookingChange} 
                                             min={new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                     <div className="space-y-2 w-1/2">
@@ -3031,7 +2597,7 @@ export default function App() {
                                             onChange={handleRoomBookingChange} 
                                             min={bookingData.check_in || new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                 </div>
@@ -3048,8 +2614,8 @@ export default function App() {
                                     <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl ${theme.bgSecondary}`}>
                                                 {rooms.length > 0 ? (
                                                     rooms.map(room => (
-                                            <div key={room.id} onClick={() => handleRoomSelection(room.id)}
-                                                    className={`rounded-lg border-2 cursor-pointer transition-all duration-200 overflow-hidden ${bookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132]`}`}
+                                                <div key={room.id} onClick={() => handleRoomSelection(room.id)}
+                                                    className={`rounded-lg border-2 cursor-pointer transition-all duration-200 overflow-hidden ${bookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-amber-500`}`}
                                                 >
                                                     <img 
                                                         src={getImageUrl(room.image_url)} 
@@ -3059,15 +2625,15 @@ export default function App() {
                                                     />
                                                     <div className="p-2 text-center">
                                                         <p className="font-semibold text-xs">Room {room.number}</p>
-                                                <p className="text-xs opacity-80">{room.type}</p>
-                                                <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
+                                                        <p className="text-xs opacity-80">{room.type}</p>
+                                                        <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
                                                         <p className="text-xs font-bold mt-1">{formatCurrency(room.price)}</p>
-                                            </div>
-                                    </div>
+                                                    </div>
+                                                </div>
                                             ))
                                         ) : (
-                                            <div className="col-span-full text-center py-8" style={{ color: '#0f5132' }}>
-                                                        <BedDouble className="w-12 h-12 mx-auto mb-3" style={{ color: '#0f5132' }} />
+                                            <div className="col-span-full text-center py-8 text-gray-500">
+                                                        <BedDouble className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                                         <p className="text-sm font-semibold mb-1">No rooms available</p>
                                                         <p className="text-xs">No rooms are available for the selected dates. Please try different dates.</p>
                                             </div>
@@ -3078,24 +2644,24 @@ export default function App() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Full Name</label>
-                                    <input type="text" name="guest_name" value={bookingData.guest_name} onChange={handleRoomBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="text" name="guest_name" value={bookingData.guest_name} onChange={handleRoomBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Email Address</label>
-                                    <input type="email" name="guest_email" value={bookingData.guest_email} onChange={handleRoomBookingChange} placeholder="user@example.com" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="email" name="guest_email" value={bookingData.guest_email} onChange={handleRoomBookingChange} placeholder="user@example.com" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Phone Number</label>
-                                    <input type="tel" name="guest_mobile" value={bookingData.guest_mobile} onChange={handleRoomBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="tel" name="guest_mobile" value={bookingData.guest_mobile} onChange={handleRoomBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="flex space-x-4">
                                     <div className="space-y-2 w-1/2">
                                         <label className={`block text-sm font-medium ${theme.textSecondary}`}>Adults</label>
-                                        <input type="number" name="adults" value={bookingData.adults} onChange={handleRoomBookingChange} min="1" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                        <input type="number" name="adults" value={bookingData.adults} onChange={handleRoomBookingChange} min="1" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                     </div>
                                     <div className="space-y-2 w-1/2">
                                         <label className={`block text-sm font-medium ${theme.textSecondary}`}>Children</label>
-                                        <input type="number" name="children" value={bookingData.children} onChange={handleRoomBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                        <input type="number" name="children" value={bookingData.children} onChange={handleRoomBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                     </div>
                                 </div>
                                 <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
@@ -3117,15 +2683,7 @@ export default function App() {
                         <div className={`w-full max-w-lg ${theme.bgCard} rounded-3xl shadow-2xl flex flex-col max-h-[90vh] my-8`}>
                             <div className={`p-6 flex items-center justify-between border-b ${theme.border}`}>
                                 <h3 className="text-lg font-bold flex items-center"><Package className={`w-5 h-5 mr-2 ${theme.textAccent}`} /> Book a Package</h3>
-                                <button
-                                    onClick={() => {
-                                        setIsPackageBookingFormOpen(false);
-                                        setSelectedPackage(null);
-                                    }}
-                                    className={`p-1 rounded-full ${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
+                                <button onClick={() => setIsPackageBookingFormOpen(false)} className={`p-1 rounded-full ${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}><X className="w-6 h-6" /></button>
                             </div>
                             {/* Error message inside modal */}
                             {bannerMessage.text && bannerMessage.type === 'error' && (
@@ -3157,7 +2715,7 @@ export default function App() {
                                             onChange={handlePackageBookingChange} 
                                             min={new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                     <div className="space-y-2 w-1/2">
@@ -3169,91 +2727,83 @@ export default function App() {
                                             onChange={handlePackageBookingChange} 
                                             min={packageBookingData.check_in || new Date().toISOString().split('T')[0]} 
                                             required 
-                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} 
+                                            className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} 
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Available Rooms for Selected Dates</label>
-                                    {selectedPackage?.is_full_property ? (
-                                        <div className="p-6 text-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
-                                            <BedDouble className="w-10 h-10 mx-auto mb-3" />
-                                            <p className="text-sm font-semibold">Full property package selected</p>
-                                            <p className="text-xs mt-1">All rooms will be reserved automatically for these dates.</p>
-                                        </div>
-                                    ) : !packageBookingData.check_in || !packageBookingData.check_out ? (
+                                    {!packageBookingData.check_in || !packageBookingData.check_out ? (
                                         <div className={`p-6 text-center rounded-xl ${theme.bgSecondary} border-2 border-dashed ${theme.border}`}>
                                             <BedDouble className={`w-10 h-10 ${theme.textSecondary} mx-auto mb-3`} />
                                             <p className={`text-sm ${theme.textSecondary}`}>Please select check-in and check-out dates above to see available rooms</p>
                                         </div>
                                     ) : (
                                         <>
-                                            {selectedPackage?.room_type && (
-                                                <p className={`text-xs ${theme.textSecondary} mb-2`}>Showing {selectedPackage.room_type} rooms available from {packageBookingData.check_in} to {packageBookingData.check_out}</p>
-                                            )}
+                                            <p className={`text-xs ${theme.textSecondary} mb-2`}>Showing rooms available from {packageBookingData.check_in} to {packageBookingData.check_out}</p>
                                     <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl ${theme.bgSecondary}`}>
-                                                {packageAvailableRooms.length > 0 ? (
-                                                    packageAvailableRooms.map(room => {
+                                                {rooms.length > 0 ? (
+                                                    rooms.map(room => {
                                                         const isAvailable = Object.keys(packageRoomAvailability).length === 0 || packageRoomAvailability[room.id] !== false;
                                                         return (
-                                                            <div
-                                                                key={room.id}
-                                                                onClick={() => isAvailable && handlePackageRoomSelection(room.id)}
-                                                                className={`rounded-lg border-2 transition-all duration-200 overflow-hidden ${
-                                                                    !isAvailable
-                                                                        ? 'opacity-50 cursor-not-allowed bg-gray-300 border-gray-400'
-                                                                        : `cursor-pointer ${packageBookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132]`}`
-                                                                }`}
-                                                            >
-                                                                <img
-                                                                    src={getImageUrl(room.image_url)}
-                                                                    alt={room.type}
-                                                                    className="w-full h-20 object-cover"
-                                                                    onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
-                                                                />
-                                                                <div className="p-2 text-center">
-                                                                    <p className="font-semibold text-xs">Room {room.number}</p>
-                                                                    <p className="text-xs opacity-80">{room.type || 'Standard'}</p>
-                                                <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
-                                                                    <p className="text-xs font-bold mt-1">{formatCurrency(room.price)}</p>
-                                                                    {!isAvailable && (
-                                                                        <p className="text-xs text-red-600 font-bold mt-1">Unavailable</p>
-                                                                    )}
-                                            </div>
-                                    </div>
+                                                <div 
+                                                    key={room.id} 
+                                                    onClick={() => isAvailable && handlePackageRoomSelection(room.id)}
+                                                    className={`rounded-lg border-2 transition-all duration-200 overflow-hidden ${
+                                                        !isAvailable 
+                                                            ? 'opacity-50 cursor-not-allowed bg-gray-300 border-gray-400' 
+                                                            : `cursor-pointer ${packageBookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-amber-500`}`
+                                                    }`}
+                                                >
+                                                    <img 
+                                                        src={getImageUrl(room.image_url)} 
+                                                        alt={room.type} 
+                                                        className="w-full h-20 object-cover" 
+                                                        onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
+                                                    />
+                                                    <div className="p-2 text-center">
+                                                        <p className="font-semibold text-xs">Room {room.number}</p>
+                                                        <p className="text-xs opacity-80">{room.type}</p>
+                                                        <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
+                                                        <p className="text-xs font-bold mt-1">{formatCurrency(room.price)}</p>
+                                                        {!isAvailable && (
+                                                            <p className="text-xs text-red-600 font-bold mt-1">Unavailable</p>
+                                                        )}
+                                                    </div>
+                                                </div>
                                                         );
                                                     })
-                                                ) : (
-                                                    <div className="col-span-full text-center py-8" style={{ color: '#0f5132' }}>
-                                                        <BedDouble className="w-12 h-12 mx-auto mb-3" style={{ color: '#0f5132' }} />
+                                        ) : (
+                                            <div className="col-span-full text-center py-8 text-gray-500">
+                                                        <BedDouble className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                                         <p className="text-sm font-semibold mb-1">No rooms available</p>
                                                         <p className="text-xs">No rooms are available for the selected dates. Please try different dates.</p>
-                                                    </div>
-                                                )}
                                             </div>
+                                        )}
+                                    </div>
                                         </>
                                     )}
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Full Name</label>
-                                    <input type="text" name="guest_name" value={packageBookingData.guest_name} onChange={handlePackageBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="text" name="guest_name" value={packageBookingData.guest_name} onChange={handlePackageBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Email Address</label>
-                                    <input type="email" name="guest_email" value={packageBookingData.guest_email || ''} onChange={handlePackageBookingChange} placeholder="user@example.com (optional)" className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="email" name="guest_email" value={packageBookingData.guest_email || ''} onChange={handlePackageBookingChange} placeholder="user@example.com (optional)" className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Phone Number</label>
-                                    <input type="tel" name="guest_mobile" value={packageBookingData.guest_mobile} onChange={handlePackageBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="tel" name="guest_mobile" value={packageBookingData.guest_mobile} onChange={handlePackageBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="flex space-x-4">
                                     <div className="space-y-2 w-1/2">
                                         <label className={`block text-sm font-medium ${theme.textSecondary}`}>Adults</label>
-                                        <input type="number" name="adults" value={packageBookingData.adults} onChange={handlePackageBookingChange} min="1" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                        <input type="number" name="adults" value={packageBookingData.adults} onChange={handlePackageBookingChange} min="1" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                     </div>
                                     <div className="space-y-2 w-1/2">
                                         <label className={`block text-sm font-medium ${theme.textSecondary}`}>Children</label>
-                                        <input type="number" name="children" value={packageBookingData.children} onChange={handlePackageBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                        <input type="number" name="children" value={packageBookingData.children} onChange={handlePackageBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                     </div>
                                 </div>
                                 <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
@@ -3323,18 +2873,6 @@ export default function App() {
                                                         <h3 className={`text-xl font-bold ${theme.textCardPrimary || theme.textPrimary} mb-2 line-clamp-2`}>
                                                             {pkg.title}
                                                         </h3>
-                                                        <div className="flex flex-wrap gap-2 mb-3">
-                                                            {pkg.is_full_property && (
-                                                                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
-                                                                    Full Property
-                                                                </span>
-                                                            )}
-                                                            {pkg.room_type && !pkg.is_full_property && (
-                                                                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
-                                                                    {pkg.room_type} Rooms
-                                                                </span>
-                                                            )}
-                                                        </div>
                                                         <p className={`text-sm ${theme.textCardSecondary || theme.textSecondary} mb-3 line-clamp-2`}>
                                                             {pkg.description}
                                                         </p>
@@ -3379,19 +2917,19 @@ export default function App() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Full Name</label>
-                                    <input type="text" name="guest_name" value={serviceBookingData.guest_name} onChange={handleServiceBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="text" name="guest_name" value={serviceBookingData.guest_name} onChange={handleServiceBookingChange} placeholder="Enter your full name" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Email Address</label>
-                                    <input type="email" name="guest_email" value={serviceBookingData.guest_email} onChange={handleServiceBookingChange} placeholder="user@example.com" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="email" name="guest_email" value={serviceBookingData.guest_email} onChange={handleServiceBookingChange} placeholder="user@example.com" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Phone Number</label>
-                                    <input type="tel" name="guest_mobile" value={serviceBookingData.guest_mobile} onChange={handleServiceBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="tel" name="guest_mobile" value={serviceBookingData.guest_mobile} onChange={handleServiceBookingChange} placeholder="Enter your mobile number" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Room ID (Optional)</label>
-                                    <input type="number" name="room_id" value={serviceBookingData.room_id || ''} onChange={handleServiceBookingChange} placeholder="Enter your room ID if assigned" className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="number" name="room_id" value={serviceBookingData.room_id || ''} onChange={handleServiceBookingChange} placeholder="Enter your room ID if assigned" className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
                                     {isBookingLoading ? 'Booking...' : 'Confirm Booking'}
@@ -3417,7 +2955,7 @@ export default function App() {
                             <form onSubmit={handleFoodOrderSubmit} className="p-4 space-y-4">
                                 <div className="space-y-2">
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Room ID</label>
-                                    <input type="number" name="room_id" value={foodOrderData.room_id || ''} onChange={(e) => setFoodOrderData(prev => ({ ...prev, room_id: parseInt(e.target.value) || '' }))} placeholder="Enter your room ID" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
+                                    <input type="number" name="room_id" value={foodOrderData.room_id || ''} onChange={(e) => setFoodOrderData(prev => ({ ...prev, room_id: parseInt(e.target.value) || '' }))} placeholder="Enter your room ID" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors`} />
                                 </div>
                                 <h4 className={`text-md font-semibold ${theme.textPrimary}`}>Select Items:</h4>
                                 <div className="space-y-4 max-h-60 overflow-y-auto">
@@ -3434,7 +2972,7 @@ export default function App() {
                                                 min="0"
                                                 value={foodOrderData.items[item.id] || 0}
                                                 onChange={(e) => handleFoodOrderChange(e, item.id)}
-                                                className={`w-20 p-2 text-center rounded-lg ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132]`}
+                                                className={`w-20 p-2 text-center rounded-lg ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-amber-500`}
                                             />
                                         </div>
                                     ))}
@@ -3452,300 +2990,20 @@ export default function App() {
                     </div>
                 )}
                 
-                {/* Food Details Modal */}
-                {isFoodDetailsOpen && selectedFoodItem && (
-                    <div className="fixed inset-0 z-[100] bg-neutral-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-                        <div className={`w-full max-w-4xl ${theme.bgCard} rounded-3xl shadow-2xl flex flex-col max-h-[90vh] my-8`}>
-                            {/* Header */}
-                            <div className={`p-6 flex items-center justify-between border-b ${theme.border}`}>
-                                <h3 className={`text-2xl font-bold ${theme.textPrimary}`}>Food Details</h3>
-                                <button 
-                                    onClick={() => {
-                                        setIsFoodDetailsOpen(false);
-                                        setSelectedFoodItem(null);
-                                    }} 
-                                    className={`p-2 rounded-full ${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="p-6 overflow-y-auto flex-1">
-                                <div className="flex flex-col md:flex-row gap-6">
-                                    {/* Image Section */}
-                                    <div className="w-full md:w-1/2">
-                                        <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
-                                            <img 
-                                                src={process.env.NODE_ENV === 'production' 
-                                                    ? `https://www.teqmates.com/${selectedFoodItem.images?.[0]?.image_url}` 
-                                                    : `http://localhost:8000/${selectedFoodItem.images?.[0]?.image_url}`} 
-                                                alt={selectedFoodItem.name} 
-                                                className="w-full h-full object-cover" 
-                                                onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                            />
-                                            {/* Availability Badge */}
-                                            <div className="absolute top-4 right-4">
-                                                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${selectedFoodItem.available ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                                                    {selectedFoodItem.available ? "Available" : "Unavailable"}
-                                                </span>
-                                            </div>
-                                            {/* Category Badge */}
-                                            {foodCategories.length > 0 && selectedFoodItem.category_id && (() => {
-                                                const category = foodCategories.find(cat => cat.id === selectedFoodItem.category_id);
-                                                return category ? (
-                                                    <div className="absolute top-4 left-4">
-                                                        <span className="px-4 py-2 bg-[#0f5132] text-white text-sm font-bold rounded-full shadow-lg">
-                                                            {category.name}
-                                                        </span>
-                                                    </div>
-                                                ) : null;
-                                            })()}
-                                        </div>
-                                        
-                                        {/* Image Gallery if multiple images */}
-                                        {selectedFoodItem.images && selectedFoodItem.images.length > 1 && (
-                                            <div className="mt-4 grid grid-cols-4 gap-2">
-                                                {selectedFoodItem.images.slice(0, 4).map((img, index) => (
-                                                    <div key={index} className="relative h-20 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                                                        <img 
-                                                            src={process.env.NODE_ENV === 'production' 
-                                                                ? `https://www.teqmates.com/${img.image_url}` 
-                                                                : `http://localhost:8000/${img.image_url}`} 
-                                                            alt={`${selectedFoodItem.name} ${index + 1}`} 
-                                                            className="w-full h-full object-cover" 
-                                                            onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    
-                                    {/* Details Section */}
-                                    <div className="w-full md:w-1/2 flex flex-col">
-                                        <h2 className={`text-3xl font-extrabold ${theme.textPrimary} mb-4`}>
-                                            {selectedFoodItem.name}
-                                        </h2>
-                                        
-                                        {/* Category */}
-                                        {foodCategories.length > 0 && selectedFoodItem.category_id && (() => {
-                                            const category = foodCategories.find(cat => cat.id === selectedFoodItem.category_id);
-                                            return category ? (
-                                                <div className="mb-4">
-                                                    <span className="inline-block px-4 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold rounded-full">
-                                                        {category.name}
-                                                    </span>
-                                                </div>
-                                            ) : null;
-                                        })()}
-                                        
-                                        {/* Divider */}
-                                        <div className="w-20 h-1 bg-gradient-to-r from-[#0f5132] to-[#1a7042] mb-6"></div>
-                                        
-                                        {/* Description */}
-                                        <div className="mb-6">
-                                            <h3 className={`text-lg font-semibold ${theme.textPrimary} mb-2`}>Description</h3>
-                                            <p className={`text-base ${theme.textSecondary} leading-relaxed`}>
-                                                {selectedFoodItem.description || 'No description available.'}
-                                            </p>
-                                        </div>
-                                        
-                                        {/* Availability Status */}
-                                        <div className="mt-auto pt-6 border-t border-gray-200">
-                                            <div className="flex items-center gap-3">
-                                                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${selectedFoodItem.available ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                                    {selectedFoodItem.available ? "✓ Currently Available" : "✗ Currently Unavailable"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Package Details Modal */}
-                {isPackageDetailsModalOpen && selectedPackageDetails && (
-                    <div className="fixed inset-0 z-[100] bg-neutral-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-                        <div className={`w-full max-w-6xl ${theme.bgCard} rounded-3xl shadow-2xl flex flex-col max-h-[90vh] my-8`}>
-                            {/* Header */}
-                            <div className={`p-6 flex items-center justify-between border-b ${theme.border}`}>
-                                <h3 className={`text-2xl font-bold ${theme.textPrimary}`}>Package Details</h3>
-                                <button 
-                                    onClick={() => {
-                                        setIsPackageDetailsModalOpen(false);
-                                        setSelectedPackageDetails(null);
-                                    }} 
-                                    className={`p-2 rounded-full ${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="p-6 overflow-y-auto flex-1">
-                                <div className="flex flex-col lg:flex-row gap-6">
-                                    {/* Image Section */}
-                                    <div className="w-full lg:w-1/2">
-                                        {/* Main Image */}
-                                        <div className="relative h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden mb-4">
-                                            <img 
-                                                src={selectedPackageDetails.images && selectedPackageDetails.images.length > 0 
-                                                    ? getImageUrl(selectedPackageDetails.images[packageImageIndex[selectedPackageDetails.id] || 0]?.image_url) 
-                                                    : ITEM_PLACEHOLDER} 
-                                                alt={selectedPackageDetails.title} 
-                                                className="w-full h-full object-cover" 
-                                                onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                            />
-                                            {/* Price Badge */}
-                                            <div className="absolute bottom-4 left-4 bg-white/95 text-[#0f5132] font-extrabold text-2xl md:text-3xl px-4 py-2 rounded-xl shadow-lg">
-                                                {formatCurrency(selectedPackageDetails.price || 0)}
-                                            </div>
-                                            {/* Image Navigation */}
-                                            {selectedPackageDetails.images && selectedPackageDetails.images.length > 1 && (
-                                                <>
-                                                    <button
-                                                        onClick={() => {
-                                                            const currentIdx = packageImageIndex[selectedPackageDetails.id] || 0;
-                                                            const prevIdx = currentIdx === 0 ? selectedPackageDetails.images.length - 1 : currentIdx - 1;
-                                                            setPackageImageIndex(prev => ({ ...prev, [selectedPackageDetails.id]: prevIdx }));
-                                                        }}
-                                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#0f5132] p-2 rounded-full shadow-lg hover:bg-white transition-all"
-                                                    >
-                                                        <ChevronRight className="w-5 h-5 rotate-180" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            const currentIdx = packageImageIndex[selectedPackageDetails.id] || 0;
-                                                            const nextIdx = currentIdx === selectedPackageDetails.images.length - 1 ? 0 : currentIdx + 1;
-                                                            setPackageImageIndex(prev => ({ ...prev, [selectedPackageDetails.id]: nextIdx }));
-                                                        }}
-                                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#0f5132] p-2 rounded-full shadow-lg hover:bg-white transition-all"
-                                                    >
-                                                        <ChevronRight className="w-5 h-5" />
-                                                    </button>
-                                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-full z-10">
-                                                        {selectedPackageDetails.images.map((_, imgIdx) => (
-                                                            <button
-                                                                key={imgIdx}
-                                                                onClick={() => setPackageImageIndex(prev => ({ ...prev, [selectedPackageDetails.id]: imgIdx }))}
-                                                                className={`w-2 h-2 rounded-full transition-all ${imgIdx === (packageImageIndex[selectedPackageDetails.id] || 0) ? 'bg-white' : 'bg-white/40'}`}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                        
-                                        {/* Image Gallery Thumbnails */}
-                                        {selectedPackageDetails.images && selectedPackageDetails.images.length > 1 && (
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {selectedPackageDetails.images.map((img, index) => (
-                                                    <div 
-                                                        key={index} 
-                                                        onClick={() => setPackageImageIndex(prev => ({ ...prev, [selectedPackageDetails.id]: index }))}
-                                                        className={`relative h-20 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border-2 ${index === (packageImageIndex[selectedPackageDetails.id] || 0) ? 'border-[#0f5132]' : 'border-transparent'}`}
-                                                    >
-                                                        <img 
-                                                            src={getImageUrl(img.image_url)} 
-                                                            alt={`${selectedPackageDetails.title} ${index + 1}`} 
-                                                            className="w-full h-full object-cover" 
-                                                            onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    
-                                    {/* Details Section */}
-                                    <div className="w-full lg:w-1/2 flex flex-col">
-                                        <h2 className={`text-3xl md:text-4xl font-extrabold ${theme.textPrimary} mb-4`}>
-                                            {selectedPackageDetails.title}
-                                        </h2>
-                                        
-                                        {/* Badges */}
-                                        <div className="flex flex-wrap items-center gap-3 mb-4">
-                                            {selectedPackageDetails.is_full_property && (
-                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
-                                                    Full Property
-                                                </span>
-                                            )}
-                                            {selectedPackageDetails.room_type && !selectedPackageDetails.is_full_property && (
-                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
-                                                    {selectedPackageDetails.room_type} Rooms
-                                                </span>
-                                            )}
-                                        </div>
-                                        
-                                        {/* Divider */}
-                                        <div className="w-20 h-1 bg-gradient-to-r from-[#0f5132] to-[#1a7042] mb-6"></div>
-                                        
-                                        {/* Description */}
-                                        <div className="mb-6">
-                                            <h3 className={`text-lg font-semibold ${theme.textPrimary} mb-2`}>Description</h3>
-                                            <p className={`text-base ${theme.textSecondary} leading-relaxed`}>
-                                                {selectedPackageDetails.description || 'No description available.'}
-                                            </p>
-                                        </div>
-                                        
-                                        {/* Price Section */}
-                                        <div className="mb-6 pt-4 border-t border-gray-200">
-                                            <p className="text-sm mb-2" style={{ color: '#0f5132' }}>Starting from</p>
-                                            <p className="text-3xl md:text-4xl font-extrabold mb-4" style={{ color: '#0f5132' }}>
-                                                {formatCurrency(selectedPackageDetails.price || 0)}
-                                                <span className="text-lg font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
-                                            </p>
-                                        </div>
-                                        
-                                        {/* Booking Button */}
-                                        <div className="mt-auto pt-6 border-t border-gray-200">
-                                            <button
-                                                onClick={() => {
-                                                    setIsPackageDetailsModalOpen(false);
-                                                    handleOpenPackageBookingForm(selectedPackageDetails.id);
-                                                }}
-                                                className="w-full px-8 py-4 bg-[#0f5132] text-white font-bold text-lg rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300"
-                                                style={{ color: '#ffffff' }}
-                                            >
-                                                <span className="flex items-center justify-center gap-2" style={{ color: '#ffffff' }}>
-                                                    Book Now
-                                                    <ChevronRight className="w-5 h-5" style={{ color: '#ffffff', stroke: '#ffffff' }} />
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                
-                <footer className="bg-white py-8 px-4 md:px-12 mt-12 border-t border-gray-200">
+                <footer className={`${theme.bgSecondary} py-8 px-4 md:px-12 mt-12`}>
                     <div className="container mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                         {resortInfo && (
                             <>
                                 <div className="text-center md:text-left">
-                                    <h3 className="text-xl font-bold tracking-tight" style={{ color: '#0f5132' }}>{resortInfo.name}</h3>
-                                    <p className="text-sm mt-1" style={{ color: '#0f5132' }}>{resortInfo.address}</p>
-                                    <p className="text-xs mt-2" style={{ color: '#0f5132' }}>&copy; 2024 Pomma Holidays. TeqMates.</p>
+                                    <h3 className={`text-xl font-bold tracking-tight ${theme.textPrimary}`}>{resortInfo.name}</h3>
+                                    <p className={`text-sm ${theme.textSecondary} mt-1`}>{resortInfo.address}</p>
+                                    <p className={`text-xs ${theme.textSecondary} mt-2`}>&copy; 2024 Elysian Retreat. All Rights Reserved.</p>
                                 </div>
-                                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-                                    <div className="flex space-x-4">
-                                        <a href={formatUrl(resortInfo.facebook)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Facebook /></a>
-                                        <a href={formatUrl(resortInfo.instagram)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Instagram /></a>
-                                        <a href={formatUrl(resortInfo.twitter)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Twitter /></a>
-                                        <a href={formatUrl(resortInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Linkedin /></a>
-                                    </div>
-                                    {/* Powered by TeqMates */}
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs" style={{ color: '#0f5132' }}>Powered by</span>
-                                        <a href="https://teqmates.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-                                            <span className="text-sm font-bold" style={{ color: '#0f5132' }}>TeqMates</span>
-                                        </a>
-                                    </div>
+                                <div className="flex space-x-4">
+                                    <a href={formatUrl(resortInfo.facebook)} target="_blank" rel="noopener noreferrer" className={`${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}><Facebook /></a>
+                                    <a href={formatUrl(resortInfo.instagram)} target="_blank" rel="noopener noreferrer" className={`${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}><Instagram /></a>
+                                    <a href={formatUrl(resortInfo.twitter)} target="_blank" rel="noopener noreferrer" className={`${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}><Twitter /></a>
+                                    <a href={formatUrl(resortInfo.linkedin)} target="_blank" rel="noopener noreferrer" className={`${theme.textSecondary} hover:${theme.textPrimary} transition-colors`}><Linkedin /></a>
                                 </div>
                             </>
                         )}

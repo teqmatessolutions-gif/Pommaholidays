@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, memo, useMemo } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
 import BannerMessage from "../components/BannerMessage";
-import api from "../services/api"; // Use the global API service
+import axios from "axios"; // We need axios to create the api service object
+import { getApiBaseUrl } from "../services/api";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DollarSign, BedDouble, Users, Utensils, Package, Hash, Calendar, CreditCard, X, Search, Filter, XCircle } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -10,7 +11,43 @@ import autoTable from 'jspdf-autotable';
 // Make sure to place your logo in the specified path or update the path accordingly.
 import { useInfiniteScroll } from "./useInfiniteScroll";
 import logo from '../assets/logo.jpeg'; 
-import { formatCurrency } from '../utils/currency';
+import { formatCurrency } from '../utils/currency'; 
+
+
+// --- Placeholder for DashboardLayout ---
+// In your actual project, you would remove this and use your own DashboardLayout component.
+
+
+// --- API service ---
+// Using the same API service setup as other pages
+const api = axios.create({
+  baseURL: getApiBaseUrl(),
+});
+
+// 1. Request Interceptor: Attaches the token to every request
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
+
+// 2. Response Interceptor: Handles 401 errors globally
+api.interceptors.response.use(response => {
+  return response;
+}, error => {
+  if (error.response && error.response.status === 401) {
+    // Token is invalid or expired
+    localStorage.removeItem('token');
+    // Use window.location to force a full page reload to clear any stale state
+    window.location.href = '/login';
+    // You could also use a state management solution to show a "Session Expired" message
+  }
+  return Promise.reject(error);
+});
 
 
 // --- Helper Components ---

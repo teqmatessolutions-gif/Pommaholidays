@@ -16,6 +16,8 @@ class PackageOut(BaseModel):
     title: str
     description: Optional[str] = None
     price: float
+    room_type: Optional[str] = None
+    is_full_property: bool = False
     images: List[PackageImageOut] = Field(default_factory=list)
 
     class Config:
@@ -55,7 +57,7 @@ class PackageBookingBase(BaseModel):
 
 
 class PackageBookingCreate(PackageBookingBase):
-    room_ids: List[int]
+    room_ids: List[int] = Field(default_factory=list)
     class Config:
         from_attributes = True
 

@@ -81,7 +81,7 @@ const FoodManagement = () => {
 
   const fetchFoodItems = async () => {
     try {
-      const res = await API.get("/food-items/", {
+      const res = await API.get("/food-items", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFoodItems(res.data);
@@ -139,12 +139,12 @@ const FoodManagement = () => {
 
     try {
       if (editingItemId) {
-        await API.put(`/food-items/${editingItemId}/`, formData, {
+        await API.put(`/food-items/${editingItemId}`, formData, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
         toast.success("Food item updated successfully!");
       } else {
-        await API.post("/food-items/", formData, {
+        await API.post("/food-items", formData, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
         toast.success("Food item added successfully!");

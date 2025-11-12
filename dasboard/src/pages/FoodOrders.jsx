@@ -34,10 +34,10 @@ export default function FoodOrders() {
     try {
       // Fetch initial page of orders
       const [ordersRes, roomsRes, employeesRes, foodItemsRes] = await Promise.all([
-        api.get("/food-orders/?skip=0&limit=20"),
-        api.get("/rooms/"),
-        api.get("/employees/"),
-        api.get("/food-items/"),
+        api.get("/food-orders?skip=0&limit=20"),
+        api.get("/rooms"),
+        api.get("/employees"),
+        api.get("/food-items"),
       ]);
       setOrders(ordersRes.data);
       setHasMore(ordersRes.data.length === 12);
@@ -54,7 +54,7 @@ export default function FoodOrders() {
     setIsFetchingMore(true);
     const nextPage = page + 1;
     try {
-      const res = await api.get(`/food-orders/?skip=${(nextPage - 1) * 20}&limit=20`);
+      const res = await api.get(`/food-orders?skip=${(nextPage - 1) * 20}&limit=20`);
       const newOrders = res.data || [];
       setOrders(prev => [...prev, ...newOrders]);
       setPage(nextPage);
@@ -104,7 +104,7 @@ export default function FoodOrders() {
     };
 
     try {
-      await api.post("/food-orders/", payload);
+      await api.post("/food-orders", payload);
       fetchAll();
       setSelectedItems([]);
       setRoomId("");
