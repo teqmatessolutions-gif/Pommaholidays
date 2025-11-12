@@ -325,7 +325,7 @@ const Dashboard = () => {
       <div className="relative max-w-[1400px] mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <header className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Resort Admin Dashboard</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Pomma Holidays Admin Dashboard</h1>
             <p className="text-sm sm:text-base text-gray-500">Overview of bookings, rooms, revenue, expenses & operations</p>
           </div>
           <div className="text-xs sm:text-sm text-gray-500">

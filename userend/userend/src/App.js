@@ -1712,21 +1712,25 @@ export default function App() {
 
     if (loading) {
         return (
-            <div className={`flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100`}>
+            <div className={`flex items-center justify-center min-h-screen bg-transparent`}>
                 <div className="flex flex-col items-center">
-                    {/* Animated Logo Loader */}
-                    <div className="relative mb-8">
-                        <div className="absolute inset-0 bg-green-500/20 rounded-full blur-2xl animate-pulse"></div>
-                        <div className="relative bg-white/90 rounded-full p-8 shadow-2xl animate-bounce" style={{ animationDuration: '2s', animationIterationCount: 'infinite' }}>
+                    {/* Animated Logo Loader with Rotating Border */}
+                    <div className="relative mb-8" style={{ width: '120px', height: '120px' }}>
+                        {/* Green Background Circle */}
+                        <div className="absolute inset-0 rounded-full bg-[#0f5132]" style={{ width: '120px', height: '120px' }}></div>
+                        {/* Rotating Border */}
+                        <div className="absolute inset-0 rounded-full border-4 border-white border-t-transparent animate-spin" style={{ animationDuration: '2s', animationIterationCount: 'infinite', animationTimingFunction: 'linear', width: '120px', height: '120px' }}></div>
+                        {/* Logo Container - No rotation */}
+                        <div className="relative rounded-full p-8" style={{ width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <img 
                                 src="/pommaholidays/logo.png" 
                                 alt="Pomma Holidays Logo" 
-                                className="w-24 h-24 object-contain animate-spin" 
-                                style={{ animationDuration: '3s', animationIterationCount: 'infinite', animationTimingFunction: 'linear' }}
+                                className="w-20 h-20 object-contain" 
+                                style={{ animation: 'none', filter: 'brightness(0) invert(1)' }}
                                 onError={(e) => {
                                     e.target.style.display = 'none';
                                     const fallback = document.createElement('div');
-                                    fallback.className = 'w-24 h-24 flex items-center justify-center text-4xl font-bold text-[#0f5132]';
+                                    fallback.className = 'w-20 h-20 flex items-center justify-center text-3xl font-bold text-white';
                                     fallback.textContent = 'PH';
                                     e.target.parentNode.appendChild(fallback);
                                 }}
@@ -1811,7 +1815,7 @@ export default function App() {
                                     </div>
                                 )}
                 
-                <header className={`fixed left-0 right-0 z-50 bg-[#0f5132]/80 backdrop-blur-md shadow-md ${bannerMessage.text ? 'top-16' : 'top-0'} transition-all duration-300`}>
+                <header className={`fixed left-0 right-0 z-50 bg-[#0f5132]/40 backdrop-blur-md shadow-md ${bannerMessage.text ? 'top-16' : 'top-0'} transition-all duration-300`}>
                     <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-10 h-16 sm:h-20 flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3 h-full">
                             {/* Pomma Holidays Logo */}
@@ -1956,17 +1960,17 @@ export default function App() {
                                                 key={featuredPkg.id}
                                                 onClick={() => handleOpenPackageDetails(featuredPkg.id)}
                                                 className={`${theme.bgCard} rounded-2xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl reveal w-full cursor-pointer`}
-                                                style={{ transitionDelay: '80ms' }}
+                                                style={{ transitionDelay: '80ms', height: '500px', minHeight: '500px', maxHeight: '500px' }}
                                             >
-                                                <div className="flex flex-col md:flex-row items-stretch">
-                                                    {/* Large Image Section - Left - Natural Height */}
-                                                    <div className="w-full md:w-1/2 overflow-hidden relative">
+                                                <div className="flex flex-col md:flex-row items-stretch h-full" style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
+                                                    {/* Large Image Section - Left - Fixed Size */}
+                                                    <div className="w-full md:w-2/5 overflow-hidden relative bg-gray-50 flex-shrink-0" style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
                                                         <img 
                                                             src={currentImage ? getImageUrl(currentImage.image_url) : ITEM_PLACEHOLDER} 
                                                             alt={featuredPkg.title} 
-                                                            className="w-full h-auto object-cover transition-transform duration-700 hover:scale-110" 
+                                                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
                                                             loading="lazy"
-                                                            style={{ maxHeight: '600px' }}
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                             onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                         />
                                                         {/* Price badge - green theme */}
@@ -1990,63 +1994,80 @@ export default function App() {
                                                         )}
                                                     </div>
                                                     
-                                                    {/* Content Section - Right */}
-                                                    <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center ${theme.bgCard}`}>
-                                                        <h3 className="text-4xl md:text-5xl font-extrabold mb-2 leading-tight" style={{ color: '#0f5132' }}>
-                                                            {featuredPkg.title}
-                                                        </h3>
-                                                        <div className="flex flex-wrap items-center gap-3 mb-4">
-                                                            {featuredPkg.is_full_property && (
-                                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
-                                                                    Full Property
-                                                                </span>
-                                                            )}
-                                                            {featuredPkg.room_type && !featuredPkg.is_full_property && (
-                                                                <span className="px-4 py-1.5 text-sm font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
-                                                                    {featuredPkg.room_type} Rooms
-                                                                </span>
-                                                            )}
+                                                    {/* Content Section - Right - Fixed Size */}
+                                                    <div className={`w-full md:w-3/5 p-5 md:p-8 flex flex-col justify-between ${theme.bgCard} overflow-hidden flex-shrink-0`} style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
+                                                        <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: '0' }}>
+                                                            <h3 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 leading-tight line-clamp-2" style={{ color: '#0f5132' }}>
+                                                                {featuredPkg.title}
+                                                            </h3>
+                                                            <div className="flex flex-wrap items-center gap-2 mb-3 flex-shrink-0">
+                                                                {featuredPkg.is_full_property && (
+                                                                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
+                                                                        Full Property
+                                                                    </span>
+                                                                )}
+                                                                {featuredPkg.room_type && !featuredPkg.is_full_property && (
+                                                                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
+                                                                        {featuredPkg.room_type} Rooms
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {/* Description with Read More - Fixed Height */}
+                                                            <div className="mb-4 flex-1 overflow-hidden" style={{ minHeight: '80px', maxHeight: '150px' }}>
+                                                                <div className={`relative h-full overflow-y-auto ${packageDescriptionExpanded[featuredPkg.id] ? '' : ''}`}>
+                                                                    <p className={`text-sm md:text-base leading-relaxed ${packageDescriptionExpanded[featuredPkg.id] ? '' : 'line-clamp-4'}`} style={{ color: '#0f5132' }}>
+                                                                        {featuredPkg.description || 'No description available.'}
+                                                                    </p>
+                                                                </div>
+                                                                {featuredPkg.description && featuredPkg.description.length > 100 && (
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            togglePackageDescription(featuredPkg.id);
+                                                                        }}
+                                                                        className="mt-2 text-[#0f5132] font-semibold hover:underline text-xs sm:text-sm flex-shrink-0"
+                                                                    >
+                                                                        {packageDescriptionExpanded[featuredPkg.id] ? 'Read Less' : 'Read More'}
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                        {/* Description with Read More */}
-                                                        <div className="mb-6">
-                                                            <p className={`text-base md:text-lg leading-relaxed ${packageDescriptionExpanded[featuredPkg.id] ? '' : 'line-clamp-3'}`} style={{ color: '#0f5132' }}>
-                                                                {featuredPkg.description}
-                                                            </p>
-                                                            {featuredPkg.description && featuredPkg.description.length > 150 && (
+                                                        {/* Price and Button Section - Fixed at Bottom */}
+                                                        <div className="pt-3 border-t border-gray-200 flex-shrink-0">
+                                                            <div className="mb-3">
+                                                                <p className="text-xs mb-1" style={{ color: '#0f5132' }}>Starting from</p>
+                                                                <p className="text-2xl md:text-3xl font-extrabold" style={{ color: '#0f5132' }}>
+                                                                    {formatCurrency(featuredPkg.price || 0)}
+                                                                    <span className="text-base font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
+                                                                </p>
+                                                            </div>
+                                                            <div className="flex items-center gap-3 flex-wrap">
                                                                 <button
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
-                                                                        togglePackageDescription(featuredPkg.id);
-                                                                    }}
-                                                                    className="mt-2 text-[#0f5132] font-semibold hover:underline text-sm"
+                                                                        handleOpenPackageDetails(featuredPkg.id);
+                                                                    }} 
+                                                                    className="px-4 md:px-6 py-2 bg-transparent text-[#0f5132] font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#0f5132] hover:text-white transition-all duration-300 flex-1 min-w-[120px]"
                                                                 >
-                                                                    {packageDescriptionExpanded[featuredPkg.id] ? 'Read Less' : 'Read More'}
+                                                                    <span className="flex items-center justify-center gap-2">
+                                                                        KNOW MORE
+                                                                        <ChevronRight className="w-4 h-4" />
+                                                                    </span>
                                                                 </button>
-                                                            )}
-                                                        </div>
-                                                        {/* Price Section */}
-                                                        <div className="mb-6 pt-4 border-t border-gray-200">
-                                                            <p className="text-sm mb-2" style={{ color: '#0f5132' }}>Starting from</p>
-                                                            <p className="text-3xl md:text-4xl font-extrabold mb-6" style={{ color: '#0f5132' }}>
-                                                                {formatCurrency(featuredPkg.price || 0)}
-                                                                <span className="text-lg font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
-                                                            </p>
-                                                        </div>
-                                                        
-                                                        <div className="flex items-center justify-between flex-wrap gap-4">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleOpenPackageDetails(featuredPkg.id);
-                                                                }} 
-                                                                className="px-10 py-3 bg-[#0f5132] text-white font-bold text-lg rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300"
-                                                                style={{ color: '#ffffff' }}
-                                                            >
-                                                                <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
-                                                                    KNOW MORE
-                                                                    <ChevronRight className="w-5 h-5" style={{ color: '#ffffff', stroke: '#ffffff' }} />
-                                                                </span>
-                                                            </button>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleOpenPackageBookingForm(featuredPkg.id);
+                                                                    }} 
+                                                                    className="px-4 md:px-6 py-2 bg-[#0f5132] text-white font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300 flex-1 min-w-[120px]"
+                                                                    style={{ color: '#ffffff' }}
+                                                                >
+                                                                    <span className="flex items-center justify-center gap-2" style={{ color: '#ffffff' }}>
+                                                                        BOOK NOW
+                                                                        <ChevronRight className="w-4 h-4" style={{ color: '#ffffff', stroke: '#ffffff' }} />
+                                                                    </span>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2064,17 +2085,17 @@ export default function App() {
                                             <div 
                                                 key={pkg.id} 
                                                 onClick={() => handleOpenPackageDetails(pkg.id)}
-                                                className={`group relative ${theme.bgCard} rounded-none sm:rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border-0 sm:border ${theme.border} cursor-pointer reveal w-full mx-0`}
-                                                style={{ transitionDelay: `${(imgIndex % 5) * 70}ms`, width: '100%', maxWidth: '100%' }}
+                                                className={`group relative ${theme.bgCard} rounded-none sm:rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border-0 sm:border ${theme.border} cursor-pointer reveal w-full mx-0 flex flex-col`}
+                                                style={{ transitionDelay: `${(imgIndex % 5) * 70}ms`, width: '100%', height: '520px', minHeight: '520px', maxHeight: '520px' }}
                                             >
-                                                        {/* Image Container - Natural Height */}
-                                                    <div className="relative w-full overflow-hidden" style={{ width: '100%' }}>
+                                                        {/* Image Container - Fixed Size */}
+                                                    <div className="relative w-full overflow-hidden flex-shrink-0" style={{ width: '100%', height: '260px', minHeight: '260px', maxHeight: '260px' }}>
                                                     <img 
                                                                 src={currentImage ? getImageUrl(currentImage.image_url) : ITEM_PLACEHOLDER} 
                                                         alt={pkg.title} 
-                                                        className="package-image w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110 reveal" 
+                                                        className="package-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 reveal" 
                                                         loading="lazy"
-                                                        style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                         onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                     />
                                                     {/* Price badge - always visible - green theme */}
@@ -2110,66 +2131,72 @@ export default function App() {
                                                     )}
                                                         </div>
 
-                                                        {/* Content - Responsive */}
-                                                        <div className={`p-4 sm:p-5 md:p-6 ${theme.bgCard}`}>
-                                                            <h3 className={`text-lg sm:text-xl md:text-2xl font-extrabold ${theme.textPrimary} mb-2 leading-tight`}>
+                                                        {/* Content - Fixed Size with Proper Spacing */}
+                                                        <div className={`p-3 sm:p-4 md:p-5 ${theme.bgCard} flex-1 flex flex-col overflow-hidden`} style={{ height: '240px', minHeight: '240px', maxHeight: '240px' }}>
+                                                            <h3 className={`text-base sm:text-lg md:text-xl font-extrabold ${theme.textPrimary} mb-1 sm:mb-2 leading-tight line-clamp-1`} style={{ color: '#0f5132' }}>
                                                                 {pkg.title}
                                                             </h3>
-                                                            <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
+                                                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 flex-shrink-0">
                                                                 {pkg.is_full_property && (
-                                                                    <span className="px-2 sm:px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
+                                                                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
                                                                         Full Property
                                                                     </span>
                                                                 )}
                                                                 {pkg.room_type && !pkg.is_full_property && (
-                                                                    <span className="px-2 sm:px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
+                                                                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700 uppercase tracking-wide">
                                                                         {pkg.room_type} Rooms
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            {/* Description with Read More */}
-                                                            <div className="mb-3 sm:mb-4">
-                                                                <p className={`text-sm sm:text-base leading-relaxed ${packageDescriptionExpanded[pkg.id] ? '' : 'line-clamp-2'}`} style={{ color: '#0f5132' }}>
-                                                                    {pkg.description}
-                                                                </p>
-                                                                {pkg.description && pkg.description.length > 100 && (
+                                                            {/* Description with Read More - Fixed Height */}
+                                                            <div className="mb-2 flex-1 overflow-hidden" style={{ minHeight: '60px', maxHeight: '100px' }}>
+                                                                <div className={`relative h-full overflow-y-auto ${packageDescriptionExpanded[pkg.id] ? '' : ''}`}>
+                                                                    <p className={`text-xs sm:text-sm leading-relaxed ${packageDescriptionExpanded[pkg.id] ? '' : 'line-clamp-3'}`} style={{ color: '#0f5132' }}>
+                                                                        {pkg.description || 'No description available.'}
+                                                                    </p>
+                                                                </div>
+                                                                {pkg.description && pkg.description.length > 80 && (
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             togglePackageDescription(pkg.id);
                                                                         }}
-                                                                        className="mt-2 text-[#0f5132] font-semibold hover:underline text-xs sm:text-sm"
+                                                                        className="mt-1 text-[#0f5132] font-semibold hover:underline text-xs flex-shrink-0"
                                                                     >
                                                                         {packageDescriptionExpanded[pkg.id] ? 'Read Less' : 'Read More'}
                                                                     </button>
                                                                 )}
                                                             </div>
-                                                            {/* Price */}
-                                                            <div className="mb-3 sm:mb-4 pt-2 sm:pt-3 border-t border-gray-200">
-                                                                <p className="text-xs sm:text-sm mb-1" style={{ color: '#0f5132' }}>Starting from</p>
-                                                                <p className="text-xl sm:text-2xl font-extrabold" style={{ color: '#0f5132' }}>
+                                                            {/* Price and Buttons - Fixed at Bottom */}
+                                                            <div className="pt-2 border-t border-gray-200 flex-shrink-0">
+                                                                <p className="text-xs mb-1.5" style={{ color: '#0f5132' }}>Starting from</p>
+                                                                <p className="text-lg sm:text-xl font-extrabold mb-2" style={{ color: '#0f5132' }}>
                                                                     {formatCurrency(pkg.price || 0)}
-                                                                    <span className="text-xs sm:text-sm font-normal" style={{ color: '#0f5132' }}>/package</span>
+                                                                    <span className="text-xs font-normal ml-1" style={{ color: '#0f5132' }}>/package</span>
                                                                 </p>
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleOpenPackageDetails(pkg.id);
+                                                                        }} 
+                                                                        className="px-3 py-1.5 bg-transparent text-[#0f5132] font-semibold text-xs rounded-md border border-[#0f5132] hover:bg-[#0f5132] hover:text-white transition-all duration-300 flex-1 min-w-[90px]"
+                                                                    >
+                                                                        KNOW MORE
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleOpenPackageBookingForm(pkg.id);
+                                                                        }} 
+                                                                        className="px-3 py-1.5 bg-[#0f5132] text-white font-semibold text-xs rounded-md border border-[#0f5132] hover:bg-[#136640] transition-all duration-300 flex-1 min-w-[90px]"
+                                                                        style={{ color: '#ffffff' }}
+                                                                    >
+                                                                        BOOK NOW
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            {/* CTA Row */}
-                                                            <div className="mt-3 sm:mt-4 flex items-center justify-between flex-wrap gap-2 sm:gap-3">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={(e) => { 
-                                                                        e.stopPropagation(); 
-                                                                        handleOpenPackageDetails(pkg.id); 
-                                                                    }}
-                                                                    className="px-4 sm:px-5 py-2 rounded-md bg-[#0f5132] text-white font-semibold hover:bg-[#136640] transition-all duration-300 text-sm sm:text-base"
-                                                                    style={{ color: '#ffffff' }}
-                                                                >
-                                                                    KNOW MORE
-                                                                </button>
-                                                                <span className="text-xs sm:text-sm" style={{ color: '#0f5132' }}>
-                                                                    Click for details
-                                                                </span>
-                                                            </div>
-                                                </div>
+                                                        </div>
                                             </div>
                                         );
                                     })}
@@ -2799,19 +2826,20 @@ export default function App() {
                                                 key={attraction.id} 
                                                 className={`${theme.bgCard} rounded-3xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl`}
                                             >
-                                                <div className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-stretch min-h-[500px]`}>
-                                                    {/* Image Section - Match card height */}
-                                                    <div className="w-full md:w-1/2 relative overflow-hidden" style={{ minHeight: '500px' }}>
+                                                <div className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-stretch`}>
+                                                    {/* Image Section - Natural Height, Centered */}
+                                                    <div className="w-full md:w-1/2 relative overflow-hidden flex items-center justify-center bg-gray-100">
                                                         <img 
                                                             src={getImageUrl(attraction.image_url)} 
                                                             alt={attraction.title} 
-                                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-110" 
+                                                            className="w-full h-auto object-contain transition-transform duration-700 hover:scale-110 max-w-full" 
+                                                            style={{ maxHeight: '100%' }}
                                                             onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                         />
                                                     </div>
                                                     
                                                     {/* Content Section */}
-                                                    <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between ${theme.bgCard}`} style={{ minHeight: '500px' }}>
+                                                    <div className={`w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between ${theme.bgCard}`}>
                                                         <div>
                                                             <h3 className={`text-3xl md:text-4xl font-extrabold ${theme.textPrimary} mb-4 leading-tight`}>
                                                                 {attraction.title}
@@ -2840,8 +2868,8 @@ export default function App() {
                                             </div>
                                         );
                                     })}
-                                </div>
                             </div>
+                        </div>
                     </section>
                     )}
 
@@ -3724,28 +3752,28 @@ export default function App() {
                 )}
                 
                 <footer className="bg-white py-8 px-4 md:px-12 mt-12 border-t border-gray-200">
-                    <div className="container mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                    <div className="container mx-auto">
                         {resortInfo && (
                             <>
-                                <div className="text-center md:text-left">
-                                    <h3 className="text-xl font-bold tracking-tight" style={{ color: '#0f5132' }}>{resortInfo.name}</h3>
-                                    <p className="text-sm mt-1" style={{ color: '#0f5132' }}>{resortInfo.address}</p>
-                                    <p className="text-xs mt-2" style={{ color: '#0f5132' }}>&copy; 2024 Pomma Holidays. TeqMates.</p>
-                                </div>
-                                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+                                <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 mb-6">
+                                    <div className="text-center md:text-left">
+                                        <h3 className="text-xl font-bold tracking-tight" style={{ color: '#0f5132' }}>{resortInfo.name}</h3>
+                                        <p className="text-sm mt-1" style={{ color: '#0f5132' }}>{resortInfo.address}</p>
+                                        <p className="text-xs mt-2" style={{ color: '#0f5132' }}>&copy; 2024 Pomma Holidays. TeqMates.</p>
+                                    </div>
                                     <div className="flex space-x-4">
                                         <a href={formatUrl(resortInfo.facebook)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Facebook /></a>
                                         <a href={formatUrl(resortInfo.instagram)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Instagram /></a>
                                         <a href={formatUrl(resortInfo.twitter)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Twitter /></a>
                                         <a href={formatUrl(resortInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Linkedin /></a>
                                     </div>
-                                    {/* Powered by TeqMates */}
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs" style={{ color: '#0f5132' }}>Powered by</span>
-                                        <a href="https://teqmates.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-                                            <span className="text-sm font-bold" style={{ color: '#0f5132' }}>TeqMates</span>
-                                        </a>
-                                    </div>
+                                </div>
+                                {/* Powered by TeqMates - Centered */}
+                                <div className="flex items-center justify-center gap-2 pt-4 border-t border-gray-200">
+                                    <span className="text-xs" style={{ color: '#0f5132' }}>Powered by</span>
+                                    <a href="https://teqmates.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                                        <span className="text-sm font-bold" style={{ color: '#0f5132' }}>TeqMates</span>
+                                    </a>
                                 </div>
                             </>
                         )}
