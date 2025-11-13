@@ -1960,26 +1960,25 @@ export default function App() {
                                                 key={featuredPkg.id}
                                                 onClick={() => handleOpenPackageDetails(featuredPkg.id)}
                                                 className={`${theme.bgCard} rounded-2xl overflow-hidden shadow-2xl border ${theme.border} transition-all duration-500 hover:shadow-3xl reveal w-full cursor-pointer`}
-                                                style={{ transitionDelay: '80ms', height: '500px', minHeight: '500px', maxHeight: '500px' }}
+                                                style={{ transitionDelay: '80ms' }}
                                             >
-                                                <div className="flex flex-col md:flex-row items-stretch h-full" style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
-                                                    {/* Large Image Section - Left - Fixed Size */}
-                                                    <div className="w-full md:w-2/5 overflow-hidden relative bg-gray-50 flex-shrink-0" style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
+                                                <div className="flex flex-col md:flex-row items-stretch md:h-[500px]">
+                                                    {/* Large Image Section - Left - Responsive Size */}
+                                                    <div className="w-full md:w-2/5 h-64 sm:h-80 md:h-full overflow-hidden relative bg-gray-50 flex-shrink-0">
                                                         <img 
                                                             src={currentImage ? getImageUrl(currentImage.image_url) : ITEM_PLACEHOLDER} 
                                                             alt={featuredPkg.title} 
                                                             className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
                                                             loading="lazy"
-                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                             onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                         />
                                                         {/* Price badge - green theme */}
-                                                        <div className="absolute bottom-4 left-4 bg-white/95 text-[#0f5132] font-extrabold text-2xl md:text-3xl px-4 py-2 rounded-xl shadow-lg">
+                                                        <div className="absolute bottom-4 left-4 bg-white/95 text-[#0f5132] font-extrabold text-xl sm:text-2xl md:text-3xl px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl shadow-lg">
                                                             {formatCurrency(featuredPkg.price || 0)}
                                                         </div>
                                                         {/* Image Slider Dots */}
                                                         {featuredPkg.images && featuredPkg.images.length > 1 && (
-                                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-full z-10">
+                                                            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-2 rounded-full z-10">
                                                                 {featuredPkg.images.map((_, imgIdx) => (
                                                                     <button
                                                                         key={imgIdx}
@@ -1987,17 +1986,17 @@ export default function App() {
                                                                             e.stopPropagation();
                                                                             setPackageImageIndex(prev => ({ ...prev, [featuredPkg.id]: imgIdx }));
                                                                         }}
-                                                                        className={`w-2 h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
+                                                                        className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
                                                                     />
                                                                 ))}
                                                             </div>
                                                         )}
                                                     </div>
                                                     
-                                                    {/* Content Section - Right - Fixed Size */}
-                                                    <div className={`w-full md:w-3/5 p-5 md:p-8 flex flex-col justify-between ${theme.bgCard} overflow-hidden flex-shrink-0`} style={{ height: '500px', minHeight: '500px', maxHeight: '500px' }}>
-                                                        <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: '0' }}>
-                                                            <h3 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 leading-tight line-clamp-2" style={{ color: '#0f5132' }}>
+                                                    {/* Content Section - Right - Responsive Size */}
+                                                    <div className={`w-full md:w-3/5 p-4 sm:p-5 md:p-8 flex flex-col justify-between ${theme.bgCard} flex-shrink-0 min-h-0`}>
+                                                        <div className="flex-1 flex flex-col min-h-0 mb-4">
+                                                            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 leading-tight line-clamp-2" style={{ color: '#0f5132' }}>
                                                                 {featuredPkg.title}
                                                             </h3>
                                                             <div className="flex flex-wrap items-center gap-2 mb-3 flex-shrink-0">
@@ -2012,10 +2011,10 @@ export default function App() {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            {/* Description with Read More - Fixed Height */}
-                                                            <div className="mb-4 flex-1 overflow-hidden" style={{ minHeight: '80px', maxHeight: '150px' }}>
+                                                            {/* Description with Read More - Responsive Height */}
+                                                            <div className="mb-4 flex-1 overflow-hidden min-h-[60px] max-h-[120px] md:max-h-[150px]">
                                                                 <div className={`relative h-full overflow-y-auto ${packageDescriptionExpanded[featuredPkg.id] ? '' : ''}`}>
-                                                                    <p className={`text-sm md:text-base leading-relaxed ${packageDescriptionExpanded[featuredPkg.id] ? '' : 'line-clamp-4'}`} style={{ color: '#0f5132' }}>
+                                                                    <p className={`text-sm md:text-base leading-relaxed ${packageDescriptionExpanded[featuredPkg.id] ? '' : 'line-clamp-3 md:line-clamp-4'}`} style={{ color: '#0f5132' }}>
                                                                         {featuredPkg.description || 'No description available.'}
                                                                     </p>
                                                                 </div>
@@ -2032,22 +2031,22 @@ export default function App() {
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        {/* Price and Button Section - Fixed at Bottom */}
-                                                        <div className="pt-3 border-t border-gray-200 flex-shrink-0">
+                                                        {/* Price and Button Section - Always Visible at Bottom */}
+                                                        <div className="pt-3 border-t border-gray-200 flex-shrink-0 mt-auto">
                                                             <div className="mb-3">
                                                                 <p className="text-xs mb-1" style={{ color: '#0f5132' }}>Starting from</p>
-                                                                <p className="text-2xl md:text-3xl font-extrabold" style={{ color: '#0f5132' }}>
+                                                                <p className="text-xl sm:text-2xl md:text-3xl font-extrabold" style={{ color: '#0f5132' }}>
                                                                     {formatCurrency(featuredPkg.price || 0)}
-                                                                    <span className="text-base font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
+                                                                    <span className="text-sm md:text-base font-normal ml-2" style={{ color: '#0f5132' }}>/package</span>
                                                                 </p>
                                                             </div>
-                                                            <div className="flex items-center gap-3 flex-wrap">
+                                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                                                                 <button
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         handleOpenPackageDetails(featuredPkg.id);
                                                                     }} 
-                                                                    className="px-4 md:px-6 py-2 bg-transparent text-[#0f5132] font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#0f5132] hover:text-white transition-all duration-300 flex-1 min-w-[120px]"
+                                                                    className="w-full sm:flex-1 px-4 md:px-6 py-2.5 sm:py-2 bg-transparent text-[#0f5132] font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#0f5132] hover:text-white transition-all duration-300"
                                                                 >
                                                                     <span className="flex items-center justify-center gap-2">
                                                                         KNOW MORE
@@ -2059,7 +2058,7 @@ export default function App() {
                                                                         e.stopPropagation();
                                                                         handleOpenPackageBookingForm(featuredPkg.id);
                                                                     }} 
-                                                                    className="px-4 md:px-6 py-2 bg-[#0f5132] text-white font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300 flex-1 min-w-[120px]"
+                                                                    className="w-full sm:flex-1 px-4 md:px-6 py-2.5 sm:py-2 bg-[#0f5132] text-white font-bold text-sm md:text-base rounded-md border-2 border-[#0f5132] hover:bg-[#136640] transition-all duration-300"
                                                                     style={{ color: '#ffffff' }}
                                                                 >
                                                                     <span className="flex items-center justify-center gap-2" style={{ color: '#ffffff' }}>
@@ -2116,7 +2115,7 @@ export default function App() {
                                                             </button>
                                                     {/* Image Slider Dots */}
                                                     {pkg.images && pkg.images.length > 1 && (
-                                                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-full z-10">
+                                                        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-2 rounded-full z-10">
                                                             {pkg.images.map((_, imgIdx) => (
                                                                 <button
                                                                     key={imgIdx}
@@ -2124,7 +2123,7 @@ export default function App() {
                                                                         e.stopPropagation();
                                                                         setPackageImageIndex(prev => ({ ...prev, [pkg.id]: imgIdx }));
                                                                     }}
-                                                                    className={`w-2 h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
+                                                                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
                                                                 />
                                                             ))}
                                                         </div>
@@ -3330,7 +3329,7 @@ export default function App() {
                                                         />
                                                         {/* Image Slider Dots */}
                                                         {pkg.images && pkg.images.length > 1 && (
-                                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 backdrop-blur-sm px-3 py-2 rounded-full z-10">
+                                                            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-2 rounded-full z-10">
                                                                 {pkg.images.map((_, imgIdx) => (
                                                                     <button
                                                                         key={imgIdx}
@@ -3338,7 +3337,7 @@ export default function App() {
                                                                             e.stopPropagation();
                                                                             setPackageImageIndex(prev => ({ ...prev, [pkg.id]: imgIdx }));
                                                                         }}
-                                                                        className={`w-2 h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
+                                                                        className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${imgIdx === imgIndex ? 'bg-white' : 'bg-white/40'}`}
                                                                     />
                                                                 ))}
                                                             </div>
