@@ -289,11 +289,16 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db), curren
         guest_name_to_use = existing_booking.guest_name
 
     # Check if rooms are available for the requested dates
+    # Prevent double-booking: One room cannot have multiple bookings on the same day
     for room_id in booking.room_ids:
-        # Check if room is already booked by regular bookings for overlapping dates (only check active bookings, not cancelled or checked-out)
+        # Check if room is already booked by regular bookings for overlapping dates
+        # Only check for active bookings (not cancelled or checked-out)
+        # Strict validation: if ANY day overlaps, block the booking
         conflicting_regular_booking = db.query(BookingRoom).join(Booking).filter(
             BookingRoom.room_id == room_id,
-            Booking.status.in_(['booked', 'checked-in']),  # Only check for active bookings
+            Booking.status.in_(['booked', 'checked-in', 'checked_in']),  # Only check for active bookings
+            # Overlap check: existing booking overlaps with new booking if:
+            # - existing check_in is before new check_out AND existing check_out is after new check_in
             Booking.check_in < booking.check_out,
             Booking.check_out > booking.check_in
         ).first()
@@ -301,16 +306,24 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db), curren
         # Check if room is already booked by package bookings for overlapping dates
         conflicting_package_booking = db.query(PackageBookingRoom).join(PackageBooking).filter(
             PackageBookingRoom.room_id == room_id,
-            PackageBooking.status.in_(['booked', 'checked-in']),  # Only check for active bookings
+            PackageBooking.status.in_(['booked', 'checked-in', 'checked_in']),  # Only check for active bookings
+            # Overlap check: existing package booking overlaps with new booking if:
+            # - existing check_in is before new check_out AND existing check_out is after new check_in
             PackageBooking.check_in < booking.check_out,
             PackageBooking.check_out > booking.check_in
         ).first()
         
         if conflicting_regular_booking or conflicting_package_booking:
             room = db.query(Room).filter(Room.id == room_id).first()
+            # Get details of conflicting booking for better error message
+            conflict_type = "regular booking" if conflicting_regular_booking else "package booking"
+            conflict_booking = conflicting_regular_booking.booking if conflicting_regular_booking else conflicting_package_booking.package_booking
+            
             raise HTTPException(
                 status_code=400,
-                detail=f"Room {room.number if room else room_id} is not available for the selected dates."
+                detail=f"Room {room.number if room else room_id} is already booked for these dates. "
+                       f"There is an existing {conflict_type} from {conflict_booking.check_in} to {conflict_booking.check_out}. "
+                       f"One room cannot have multiple bookings on the same day."
             )
 
     db_booking = Booking(
@@ -498,10 +511,10 @@ def create_guest_booking(booking: BookingCreate, db: Session = Depends(get_db)):
 
         # Check if rooms are available for the requested dates
         for room_id in booking.room_ids:
-            # Check if room is already booked for overlapping dates
+            # Check if room is already booked for overlapping dates (regular bookings)
             conflicting_booking = db.query(BookingRoom).join(Booking).filter(
                 BookingRoom.room_id == room_id,
-                Booking.status.in_(['booked', 'checked-in']),
+                Booking.status.in_(['booked', 'checked-in', 'checked_in']),
                 Booking.check_in < booking.check_out,
                 Booking.check_out > booking.check_in
             ).first()
@@ -511,6 +524,21 @@ def create_guest_booking(booking: BookingCreate, db: Session = Depends(get_db)):
                 raise HTTPException(
                     status_code=400,
                     detail=f"Room {room.number if room else room_id} is not available for the selected dates."
+                )
+            
+            # Check if room is already booked for overlapping dates (package bookings)
+            conflicting_package_booking = db.query(PackageBookingRoom).join(PackageBooking).filter(
+                PackageBookingRoom.room_id == room_id,
+                PackageBooking.status.in_(['booked', 'checked-in', 'checked_in']),
+                PackageBooking.check_in < booking.check_out,
+                PackageBooking.check_out > booking.check_in
+            ).first()
+            
+            if conflicting_package_booking:
+                room = db.query(Room).filter(Room.id == room_id).first()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Room {room.number if room else room_id} is not available for the selected dates (booked via package)."
                 )
 
         db_booking = Booking(

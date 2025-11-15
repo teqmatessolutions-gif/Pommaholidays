@@ -15,7 +15,8 @@ router = APIRouter(prefix="/expenses", tags=["Expenses"])
 UPLOAD_DIR = "uploads/expenses"
 
 
-@router.post("/", response_model=ExpenseOut)
+# Use route without trailing slash to avoid redirects on POST requests
+@router.post("", response_model=ExpenseOut)
 async def create_expense(
     category: str = Form(...),
     amount: float = Form(...),
@@ -26,38 +27,72 @@ async def create_expense(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    image_path = None
-    if image:
-        # Safe filename using UUID
-        filename = f"{employee_id}_{uuid.uuid4().hex}_{image.filename}"
-        file_location = os.path.join(UPLOAD_DIR, filename)
-        with open(file_location, "wb") as buffer:
-            shutil.copyfileobj(image.file, buffer)
+    try:
+        # Validate employee exists
+        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=400, detail=f"Employee with ID {employee_id} not found")
         
-        # Path to be used by frontend (relative to /uploads/)
-        image_path = f"uploads/expenses/{filename}"
+        # Ensure upload directory exists
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        
+        image_path = None
+        if image and image.filename:
+            try:
+                # Safe filename using UUID
+                safe_filename = image.filename.replace(" ", "_")
+                filename = f"{employee_id}_{uuid.uuid4().hex}_{safe_filename}"
+                file_location = os.path.join(UPLOAD_DIR, filename)
+                
+                # Save the file
+                with open(file_location, "wb") as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+                
+                # Path to be used by frontend (relative to /uploads/)
+                image_path = f"uploads/expenses/{filename}"
+            except Exception as e:
+                import traceback
+                error_trace = traceback.format_exc()
+                print(f"Error saving expense image: {str(e)}")
+                print(f"Traceback: {error_trace}")
+                raise HTTPException(status_code=500, detail=f"Failed to save image: {str(e)}")
 
-    # Store expense in DB using ExpenseCreate schema
-    from app.schemas.expenses import ExpenseCreate
-    from datetime import datetime
-    
-    expense_data = ExpenseCreate(
-        category=category,
-        amount=amount,
-        date=datetime.strptime(date, "%Y-%m-%d").date() if isinstance(date, str) else date,
-        description=description,
-        employee_id=employee_id,
-    )
+        # Store expense in DB using ExpenseCreate schema
+        from app.schemas.expenses import ExpenseCreate
+        from datetime import datetime
+        
+        try:
+            expense_date = datetime.strptime(date, "%Y-%m-%d").date() if isinstance(date, str) else date
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=f"Invalid date format. Expected YYYY-MM-DD, got: {date}")
+        
+        expense_data = ExpenseCreate(
+            category=category,
+            amount=amount,
+            date=expense_date,
+            description=description,
+            employee_id=employee_id,
+        )
 
-    created = expense_crud.create_expense(db, data=expense_data, image_path=image_path)
+        created = expense_crud.create_expense(db, data=expense_data, image_path=image_path)
 
-    # Add employee name in the response
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    return {
-        **created.__dict__,
-        "employee_name": employee.name if employee else "N/A"
-    }
+        # Add employee name in the response
+        return {
+            **created.__dict__,
+            "employee_name": employee.name if employee else "N/A"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"Error creating expense: {str(e)}")
+        print(f"Traceback: {error_trace}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to create expense: {str(e)}")
 
+# Handle both with and without trailing slash to avoid redirects
+@router.get("", response_model=list[ExpenseOut])
 @router.get("/", response_model=list[ExpenseOut])
 def get_expenses(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     expenses = expense_crud.get_all_expenses(db, skip=skip, limit=limit)

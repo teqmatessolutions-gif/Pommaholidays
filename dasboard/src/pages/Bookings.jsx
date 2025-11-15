@@ -406,7 +406,7 @@ const Bookings = () => {
         API.get("/rooms/", authHeader()),
         API.get("/bookings?skip=0&limit=20&order_by=id&order=desc", authHeader()), // Order by latest first
         API.get("/packages/bookingsall?skip=0&limit=500", authHeader()), // Reduced from 10000 to 500 for performance
-        API.get("/packages/", authHeader()),
+        API.get("/packages/?limit=1000", authHeader()),
       ]);
 
       const allRooms = roomsRes.data;
@@ -449,25 +449,50 @@ const Bookings = () => {
       let availableRooms = allRooms;
       if (formData.checkIn && formData.checkOut) {
         availableRooms = allRooms.filter(room => {
-          // Check if room has any conflicting bookings (ignore cancelled, checked-out, and checked_out)
-          const hasConflict = allBookings.some(booking => {
-            const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
-            if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
+          // Check if room has any conflicting bookings
+          // IMPORTANT: Only exclude rooms with ACTIVE bookings (booked, checked-in)
+          // Rooms with cancelled or checked-out bookings are considered AVAILABLE
+          const hasActiveBooking = allBookings.some(booking => {
+            // Normalize status
+            const normalizedStatus = booking.status?.toLowerCase().replace(/[-_\s]/g, '');
             
+            // ONLY check active bookings: "booked" or "checked-in" or "checkedin"
+            // Skip cancelled and checked-out bookings (they don't block availability)
+            if (normalizedStatus === "cancelled" || normalizedStatus === "checkedout") {
+              return false; // Room is available
+            }
+            
+            // Only active bookings block the room
+            if (normalizedStatus !== "booked" && normalizedStatus !== "checkedin") {
+              return false; // Unknown status, don't block
+            }
+            
+            // Check date overlap for active bookings
             const bookingCheckIn = new Date(booking.check_in);
             const bookingCheckOut = new Date(booking.check_out);
             const requestedCheckIn = new Date(formData.checkIn);
             const requestedCheckOut = new Date(formData.checkOut);
             
-            // Check if room is part of this booking
-            const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.id === room.id);
+            // Check if room is part of this active booking
+            // Handle both regular bookings (direct room object) and package bookings (nested room.room structure)
+            let isRoomInBooking = false;
+            if (booking.rooms && Array.isArray(booking.rooms)) {
+              isRoomInBooking = booking.rooms.some(r => {
+                // For package bookings, room might be nested: r.room.id
+                // For regular bookings, room is direct: r.id
+                const roomId = r.room?.id || r.id;
+                return roomId === room.id;
+              });
+            }
+            
             if (!isRoomInBooking) return false;
             
-            // Check for date overlap
+            // Check for date overlap: if ANY day overlaps with an active booking, exclude the room
             return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
           });
           
-          return !hasConflict;
+          // Room is available if it has no active bookings for these dates
+          return !hasActiveBooking;
         });
       } else {
         // If no dates selected, show all available rooms
@@ -521,25 +546,50 @@ const Bookings = () => {
   useEffect(() => {
     if (formData.checkIn && formData.checkOut && allRooms.length > 0) {
       const availableRooms = allRooms.filter(room => {
-        // Check if room has any conflicting bookings (ignore cancelled, checked-out, and checked_out)
-        const hasConflict = bookings.some(booking => {
-          const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
-          if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
+        // Check if room has any conflicting bookings
+        // IMPORTANT: Only exclude rooms with ACTIVE bookings (booked, checked-in)
+        // Rooms with cancelled or checked-out bookings are considered AVAILABLE
+        const hasActiveBooking = bookings.some(booking => {
+          // Normalize status
+          const normalizedStatus = booking.status?.toLowerCase().replace(/[-_\s]/g, '');
           
+          // ONLY check active bookings: "booked" or "checked-in" or "checkedin"
+          // Skip cancelled and checked-out bookings (they don't block availability)
+          if (normalizedStatus === "cancelled" || normalizedStatus === "checkedout") {
+            return false; // Room is available
+          }
+          
+          // Only active bookings block the room
+          if (normalizedStatus !== "booked" && normalizedStatus !== "checkedin") {
+            return false; // Unknown status, don't block
+          }
+          
+          // Check date overlap for active bookings
           const bookingCheckIn = new Date(booking.check_in);
           const bookingCheckOut = new Date(booking.check_out);
           const requestedCheckIn = new Date(formData.checkIn);
           const requestedCheckOut = new Date(formData.checkOut);
           
-          // Check if room is part of this booking
-          const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.id === room.id);
+          // Check if room is part of this active booking
+          // Handle both regular bookings (direct room object) and package bookings (nested room.room structure)
+          let isRoomInBooking = false;
+          if (booking.rooms && Array.isArray(booking.rooms)) {
+            isRoomInBooking = booking.rooms.some(r => {
+              // For package bookings, room might be nested: r.room.id
+              // For regular bookings, room is direct: r.id
+              const roomId = r.room?.id || r.id;
+              return roomId === room.id;
+            });
+          }
+          
           if (!isRoomInBooking) return false;
           
-          // Check for date overlap
+          // Check for date overlap: if ANY day overlaps with an active booking, exclude the room
           return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
         });
         
-        return !hasConflict;
+        // Room is available if it has no active bookings for these dates
+        return !hasActiveBooking;
       });
       
       setRooms(availableRooms);
@@ -553,25 +603,50 @@ const Bookings = () => {
   useEffect(() => {
     if (packageBookingForm.check_in && packageBookingForm.check_out && allRooms.length > 0) {
       const availableRooms = allRooms.filter(room => {
-        // Check if room has any conflicting bookings (ignore cancelled, checked-out, and checked_out)
-        const hasConflict = bookings.some(booking => {
-          const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
-          if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
+        // Check if room has any conflicting bookings
+        // IMPORTANT: Only exclude rooms with ACTIVE bookings (booked, checked-in)
+        // Rooms with cancelled or checked-out bookings are considered AVAILABLE
+        const hasActiveBooking = bookings.some(booking => {
+          // Normalize status
+          const normalizedStatus = booking.status?.toLowerCase().replace(/[-_\s]/g, '');
           
+          // ONLY check active bookings: "booked" or "checked-in" or "checkedin"
+          // Skip cancelled and checked-out bookings (they don't block availability)
+          if (normalizedStatus === "cancelled" || normalizedStatus === "checkedout") {
+            return false; // Room is available
+          }
+          
+          // Only active bookings block the room
+          if (normalizedStatus !== "booked" && normalizedStatus !== "checkedin") {
+            return false; // Unknown status, don't block
+          }
+          
+          // Check date overlap for active bookings
           const bookingCheckIn = new Date(booking.check_in);
           const bookingCheckOut = new Date(booking.check_out);
           const requestedCheckIn = new Date(packageBookingForm.check_in);
           const requestedCheckOut = new Date(packageBookingForm.check_out);
           
-          // Check if room is part of this booking
-          const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.id === room.id);
+          // Check if room is part of this active booking
+          // Handle both regular bookings (direct room object) and package bookings (nested room.room structure)
+          let isRoomInBooking = false;
+          if (booking.rooms && Array.isArray(booking.rooms)) {
+            isRoomInBooking = booking.rooms.some(r => {
+              // For package bookings, room might be nested: r.room.id
+              // For regular bookings, room is direct: r.id
+              const roomId = r.room?.id || r.id;
+              return roomId === room.id;
+            });
+          }
+          
           if (!isRoomInBooking) return false;
           
-          // Check for date overlap
+          // Check for date overlap: if ANY day overlaps with an active booking, exclude the room
           return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
         });
         
-        return !hasConflict;
+        // Room is available if it has no active bookings for these dates
+        return !hasActiveBooking;
       });
       
       // Update package rooms separately

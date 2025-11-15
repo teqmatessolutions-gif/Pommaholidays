@@ -231,33 +231,25 @@ def book_package(db: Session, booking: PackageBookingCreate):
 
     # CRITICAL FIX: Check for conflicts BEFORE creating the booking
     # This prevents invalid bookings from being created in the database
+    # Prevent double-booking: One room cannot have multiple bookings on the same day
     for room_id in room_ids_to_book:
         # Check for conflicts with package bookings
+        # Strict validation: if ANY day overlaps, block the booking
         package_conflict = (
             db.query(PackageBookingRoom)
             .join(PackageBooking)
             .filter(
                 PackageBookingRoom.room_id == room_id,
                 PackageBooking.status.in_(["booked", "checked-in", "checked_in"]),  # Only check for active bookings
-                or_(
-                    and_(
-                        PackageBooking.check_in <= booking.check_in,
-                        PackageBooking.check_out > booking.check_in
-                    ),
-                    and_(
-                        PackageBooking.check_in < booking.check_out,
-                        PackageBooking.check_out >= booking.check_out
-                    ),
-                    and_(
-                        PackageBooking.check_in >= booking.check_in,
-                        PackageBooking.check_out <= booking.check_out
-                    ),
-                )
+                # Overlap check: existing package booking overlaps with new booking if:
+                # - existing check_in is before new check_out AND existing check_out is after new check_in
+                PackageBooking.check_in < booking.check_out,
+                PackageBooking.check_out > booking.check_in
             )
             .first()
         )
 
-        # Check for conflicts with regular bookings (THIS WAS MISSING!)
+        # Check for conflicts with regular bookings
         from app.models.booking import Booking, BookingRoom
         regular_conflict = (
             db.query(BookingRoom)
@@ -265,27 +257,26 @@ def book_package(db: Session, booking: PackageBookingCreate):
             .filter(
                 BookingRoom.room_id == room_id,
                 Booking.status.in_(["booked", "checked-in", "checked_in"]),  # Only check for active bookings
-                or_(
-                    and_(
-                        Booking.check_in <= booking.check_in,
-                        Booking.check_out > booking.check_in
-                    ),
-                    and_(
-                        Booking.check_in < booking.check_out,
-                        Booking.check_out >= booking.check_out
-                    ),
-                    and_(
-                        Booking.check_in >= booking.check_in,
-                        Booking.check_out <= booking.check_out
-                    ),
-                )
+                # Overlap check: existing regular booking overlaps with new booking if:
+                # - existing check_in is before new check_out AND existing check_out is after new check_in
+                Booking.check_in < booking.check_out,
+                Booking.check_out > booking.check_in
             )
             .first()
         )
 
         if package_conflict or regular_conflict:
             room = db.query(Room).filter(Room.id == room_id).first()
-            raise HTTPException(status_code=400, detail=f"Room {room.number if room else room_id} is not available for the selected dates.")
+            # Get details of conflicting booking for better error message
+            conflict_type = "regular booking" if regular_conflict else "package booking"
+            conflict_booking = regular_conflict.booking if regular_conflict else package_conflict.package_booking
+            
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Room {room.number if room else room_id} is already booked for these dates. "
+                       f"There is an existing {conflict_type} from {conflict_booking.check_in} to {conflict_booking.check_out}. "
+                       f"One room cannot have multiple bookings on the same day."
+            )
 
     # All conflict checks passed - now create the booking
     db_booking = PackageBooking(

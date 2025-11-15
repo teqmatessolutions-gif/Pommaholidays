@@ -43,7 +43,7 @@ const Dashboard = () => {
           API.get("/food-orders?limit=500").catch(err => ({ error: err, data: [] })),
           API.get("/services/assigned?limit=500").catch(err => ({ error: err, data: [] })),
           API.get("/bill/checkouts?limit=500").catch(err => ({ error: err, data: [] })),
-          API.get("/packages?limit=500").catch(err => ({ error: err, data: [] })),
+          API.get("/packages?limit=1000").catch(err => ({ error: err, data: [] })),
         ]);
 
         if (!mounted) return;
@@ -120,46 +120,85 @@ const Dashboard = () => {
   const fmtCurrency = useCallback((n, decimals = 0) => formatCurrency(Number(n || 0), true, decimals), []);
   const roomCounts = useMemo(() => {
     const total = rooms.length;
-    // Room statuses are: "Available", "Occupied", "Maintenance"
-    const occupied = rooms.filter(r => {
-      const status = (r.status || r.current_status || "").toLowerCase();
-      return status.includes("occupied") || status.includes("booked");
-    }).length;
-    const available = rooms.filter(r => {
-      const status = (r.status || "").toLowerCase();
-      return status.includes("avail");
-    }).length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate occupied rooms from active bookings (more accurate than room.status)
+    const occupiedRoomIds = new Set();
+    
+    // Process regular bookings
+    bookings.forEach(booking => {
+      if (!booking || !booking.status) return;
+      const status = (booking.status || "").toLowerCase();
+      // Only count active bookings (booked, checked-in, not cancelled or checked-out)
+      if (status.includes("cancel") || status.includes("checked-out") || status.includes("checked_out")) {
+        return;
+      }
+      
+      // Check if booking is active today
+      const checkIn = safeDate(booking.check_in);
+      const checkOut = safeDate(booking.check_out);
+      if (!checkIn || !checkOut) return;
+      
+      if (checkIn <= today && checkOut > today) {
+        // Add room IDs from this booking
+        if (booking.rooms && Array.isArray(booking.rooms)) {
+          booking.rooms.forEach(r => {
+            const roomId = r.room?.id || r.id || r.room_id;
+            if (roomId) occupiedRoomIds.add(roomId);
+          });
+        } else if (booking.room_ids && Array.isArray(booking.room_ids)) {
+          booking.room_ids.forEach(roomId => occupiedRoomIds.add(roomId));
+        }
+      }
+    });
+    
+    const occupied = occupiedRoomIds.size;
+    
+    // Count maintenance rooms by status
     const maintenance = rooms.filter(r => {
       const status = (r.status || "").toLowerCase();
       return status.includes("maintenance") || status.includes("maintain");
     }).length;
-    // Ensure counts add up correctly
-    const calculatedMaintenance = Math.max(0, total - occupied - available);
+    
+    // Available = Total - Occupied - Maintenance
+    const available = Math.max(0, total - occupied - maintenance);
+    
     return { 
       total, 
       occupied, 
       available, 
-      maintenance: maintenance > 0 ? maintenance : calculatedMaintenance 
+      maintenance
     };
-  }, [rooms]);
+  }, [rooms, bookings, safeDate]);
   const revenue = useMemo(() => {
     const total = billings.reduce((s, b) => s + Number(b.grand_total || 0), 0);
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const todayStr = now.toISOString().slice(0, 10);
     const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     let today = 0, month = 0;
     billings.forEach(b => {
-      // Use checkout_date if available, otherwise fallback to created_at
-      const dateToUse = b.checkout_date || b.created_at;
-      const d = safeDate(dateToUse);
-      if (!d) return;
-      const ds = d.toISOString().slice(0, 10);
+      // Prefer checkout_date, but if it's in the future or null, use created_at
+      const checkoutDate = safeDate(b.checkout_date);
+      const createdDate = safeDate(b.created_at);
+      
+      // Use checkout_date only if it's today or in the past, otherwise use created_at
+      let dateToUse = checkoutDate;
+      if (!checkoutDate || (checkoutDate && checkoutDate > now)) {
+        dateToUse = createdDate;
+      }
+      
+      if (!dateToUse) return;
+      
+      const ds = dateToUse.toISOString().slice(0, 10);
       if (ds === todayStr) today += Number(b.grand_total || 0);
-      const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      
+      const mk = `${dateToUse.getFullYear()}-${String(dateToUse.getMonth() + 1).padStart(2, "0")}`;
       if (mk === thisMonthKey) month += Number(b.grand_total || 0);
     });
     return { total, today, month };
-  }, [billings]);
+  }, [billings, safeDate]);
   const expenseAgg = useMemo(() => {
     const total = expenses.reduce((s, e) => s + Number(e.amount || e.charges || 0), 0);
     const now = new Date();

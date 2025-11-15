@@ -167,6 +167,22 @@ const ImageModal = ({ imageUrl, onClose }) => {
 };
 
 const Rooms = () => {
+  // Available room features
+  const availableFeatures = [
+    "Air Conditioning",
+    "Living Room",
+    "Kitchen",
+    "Garden",
+    "Free Wifi",
+    "Terrace",
+    "Family Room",
+    "Dining Area",
+    "Private Bathroom",
+    "Free Parking",
+    "BBQ",
+    "Breakfast"
+  ];
+
   const [rooms, setRooms] = useState([]);
   const [form, setForm] = useState({
     number: "",
@@ -176,6 +192,7 @@ const Rooms = () => {
     adults: 2,
     children: 0,
     image: null,
+    features: [],
   });
   const [previewImage, setPreviewImage] = useState(null);
   const [bannerMessage, setBannerMessage] = useState({ type: null, text: "" });
@@ -284,7 +301,7 @@ const Rooms = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files, type, checked } = e.target;
     if (name === "image") {
       const file = files[0];
       if (file) {
@@ -304,6 +321,17 @@ const Rooms = () => {
       }
       setForm((prev) => ({ ...prev, image: file }));
       setPreviewImage(file ? URL.createObjectURL(file) : null);
+    } else if (type === "checkbox" && name.startsWith("feature_")) {
+      // Handle feature checkbox
+      const featureName = name.replace("feature_", "");
+      setForm((prev) => {
+        const features = prev.features || [];
+        if (checked) {
+          return { ...prev, features: [...features, featureName] };
+        } else {
+          return { ...prev, features: features.filter(f => f !== featureName) };
+        }
+      });
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -318,6 +346,8 @@ const Rooms = () => {
     formData.append("status", form.status);
     formData.append("adults", form.adults);
     formData.append("children", form.children);
+    // Add features as JSON string
+    formData.append("features", JSON.stringify(form.features || []));
     if (form.image) formData.append("image", form.image);
 
     try {
@@ -337,6 +367,8 @@ const Rooms = () => {
         formData.append("status", form.status);
         formData.append("adults", form.adults);
         formData.append("children", form.children);
+        // Add features as JSON string
+        formData.append("features", JSON.stringify(form.features || []));
         if (form.image) formData.append("image", form.image);
 
         await API.post("/rooms/test", formData, {
@@ -353,6 +385,7 @@ const Rooms = () => {
         adults: 2,
         children: 0,
         image: null,
+        features: [],
       });
       setPreviewImage(null);
       fetchRooms();
@@ -373,6 +406,7 @@ const Rooms = () => {
       adults: room.adults,
       children: room.children,
       image: null,
+      features: room.features || [],
     });
     setPreviewImage(getImageUrl(room.image_url));
     setBannerMessage({ type: null, text: "" });
@@ -527,7 +561,31 @@ const Rooms = () => {
               className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
             />
           )}
-        <div className="md:col-span-2 lg:col-span-3 flex items-center gap-4">
+        </div>
+
+        {/* Room Features Section */}
+        <div className="md:col-span-2 lg:col-span-3 mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-3">Room Features</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {availableFeatures.map((feature) => (
+              <label
+                key={feature}
+                className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  name={`feature_${feature}`}
+                  checked={form.features?.includes(feature) || false}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                />
+                <span className="text-sm text-gray-700">{feature}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="md:col-span-2 lg:col-span-3 flex items-center gap-4 mt-4">
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition-transform transform hover:-translate-y-1"
@@ -548,6 +606,7 @@ const Rooms = () => {
                   adults: 2,
                   children: 0,
                   image: null,
+                  features: [],
                 });
                 setPreviewImage(null);
                 setBannerMessage({ type: null, text: "" });
@@ -601,6 +660,26 @@ const Rooms = () => {
                   <p className="text-indigo-600 font-bold text-xl">{formatCurrency(room.price)}</p>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">Capacity: {room.adults} Adults, {room.children} Children</p>
+                {room.features && room.features.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs text-gray-500 mb-2">Features:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {room.features.slice(0, 4).map((feature, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                      {room.features.length > 4 && (
+                        <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
+                          +{room.features.length - 4} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
                 <div className="h-16 mt-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={(room.trend || []).map((v, i) => ({ day: i + 1, value: v }))}>

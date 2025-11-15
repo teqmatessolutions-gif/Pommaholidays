@@ -15,12 +15,17 @@ const resolveBaseURL = () => {
     if (path.startsWith("/pommaadmin")) {
       return `${origin}/pommaapi/api`;
     }
+    
+    // Use /api for /admin path (TeqMates Resort admin - resortdb)
+    if (path.startsWith("/admin")) {
+      return `${origin}/api`;
+    }
   }
 
   // Default to pommodb for Pomma admin in production
   return process.env.NODE_ENV === "production"
     ? "https://www.teqmates.com/pommaapi/api"
-    : "http://localhost:8000/api";
+    : "http://localhost:8010/api";
 };
 
 // Set your backend API base URL
@@ -45,13 +50,12 @@ API.interceptors.response.use(
       console.error("Unauthorized:", error.response?.data);
       localStorage.removeItem("token");
       // Redirect to login page within the same app
-      // For Pomma admin, redirect to /pommaadmin/ for login
       const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
       if (currentPath.startsWith('/pommaadmin')) {
         // Redirect to /pommaadmin/ for login (Pomma admin)
         window.location.href = '/pommaadmin';
       } else if (currentPath.startsWith('/admin')) {
-        // Redirect to /admin/ for login (Resort admin)
+        // Redirect to /admin/ for login (TeqMates Resort admin)
         window.location.href = '/admin';
       } else {
         window.location.href = '/';

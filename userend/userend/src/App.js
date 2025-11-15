@@ -16,10 +16,14 @@ const getApiBaseUrl = () => {
         if (path.startsWith("/pommaholidays")) {
             return `${origin}/pommaapi/api`;
         }
+        
+        if (path.startsWith("/resort")) {
+            return `${origin}/api`;
+        }
     }
 
     return process.env.NODE_ENV === "production"
-        ? "https://www.teqmates.com/pommaapi/api"
+        ? "https://www.teqmates.com/api"
         : "http://localhost:8000/api";
 };
 
@@ -508,7 +512,7 @@ const BackgroundAnimation = ({ theme }) => {
     return (
         <>
             <style>{`
-                /* Green and White Theme - Pomma Holidays */
+                /* Green and White Theme - TeqMates Resort */
                 :root {
                     --color-green-primary: #0f5132;
                     --color-green-secondary: #1a7042;
@@ -530,6 +534,21 @@ const BackgroundAnimation = ({ theme }) => {
                     color: #0f5132;
                 }
                 
+                /* CRITICAL: Override green text on buttons with green background - MUST come before other rules */
+                button.bg-\[#0f5132\],
+                button.bg-\[#0f5132\] *,
+                button.bg-\[#0f5132\] span,
+                button.bg-\[#0f5132\] svg,
+                button.bg-\[#0f5132\] path,
+                button[style*="color"][style*="#ffffff"],
+                button[style*="color"][style*="ffffff"],
+                button span[style*="color"][style*="#ffffff"],
+                button span[style*="color"][style*="ffffff"] {
+                    color: #ffffff !important;
+                    fill: #ffffff !important;
+                    stroke: #ffffff !important;
+                }
+                
                 /* Keep white text for buttons with green background, overlays, and hero sections */
                 button.text-white,
                 .text-white,
@@ -549,6 +568,10 @@ const BackgroundAnimation = ({ theme }) => {
                 button.bg-\[#0f5132\] span,
                 button.bg-\[#0f5132\] svg,
                 button.bg-\[#0f5132\] path,
+                button.text-white,
+                button.text-white *,
+                button.text-white span,
+                button.text-white svg,
                 a.bg-\[#0f5132\],
                 a.bg-\[#0f5132\] *,
                 a.bg-\[#0f5132\] span,
@@ -562,9 +585,51 @@ const BackgroundAnimation = ({ theme }) => {
                 .bg-\[#0f5132\] button span,
                 .bg-\[#0f5132\] a span,
                 .bg-\[#0f5132\] button svg,
-                .bg-\[#0f5132\] a svg {
+                .bg-\[#0f5132\] a svg,
+                /* Ensure text-white class works on buttons */
+                .text-white,
+                .text-white *,
+                .text-white span,
+                .text-white svg,
+                button[style*="color: #ffffff"],
+                button[style*="color:#ffffff"],
+                button[style*="color: '#ffffff'"],
+                button[style*="color:'#ffffff'"],
+                button span[style*="color: #ffffff"],
+                button span[style*="color:#ffffff"],
+                button span[style*="color: '#ffffff'"],
+                button span[style*="color:'#ffffff'"],
+                /* Force white text on buttons with green background via inline style */
+                button[style*="backgroundColor: #0f5132"],
+                button[style*="backgroundColor:#0f5132"],
+                button[style*="backgroundColor: '#0f5132'"],
+                button[style*="backgroundColor:'#0f5132'"],
+                button[style*="backgroundColor: #0f5132"] *,
+                button[style*="backgroundColor:#0f5132"] *,
+                button[style*="backgroundColor: '#0f5132'"] *,
+                button[style*="backgroundColor:'#0f5132'"] *,
+                button[style*="backgroundColor: #0f5132"] span,
+                button[style*="backgroundColor:#0f5132"] span,
+                button[style*="backgroundColor: '#0f5132'"] span,
+                button[style*="backgroundColor:'#0f5132'"] span,
+                button[style*="backgroundColor: #0f5132"] svg,
+                button[style*="backgroundColor:#0f5132"] svg,
+                button[style*="backgroundColor: '#0f5132'"] svg,
+                button[style*="backgroundColor:'#0f5132'"] svg {
                     color: #ffffff !important;
                     fill: #ffffff !important;
+                    stroke: #ffffff !important;
+                }
+                
+                /* Force white text on green buttons - highest priority */
+                button.bg-\[#0f5132\],
+                button.bg-\[#0f5132\] *,
+                button.bg-\[#0f5132\] span,
+                button.bg-\[#0f5132\] svg,
+                button.bg-\[#0f5132\] path {
+                    color: #ffffff !important;
+                    fill: #ffffff !important;
+                    stroke: #ffffff !important;
                 }
                 
                 /* Hero section text should be white - comprehensive coverage */
@@ -592,6 +657,53 @@ const BackgroundAnimation = ({ theme }) => {
                     color: #ffffff !important;
                     fill: #ffffff !important;
                     stroke: #ffffff !important;
+                }
+                
+                /* CRITICAL: Ensure package titles are always visible - highest priority */
+                /* All package titles in section */
+                section#packages h3:first-child,
+                section#packages h3,
+                section#packages h2,
+                /* Featured package title */
+                [class*="rounded-2xl"] h3:first-child,
+                [class*="rounded-2xl"] h3,
+                /* Grid package titles */
+                [class*="rounded-none"][class*="rounded-2xl"] h3,
+                [class*="flex-col"] h3:first-child,
+                /* Package card content titles */
+                div[class*="p-3"] h3:first-child,
+                div[class*="p-4"] h3:first-child,
+                div[class*="p-5"] h3:first-child,
+                /* Package card titles with flex-shrink-0 */
+                h3.flex-shrink-0,
+                /* Package titles by color style */
+                h3[style*="color: '#0f5132'"],
+                h3[style*="color:#0f5132"],
+                h2[style*="color: '#0f5132'"],
+                h2[style*="color:#0f5132"] {
+                    color: #0f5132 !important;
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    font-weight: 900 !important;
+                    -webkit-text-fill-color: #0f5132 !important;
+                    overflow: visible !important;
+                    clip: auto !important;
+                    clip-path: none !important;
+                    height: auto !important;
+                    max-height: none !important;
+                    min-height: auto !important;
+                }
+                
+                /* Ensure package titles are never hidden by parent overflow */
+                section#packages div[class*="overflow-hidden"] h3:first-child,
+                div[class*="overflow-hidden"] h3.flex-shrink-0 {
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    color: #0f5132 !important;
+                    position: relative !important;
+                    z-index: 20 !important;
                 }
                 
                 * {
@@ -791,9 +903,14 @@ const BackgroundAnimation = ({ theme }) => {
  * @returns {string} A valid, absolute URL.
  */
 const formatUrl = (url) => {
-    if (!url || typeof url !== 'string') return '#'; // Return a safe, non-navigating link if URL is missing
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return `https://${url}`;
+    if (!url || typeof url !== 'string' || url.trim() === '' || url.toLowerCase() === 'null') {
+        return null; // Return null if URL is missing or invalid
+    }
+    const trimmedUrl = url.trim();
+    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+        return trimmedUrl;
+    }
+    return `https://${trimmedUrl}`;
 };
 
 export default function App() {
@@ -811,7 +928,8 @@ export default function App() {
     }, []);
     const [rooms, setRooms] = useState([]);
     const [allRooms, setAllRooms] = useState([]); // Store all rooms for filtering
-    const [bookings, setBookings] = useState([]); // Store bookings for availability check
+    const [bookings, setBookings] = useState([]); // Store regular bookings for availability check
+    const [packageBookings, setPackageBookings] = useState([]); // Store package bookings for availability check
     const [services, setServices] = useState([]);
     const [foodItems, setFoodItems] = useState([]);
     const [foodCategories, setFoodCategories] = useState([]);
@@ -828,6 +946,7 @@ export default function App() {
     const [signatureExperiences, setSignatureExperiences] = useState([]);
     const [planWeddings, setPlanWeddings] = useState([]);
     const [nearbyAttractions, setNearbyAttractions] = useState([]);
+    const [nearbyAttractionBanner, setNearbyAttractionBanner] = useState(null);
     const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
     const [currentWeddingIndex, setCurrentWeddingIndex] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -911,15 +1030,34 @@ export default function App() {
     
     const ITEM_PLACEHOLDER = "https://placehold.co/400x300/2d3748/cbd5e0?text=Image+Not+Available";
 
+    // Helper function to clean image paths from pommaadmin/pommaholidays references
+    const cleanImagePath = (imagePath) => {
+        if (!imagePath) return imagePath;
+        // Remove pommaadmin and pommaholidays from the path
+        return imagePath
+            .replace(/^\/pommaadmin\//, '/')
+            .replace(/^\/pommaholidays\//, '/')
+            .replace(/\/pommaadmin\//g, '/')
+            .replace(/\/pommaholidays\//g, '/');
+    };
+
     // Helper function to get correct image URL
     const getImageUrl = (imagePath) => {
         if (!imagePath) return ITEM_PLACEHOLDER;
-        if (imagePath.startsWith('http')) return imagePath; // Already a full URL
+        if (imagePath.startsWith('http')) {
+            // If it's already a full URL, check if it contains pommaadmin or pommaholidays and replace
+            if (imagePath.includes('/pommaadmin/') || imagePath.includes('/pommaholidays/')) {
+                return cleanImagePath(imagePath);
+            }
+            return imagePath; // Already a full URL
+        }
         const baseUrl = process.env.NODE_ENV === 'production' 
             ? 'https://www.teqmates.com' 
             : 'http://localhost:8000';
+        // Remove any pommaadmin or pommaholidays paths from the image path
+        let cleanPath = cleanImagePath(imagePath);
         // Ensure imagePath starts with / for proper URL construction
-        const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+        const path = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
         return `${baseUrl}${path}`;
     };
 
@@ -953,17 +1091,19 @@ export default function App() {
             const endpoints = {
                 rooms: '/rooms/test',  // Use working test endpoint for real room data
                 bookings: '/bookings?limit=500&skip=0', // Reduced limit for better performance - only recent bookings needed
-                foodItems: '/food-items/',
-                foodCategories: '/food-categories/',
-                packages: '/packages/',
-                resortInfo: '/resort-info/',
-                gallery: '/gallery/',
-                reviews: '/reviews/',
-                banners: '/header-banner/',
-                services: '/services/', // Fetch services (note: plural)
-                signatureExperiences: '/signature-experiences/',
-                planWeddings: '/plan-weddings/',
-                nearbyAttractions: '/nearby-attractions/'
+                packageBookings: '/packages/bookingsall?limit=500&skip=0', // Fetch package bookings for availability check
+                foodItems: '/food-items?limit=1000',  // Added limit to get all items from pommadb
+                foodCategories: '/food-categories?limit=1000',  // Added limit to get all items from pommadb
+                packages: '/packages?limit=1000',  // Added limit to get all items from pommadb
+                resortInfo: '/resort-info',  // Removed trailing slash to avoid redirect
+                gallery: '/gallery?limit=1000',  // Added limit to get all items from pommadb
+                reviews: '/reviews?limit=1000',  // Added limit to get all items from pommadb
+                banners: '/header-banner?limit=1000',  // Added limit to get all items from pommadb
+                services: '/services?limit=1000', // Added limit to get all items from pommadb
+                signatureExperiences: '/signature-experiences?limit=1000',  // Added limit to get all items from pommadb
+                planWeddings: '/plan-weddings?limit=1000',  // Added limit to get all items from pommadb
+                nearbyAttractions: '/nearby-attractions?limit=1000',  // Added limit to get all items from pommadb
+                nearbyAttractionBanner: '/nearby-attraction-banner?limit=1000'  // Separate endpoint for nearby attraction banner
             };
 
             try {
@@ -980,15 +1120,16 @@ export default function App() {
                 const data = await Promise.all(responses.map(res => res.json()));
 
                 const [
-                    roomsData, bookingsData, foodItemsData, foodCategoriesData, packagesData,
+                    roomsData, bookingsData, packageBookingsData, foodItemsData, foodCategoriesData, packagesData,
                     resortInfoData, galleryData, reviewsData, bannerData, servicesData,
-                    signatureExperiencesData, planWeddingsData, nearbyAttractionsData
+                    signatureExperiencesData, planWeddingsData, nearbyAttractionsData, nearbyAttractionBannerData
                 ] = data;
 
                 setAllRooms(roomsData);
                 // Don't set rooms here - only show after dates are selected
                 // setRooms will be set in useEffect when dates are chosen
-                setBookings(bookingsData.bookings || []); // Store bookings for availability filtering
+                setBookings(bookingsData.bookings || []); // Store regular bookings for availability filtering
+                setPackageBookings(Array.isArray(packageBookingsData) ? packageBookingsData : []); // Store package bookings for availability filtering
                 setServices(servicesData || []); // Fetch services from backend
                 setFoodItems(foodItemsData || []);
                 setFoodCategories(foodCategoriesData || []);
@@ -1000,6 +1141,9 @@ export default function App() {
                 setSignatureExperiences(signatureExperiencesData || []);
                 setPlanWeddings(planWeddingsData || []);
                 setNearbyAttractions(nearbyAttractionsData || []);
+                // Set the first active nearby attraction banner (if available)
+                const activeBanner = (nearbyAttractionBannerData || []).find(b => b.is_active);
+                setNearbyAttractionBanner(activeBanner || null);
 
             } catch (err) {
                 console.error("Failed to fetch resort data:", err);
@@ -1042,7 +1186,20 @@ export default function App() {
 
     // Handlers for opening booking modals
     const handleOpenRoomBookingForm = (roomId) => {
-        setBookingData(prev => ({ ...prev, room_ids: prev.room_ids.includes(roomId) ? prev.room_ids : [...prev.room_ids, roomId] }));
+        // Check if dates are selected and room is available
+        if (bookingData.check_in && bookingData.check_out) {
+            // If dates are selected, check availability
+            if (roomAvailability[roomId] !== true) {
+                showBannerMessage("error", "This room is not available for the selected dates. Please select different dates or choose another room.");
+                return; // Don't open the modal for unavailable rooms
+            }
+        }
+        
+        // Only add room to selection if it's not already selected
+        setBookingData(prev => ({ 
+            ...prev, 
+            room_ids: prev.room_ids.includes(roomId) ? prev.room_ids : [...prev.room_ids, roomId] 
+        }));
         setIsRoomBookingFormOpen(true);
         setBookingMessage({ type: null, text: "" });
     };
@@ -1142,23 +1299,40 @@ export default function App() {
             // If check_in is changed and is after check_out, clear check_out
             if (name === 'check_in' && value && prev.check_out && value >= prev.check_out) {
                 updated.check_out = '';
+                updated.room_ids = []; // Clear room selection when dates change
             }
             // If check_out is changed and is before check_in, clear check_in
             if (name === 'check_out' && value && prev.check_in && value <= prev.check_in) {
                 updated.check_in = '';
+                updated.room_ids = []; // Clear room selection when dates change
+            }
+            // CRITICAL: Clear room selection when dates change to prevent booking unavailable rooms
+            if (name === 'check_in' || name === 'check_out') {
+                updated.room_ids = []; // Always clear selection when dates change
             }
             return updated;
         });
     };
 
     const handleRoomSelection = useCallback((roomId) => {
+        // Only allow selection of available rooms
+        if (!bookingData.check_in || !bookingData.check_out) {
+            return; // Don't allow selection until dates are selected
+        }
+        
+        // Check if room is available (shouldn't be in the list if not, but double-check for safety)
+        if (roomAvailability[roomId] !== true) {
+            showBannerMessage("error", "This room is not available for the selected dates.");
+            return;
+        }
+        
         setBookingData(prev => {
             const newRoomIds = prev.room_ids.includes(roomId)
                 ? prev.room_ids.filter(id => id !== roomId)
                 : [...prev.room_ids, roomId];
             return { ...prev, room_ids: newRoomIds };
         });
-    }, []);
+    }, [bookingData.check_in, bookingData.check_out, roomAvailability]);
 
     const handlePackageBookingChange = (e) => {
         const { name, value } = e.target;
@@ -1212,7 +1386,7 @@ export default function App() {
         }));
     };
 
-    // Check room availability based on selected dates (but always show all rooms)
+    // Check room availability based on selected dates
     const [roomAvailability, setRoomAvailability] = useState({});
     
     // Optimized room availability calculation with useMemo and debouncing
@@ -1221,28 +1395,101 @@ export default function App() {
             return {};
         }
         
+        // Ensure bookings arrays are loaded (they should be arrays, not undefined)
+        if (!Array.isArray(bookings) || !Array.isArray(packageBookings)) {
+            return {}; // Wait for bookings to load
+        }
+        
         // Calculate availability for each room (memoized for performance)
         const availability = {};
         allRooms.forEach(room => {
-            const hasConflict = bookings.some(booking => {
-                const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
-                if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
+            // Check conflicts with regular bookings
+            const hasRegularConflict = bookings.some(booking => {
+                // Normalize status: handle both hyphen and underscore formats
+                const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-') || '';
                 
+                // Only consider active bookings (booked, checked-in) as conflicts
+                // Ignore cancelled, checked-out, or any other inactive statuses
+                const isActiveBooking = normalizedStatus === 'booked' || 
+                                       normalizedStatus === 'checked-in' || 
+                                       normalizedStatus === 'checkedin';
+                
+                if (!isActiveBooking) return false;
+                
+                // Parse dates and set to start of day for accurate comparison
                 const bookingCheckIn = new Date(booking.check_in);
+                bookingCheckIn.setHours(0, 0, 0, 0);
                 const bookingCheckOut = new Date(booking.check_out);
+                bookingCheckOut.setHours(0, 0, 0, 0);
                 const requestedCheckIn = new Date(bookingData.check_in);
+                requestedCheckIn.setHours(0, 0, 0, 0);
                 const requestedCheckOut = new Date(bookingData.check_out);
+                requestedCheckOut.setHours(0, 0, 0, 0);
                 
-                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.id === room.id);
+                // Check if this room is in the booking
+                // Handle both direct room objects and nested structures
+                const isRoomInBooking = booking.rooms && booking.rooms.some(r => {
+                    if (!r) return false;
+                    // Handle direct room object: { id, number, type, ... }
+                    if (r.id === room.id) return true;
+                    // Handle nested room object: { room: { id, ... } }
+                    if (r.room && r.room.id === room.id) return true;
+                    return false;
+                });
                 if (!isRoomInBooking) return false;
                 
-                return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
+                // Check for date overlap: requested dates overlap if:
+                // requestedCheckIn < bookingCheckOut AND requestedCheckOut > bookingCheckIn
+                // This means any day overlap is a conflict
+                const hasOverlap = requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn;
+                return hasOverlap;
             });
             
-            availability[room.id] = !hasConflict;
+            // Check conflicts with package bookings
+            const hasPackageConflict = packageBookings.some(booking => {
+                // Normalize status: handle both hyphen and underscore formats
+                const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-') || '';
+                
+                // Only consider active bookings (booked, checked-in) as conflicts
+                // Ignore cancelled, checked-out, or any other inactive statuses
+                const isActiveBooking = normalizedStatus === 'booked' || 
+                                       normalizedStatus === 'checked-in' || 
+                                       normalizedStatus === 'checkedin';
+                
+                if (!isActiveBooking) return false;
+                
+                // Parse dates and set to start of day for accurate comparison
+                const bookingCheckIn = new Date(booking.check_in);
+                bookingCheckIn.setHours(0, 0, 0, 0);
+                const bookingCheckOut = new Date(booking.check_out);
+                bookingCheckOut.setHours(0, 0, 0, 0);
+                const requestedCheckIn = new Date(bookingData.check_in);
+                requestedCheckIn.setHours(0, 0, 0, 0);
+                const requestedCheckOut = new Date(bookingData.check_out);
+                requestedCheckOut.setHours(0, 0, 0, 0);
+                
+                // Package bookings have rooms as array of { room: { id, ... } } objects
+                // Also handle direct room objects for consistency
+                const isRoomInBooking = booking.rooms && booking.rooms.some(r => {
+                    if (!r) return false;
+                    // Handle nested room object: { room: { id, ... } }
+                    if (r.room && r.room.id === room.id) return true;
+                    // Handle direct room object: { id, number, type, ... }
+                    if (r.id === room.id) return true;
+                    return false;
+                });
+                if (!isRoomInBooking) return false;
+                
+                // Check for date overlap: any day overlap is a conflict
+                const hasOverlap = requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn;
+                return hasOverlap;
+            });
+            
+            // Room is available only if there are no conflicts
+            availability[room.id] = !hasRegularConflict && !hasPackageConflict;
         });
         return availability;
-    }, [bookingData.check_in, bookingData.check_out, allRooms, bookings]);
+    }, [bookingData.check_in, bookingData.check_out, allRooms, bookings, packageBookings]);
     
     // Update state with debouncing to prevent excessive re-renders
     useEffect(() => {
@@ -1252,7 +1499,33 @@ export default function App() {
         return () => clearTimeout(timer);
     }, [roomAvailabilityMemo]);
     
-    // Always set rooms to allRooms - availability filtering happens in UI
+    // CRITICAL: Remove unavailable rooms from selection when availability changes
+    useEffect(() => {
+        if (Object.keys(roomAvailability).length === 0) {
+            return; // Availability not calculated yet
+        }
+        
+        // Filter out any rooms that are no longer available
+        const availableRoomIds = bookingData.room_ids.filter(roomId => roomAvailability[roomId] === true);
+        
+        // If any rooms were removed, update the selection
+        if (availableRoomIds.length !== bookingData.room_ids.length) {
+            const removedCount = bookingData.room_ids.length - availableRoomIds.length;
+            // Use functional update to avoid dependency on bookingData.room_ids
+            setBookingData(prev => {
+                const currentAvailable = prev.room_ids.filter(roomId => roomAvailability[roomId] === true);
+                if (currentAvailable.length === prev.room_ids.length) {
+                    return prev; // No change needed
+                }
+                return { ...prev, room_ids: currentAvailable };
+            });
+            if (removedCount > 0) {
+                showBannerMessage("error", `${removedCount} selected room(s) are no longer available and have been removed from your selection.`);
+            }
+        }
+    }, [roomAvailability]); // Only depend on roomAvailability, not bookingData.room_ids
+    
+    // Set rooms to allRooms (used for main page display with availability badges)
     useEffect(() => {
         setRooms(allRooms);
     }, [allRooms]);
@@ -1284,7 +1557,8 @@ export default function App() {
         // Calculate availability for each room for package booking (memoized for performance)
         const availability = {};
         packageSelectableRooms.forEach(room => {
-            const hasConflict = bookings.some(booking => {
+            // Check conflicts with regular bookings
+            const hasRegularConflict = bookings.some(booking => {
                 const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
                 if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
                 
@@ -1293,16 +1567,33 @@ export default function App() {
                 const requestedCheckIn = new Date(packageBookingData.check_in);
                 const requestedCheckOut = new Date(packageBookingData.check_out);
                 
-                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r.room && r.room.id === room.id);
+                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r && r.id === room.id);
                 if (!isRoomInBooking) return false;
                 
                 return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
             });
             
-            availability[room.id] = !hasConflict;
+            // Check conflicts with package bookings
+            const hasPackageConflict = packageBookings.some(booking => {
+                const normalizedStatus = booking.status?.toLowerCase().replace(/_/g, '-');
+                if (normalizedStatus === "cancelled" || normalizedStatus === "checked-out") return false;
+                
+                const bookingCheckIn = new Date(booking.check_in);
+                const bookingCheckOut = new Date(booking.check_out);
+                const requestedCheckIn = new Date(packageBookingData.check_in);
+                const requestedCheckOut = new Date(packageBookingData.check_out);
+                
+                // Package bookings have rooms as array of { room: { id, ... } } objects
+                const isRoomInBooking = booking.rooms && booking.rooms.some(r => r && r.room && r.room.id === room.id);
+                if (!isRoomInBooking) return false;
+                
+                return (requestedCheckIn < bookingCheckOut && requestedCheckOut > bookingCheckIn);
+            });
+            
+            availability[room.id] = !hasRegularConflict && !hasPackageConflict;
         });
         return availability;
-    }, [packageBookingData.check_in, packageBookingData.check_out, packageSelectableRooms, bookings, isPackageBookingFormOpen, selectedPackage]);
+    }, [packageBookingData.check_in, packageBookingData.check_out, packageSelectableRooms, bookings, packageBookings, isPackageBookingFormOpen, selectedPackage]);
     
     // Update state with debouncing to prevent excessive re-renders
     useEffect(() => {
@@ -1317,10 +1608,43 @@ export default function App() {
             return [];
         }
         if (!packageBookingData.check_in || !packageBookingData.check_out) {
-            return packageSelectableRooms;
+            return []; // Don't show any rooms until dates are selected
         }
-        return packageSelectableRooms.filter(room => packageRoomAvailability[room.id] !== false);
+        // Only show rooms that are explicitly available (not false and not undefined)
+        // If packageRoomAvailability is empty or room is not in the map, don't show it
+        if (Object.keys(packageRoomAvailability).length === 0) {
+            return []; // No availability data yet, don't show any rooms
+        }
+        return packageSelectableRooms.filter(room => packageRoomAvailability[room.id] === true);
     }, [packageSelectableRooms, packageRoomAvailability, packageBookingData.check_in, packageBookingData.check_out, selectedPackage]);
+
+    // Filter available rooms for regular room booking modal
+    const availableRooms = useMemo(() => {
+        if (!bookingData.check_in || !bookingData.check_out) {
+            return []; // Don't show any rooms until dates are selected
+        }
+        
+        // Wait for bookings to be loaded before calculating availability
+        if (!Array.isArray(bookings) || !Array.isArray(packageBookings)) {
+            return []; // Bookings not loaded yet, don't show any rooms
+        }
+        
+        // Only show rooms that are explicitly available (not false and not undefined)
+        // If roomAvailability is empty or room is not in the map, don't show it
+        if (Object.keys(roomAvailability).length === 0) {
+            return []; // No availability data yet, don't show any rooms
+        }
+        
+        // STRICT FILTER: Only show rooms where availability is explicitly true
+        // This ensures unavailable rooms are NEVER shown
+        const filtered = allRooms.filter(room => {
+            const isAvailable = roomAvailability[room.id];
+            // Only return true if explicitly set to true (not undefined, not false)
+            return isAvailable === true;
+        });
+        
+        return filtered;
+    }, [allRooms, roomAvailability, bookingData.check_in, bookingData.check_out, bookings, packageBookings]);
 
     // Handlers for form submissions
     const handleRoomBookingSubmit = async (e) => {
@@ -1340,6 +1664,24 @@ export default function App() {
             return;
         }
 
+        // --- AVAILABILITY VALIDATION ---
+        // Filter out any unavailable rooms as a final safeguard
+        const availableRoomIds = bookingData.room_ids.filter(roomId => roomAvailability[roomId] === true);
+        if (availableRoomIds.length !== bookingData.room_ids.length) {
+            const unavailableCount = bookingData.room_ids.length - availableRoomIds.length;
+            showBannerMessage("error", `${unavailableCount} room(s) are no longer available. Please select different rooms.`);
+            // Update booking data to remove unavailable rooms
+            setBookingData(prev => ({ ...prev, room_ids: availableRoomIds }));
+            setIsBookingLoading(false);
+            return;
+        }
+        if (availableRoomIds.length === 0) {
+            showBannerMessage("error", "No available rooms selected. Please select available rooms.");
+            setIsBookingLoading(false);
+            return;
+        }
+        // -------------------------
+
         // --- MINIMUM BOOKING DURATION VALIDATION ---
         if (bookingData.check_in && bookingData.check_out) {
             const checkInDate = new Date(bookingData.check_in);
@@ -1356,7 +1698,7 @@ export default function App() {
 
         // --- CAPACITY VALIDATION ---
         const totalGuests = parseInt(bookingData.adults) + parseInt(bookingData.children);
-        const selectedRoomDetails = bookingData.room_ids.map(roomId => rooms.find(r => r.id === roomId)).filter(Boolean);
+        const selectedRoomDetails = availableRoomIds.map(roomId => allRooms.find(r => r.id === roomId)).filter(Boolean);
         const totalCapacity = selectedRoomDetails.reduce((sum, room) => sum + (room.adults || 0) + (room.children || 0), 0);
 
         if (totalGuests > totalCapacity) {
@@ -1368,10 +1710,15 @@ export default function App() {
 
         try {
             const API_BASE_URL = getApiBaseUrl();
+            // Ensure only available rooms are sent
+            const bookingPayload = {
+                ...bookingData,
+                room_ids: availableRoomIds
+            };
             const response = await fetch(`${API_BASE_URL}/bookings/guest`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bookingData)
+                body: JSON.stringify(bookingPayload)
             });
 
             if (response.ok) {
@@ -1712,37 +2059,51 @@ export default function App() {
 
     if (loading) {
         return (
-            <div className={`flex items-center justify-center min-h-screen bg-transparent`}>
+            <div className={`flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50`}>
                 <div className="flex flex-col items-center">
                     {/* Animated Logo Loader with Rotating Border */}
-                    <div className="relative mb-8" style={{ width: '120px', height: '120px' }}>
+                    <div className="relative mb-8" style={{ width: '150px', height: '150px' }}>
                         {/* Green Background Circle */}
-                        <div className="absolute inset-0 rounded-full bg-[#0f5132]" style={{ width: '120px', height: '120px' }}></div>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#0f5132] to-[#136640]" style={{ width: '150px', height: '150px', boxShadow: '0 10px 40px rgba(15, 81, 50, 0.3)' }}></div>
                         {/* Rotating Border */}
-                        <div className="absolute inset-0 rounded-full border-4 border-white border-t-transparent animate-spin" style={{ animationDuration: '2s', animationIterationCount: 'infinite', animationTimingFunction: 'linear', width: '120px', height: '120px' }}></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-white border-t-transparent animate-spin" style={{ animationDuration: '1.5s', animationIterationCount: 'infinite', animationTimingFunction: 'linear', width: '150px', height: '150px' }}></div>
                         {/* Logo Container - No rotation */}
-                        <div className="relative rounded-full p-8" style={{ width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div className="relative rounded-full p-6" style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <img 
-                                src="/pommaholidays/logo.png" 
+                                src="/pommaholidays/pomma-logo.png" 
                                 alt="Pomma Holidays Logo" 
-                                className="w-20 h-20 object-contain" 
-                                style={{ animation: 'none', filter: 'brightness(0) invert(1)' }}
+                                className="w-24 h-24 object-contain rounded-full" 
+                                style={{ animation: 'none' }}
                                 onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const fallback = document.createElement('div');
-                                    fallback.className = 'w-20 h-20 flex items-center justify-center text-3xl font-bold text-white';
-                                    fallback.textContent = 'PH';
-                                    e.target.parentNode.appendChild(fallback);
+                                    // Try alternative paths
+                                    if (e.target.src.includes('/pommaholidays/pomma-logo.png')) {
+                                        e.target.src = '/pommaholidays/logo.png';
+                                    } else if (e.target.src.includes('/pommaholidays/logo.png')) {
+                                        e.target.src = '/logo.png';
+                                    } else if (e.target.src.includes('/logo.png')) {
+                                        e.target.src = '/pommaholidays/logo.jpeg';
+                                    } else {
+                                        e.target.style.display = 'none';
+                                        if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('fallback-logo')) {
+                                            const fallback = document.createElement('div');
+                                            fallback.className = 'fallback-logo w-24 h-24 flex items-center justify-center text-3xl font-bold text-white';
+                                            fallback.textContent = 'PH';
+                                            e.target.parentNode.appendChild(fallback);
+                                        }
+                                    }
                                 }}
                             />
                         </div>
                     </div>
                     {/* Loading Text */}
-                    <p className="text-xl font-semibold text-[#0f5132] animate-pulse" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        Loading Pomma Holidays...
+                    <p className="text-2xl font-bold text-[#0f5132] animate-pulse" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '0.05em' }}>
+                        Loading...
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        Loading your experience...
                     </p>
                     {/* Loading Dots */}
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 mt-6">
                         <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
                         <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         <div className="w-3 h-3 bg-[#0f5132] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
@@ -1819,25 +2180,34 @@ export default function App() {
                     <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-10 h-16 sm:h-20 flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3 h-full">
                             {/* Pomma Holidays Logo */}
-                            <div className="flex items-center h-full px-3 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
+                            <div className="flex items-center h-full px-2 sm:px-3 py-1 sm:py-2 bg-white/10 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-all duration-300 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                                 <img 
-                                    src="/pommaholidays/logo.png" 
+                                    src="/pommaholidays/pomma-logo.png"
                                     alt="Pomma Holidays Logo" 
-                                    className="h-8 sm:h-10 md:h-12 object-contain cursor-pointer"
+                                    className="h-10 sm:h-12 md:h-14 object-contain rounded-lg"
                                     onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        const fallback = e.target.nextElementSibling;
-                                        if (fallback) fallback.style.display = 'flex';
+                                        console.error('Logo load error:', e.target.src);
+                                        // Try alternative paths
+                                        const currentSrc = e.target.src;
+                                        if (currentSrc.includes('/pommaholidays/pomma-logo.png')) {
+                                            e.target.src = currentSrc.replace('/pomma-logo.png', '/logo.png');
+                                        } else if (currentSrc.includes('/pommaholidays/logo.png')) {
+                                            e.target.src = currentSrc.replace('/pommaholidays/logo.png', '/logo.png');
+                                        } else if (currentSrc.includes('/logo.png')) {
+                                            e.target.src = currentSrc.replace('/logo.png', '/pommaholidays/logo.jpeg');
+                                        } else {
+                                            e.target.style.display = 'none';
+                                            if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('fallback-logo-text')) {
+                                                const fallback = document.createElement('div');
+                                                fallback.className = 'fallback-logo-text flex items-center gap-2';
+                                                fallback.innerHTML = '<span class="text-white font-bold text-lg sm:text-xl">Resort</span>';
+                                                e.target.parentNode.appendChild(fallback);
+                                            }
+                                        }
                                     }}
-                                    style={{ maxHeight: '48px' }}
-                                    onClick={() => window.location.href = '/pommaholidays/'}
+                                    onLoad={() => console.log('Logo loaded successfully')}
+                                    style={{ maxHeight: '56px', maxWidth: '120px', display: 'block' }}
                                 />
-                            </div>
-                            <div className="hidden items-center gap-2">
-                                <BedDouble className="w-8 h-8 text-white" />
-                                <span className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
-                                    Pomma Holidays
-                                </span>
                             </div>
                         </div>
                         <nav className="flex items-center gap-3">
@@ -1934,17 +2304,46 @@ export default function App() {
     )}
 </div>
 
-                    {/* Exclusive Deals Section - Mountain Shadows Style */}
-                    <section id="packages" className={`bg-gradient-to-b ${theme.bgSecondary} ${theme.bgCard} py-12 sm:py-16 md:py-20 transition-colors duration-500 w-full overflow-x-hidden`} style={{ width: '100%', maxWidth: '100vw' }}>
+                    {/* Packages Section - Mountain Shadows Style */}
+                    <section id="packages" className={`bg-gradient-to-b ${theme.bgSecondary} ${theme.bgCard} pt-16 pb-12 sm:pt-20 sm:pb-16 md:pt-24 md:pb-20 transition-colors duration-500 w-full overflow-x-hidden`} style={{ width: '100%', maxWidth: '100vw', position: 'relative' }}>
                         <div className="w-full max-w-full mx-auto">
-                            {/* Section Header */}
-                            <div className="text-center mb-8 sm:mb-12 md:mb-16 px-4 sm:px-6 md:px-8">
-                                <span className="inline-block px-4 sm:px-6 py-2 bg-green-100 text-[#0f5132] text-xs sm:text-sm font-semibold tracking-widest uppercase rounded-full mb-3 sm:mb-4">
-                                    ✦ Exclusive Deals ✦
+                            {/* Section Header - Always visible and prominent */}
+                            <div className="text-center mb-10 sm:mb-14 md:mb-16 px-4 sm:px-6 md:px-8" style={{ 
+                                display: 'block !important', 
+                                visibility: 'visible !important',
+                                width: '100%',
+                                position: 'relative',
+                                zIndex: 10,
+                                paddingTop: '2rem',
+                                marginTop: '2rem'
+                            }}>
+                                <span className="inline-block px-4 sm:px-6 py-2 bg-green-100 text-[#0f5132] text-xs sm:text-sm font-semibold tracking-widest uppercase rounded-full mb-4 sm:mb-5" style={{ 
+                                    display: 'inline-block',
+                                    visibility: 'visible',
+                                    backgroundColor: '#d1fae5',
+                                    color: '#0f5132'
+                                }}>
+                                    ✦ Packages ✦
                                 </span>
-                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4" style={{ color: '#0f5132' }}>
-                                    EXCLUSIVE DEALS FOR MEMORABLE EXPERIENCES
+                                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5" style={{ 
+                                    color: '#0f5132 !important', 
+                                    fontWeight: '900', 
+                                    display: 'block !important', 
+                                    visibility: 'visible !important',
+                                    lineHeight: '1.2',
+                                    marginBottom: '1rem',
+                                    fontSize: 'clamp(2rem, 5vw, 4rem)'
+                                }}>
+                                    OUR PACKAGES
                                 </h2>
+                                <p className="text-base sm:text-lg md:text-xl text-[#0f5132] opacity-90 max-w-3xl mx-auto font-medium" style={{ 
+                                    display: 'block !important', 
+                                    visibility: 'visible !important',
+                                    marginTop: '1rem',
+                                    color: '#0f5132'
+                                }}>
+                                    Choose from our exclusive packages for an unforgettable experience
+                                </p>
                             </div>
 
                             {/* Packages - Mountain Shadows Style with Green Theme */}
@@ -1995,9 +2394,33 @@ export default function App() {
                                                     
                                                     {/* Content Section - Right - Responsive Size */}
                                                     <div className={`w-full md:w-3/5 p-4 sm:p-5 md:p-8 flex flex-col justify-between ${theme.bgCard} flex-shrink-0 min-h-0`}>
-                                                        <div className="flex-1 flex flex-col min-h-0 mb-4">
-                                                            <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 leading-tight line-clamp-2" style={{ color: '#0f5132' }}>
-                                                                {featuredPkg.title}
+                                                        <div className="flex-1 flex flex-col min-h-0 mb-4" style={{ overflow: 'visible' }}>
+                                                            {/* Featured Package Title - Always Visible */}
+                                                            <h3 
+                                                                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 leading-tight flex-shrink-0" 
+                                                                style={{ 
+                                                                    color: '#0f5132',
+                                                                    fontWeight: '900',
+                                                                    display: 'block',
+                                                                    visibility: 'visible',
+                                                                    backgroundColor: 'transparent',
+                                                                    width: '100%',
+                                                                    padding: '0.75rem 0 0.5rem 0',
+                                                                    margin: '0 0 1rem 0',
+                                                                    opacity: '1',
+                                                                    zIndex: '20',
+                                                                    position: 'relative',
+                                                                    fontSize: 'clamp(1.25rem, 3vw, 2.5rem)',
+                                                                    lineHeight: '1.2',
+                                                                    textShadow: '0 2px 4px rgba(15, 81, 50, 0.2)',
+                                                                    WebkitTextFillColor: '#0f5132',
+                                                                    wordBreak: 'break-word',
+                                                                    overflow: 'visible'
+                                                                }}
+                                                            >
+                                                                {featuredPkg.is_full_property 
+                                                                    ? 'Whole Property (Private Function)' 
+                                                                    : (featuredPkg.title || 'Package')}
                                                             </h3>
                                                             <div className="flex flex-wrap items-center gap-2 mb-3 flex-shrink-0">
                                                                 {featuredPkg.is_full_property && (
@@ -2131,11 +2554,37 @@ export default function App() {
                                                         </div>
 
                                                         {/* Content - Fixed Size with Proper Spacing */}
-                                                        <div className={`p-3 sm:p-4 md:p-5 ${theme.bgCard} flex-1 flex flex-col overflow-hidden`} style={{ height: '240px', minHeight: '240px', maxHeight: '240px' }}>
-                                                            <h3 className={`text-base sm:text-lg md:text-xl font-extrabold ${theme.textPrimary} mb-1 sm:mb-2 leading-tight line-clamp-1`} style={{ color: '#0f5132' }}>
-                                                                {pkg.title}
+                                                        <div className={`p-3 sm:p-4 md:p-5 ${theme.bgCard} flex-1 flex flex-col`} style={{ height: '240px', minHeight: '240px', maxHeight: '240px', overflow: 'visible' }}>
+                                                            {/* Package Title - Always Visible at Top */}
+                                                            <h3 
+                                                                className="text-lg sm:text-xl md:text-2xl font-extrabold mb-2 leading-tight flex-shrink-0" 
+                                                                style={{ 
+                                                                    color: '#0f5132',
+                                                                    fontWeight: '900',
+                                                                    display: 'block',
+                                                                    visibility: 'visible',
+                                                                    backgroundColor: 'transparent',
+                                                                    lineHeight: '1.3',
+                                                                    width: '100%',
+                                                                    minHeight: '2.5rem',
+                                                                    padding: '0.5rem 0 0.25rem 0',
+                                                                    margin: '0 0 0.5rem 0',
+                                                                    opacity: '1',
+                                                                    zIndex: '20',
+                                                                    position: 'relative',
+                                                                    fontSize: 'clamp(1.125rem, 2.5vw, 1.75rem)',
+                                                                    textShadow: '0 1px 3px rgba(15, 81, 50, 0.15)',
+                                                                    WebkitTextFillColor: '#0f5132',
+                                                                    wordBreak: 'break-word',
+                                                                    overflow: 'visible'
+                                                                }}
+                                                            >
+                                                                {pkg.is_full_property 
+                                                                    ? 'Whole Property (Private Function)' 
+                                                                    : (pkg.title || 'Package')}
                                                             </h3>
-                                                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 flex-shrink-0">
+                                                            {/* Badges - Below Title */}
+                                                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 flex-shrink-0" style={{ marginTop: '0' }}>
                                                                 {pkg.is_full_property && (
                                                                     <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-wide">
                                                                         Full Property
@@ -2343,15 +2792,27 @@ export default function App() {
 
                                                 {/* CTA Button */}
                                                 <button 
-                                                    onClick={() => handleOpenRoomBookingForm(room.id)} 
-                                                    disabled={bookingData.check_in && bookingData.check_out && !roomAvailability[room.id]}
-                                                    className={`w-full mt-4 px-6 py-3 font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${
-                                                        bookingData.check_in && bookingData.check_out && !roomAvailability[room.id]
-                                                            ? 'bg-gray-400 text-gray-700 cursor-not-allowed opacity-50'
-                                                            : 'bg-[#0f5132] text-white hover:bg-[#136640] hover:shadow-[#0f5132]/50'
+                                                    onClick={(e) => {
+                                                        // Prevent clicking if room is unavailable
+                                                        if (bookingData.check_in && bookingData.check_out && roomAvailability[room.id] !== true) {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            showBannerMessage("error", "This room is not available for the selected dates.");
+                                                            return false;
+                                                        }
+                                                        handleOpenRoomBookingForm(room.id);
+                                                    }} 
+                                                    disabled={bookingData.check_in && bookingData.check_out && roomAvailability[room.id] !== true}
+                                                    className={`w-full mt-4 px-6 py-3 font-bold rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                                                        bookingData.check_in && bookingData.check_out && roomAvailability[room.id] !== true
+                                                            ? 'bg-gray-400 text-gray-700 cursor-not-allowed opacity-50 pointer-events-none'
+                                                            : 'bg-[#0f5132] text-white hover:bg-[#136640] hover:shadow-[#0f5132]/50 transform hover:scale-105'
                                                     }`}
+                                                    style={{
+                                                        pointerEvents: (bookingData.check_in && bookingData.check_out && roomAvailability[room.id] !== true) ? 'none' : 'auto'
+                                                    }}
                                                 >
-                                                    {bookingData.check_in && bookingData.check_out && !roomAvailability[room.id] ? 'Not Available' : 'Book Now'}
+                                                    {bookingData.check_in && bookingData.check_out && roomAvailability[room.id] !== true ? 'Not Available' : 'Book Now'}
                                                     <ChevronRight className="w-5 h-5" />
                                                 </button>
                                             </div>
@@ -2500,6 +2961,74 @@ export default function App() {
                                     </div>
                     </section>
 
+                    {/* Plan Your Wedding Section - Dynamic with Slider */}
+                    {planWeddings && planWeddings.length > 0 && planWeddings.some(w => w.is_active) && (
+                        <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
+                            {planWeddings.filter(w => w.is_active).map((wedding, index) => (
+                                <div key={wedding.id}>
+                                    {/* Background Images with Animation and Auto-Change */}
+                                    <div className="absolute inset-0">
+                                        <img 
+                                            src={getImageUrl(wedding.image_url)} 
+                                            alt={wedding.title} 
+                                            className={`absolute inset-0 w-[110%] h-[110%] object-cover object-center transition-all duration-[10000ms] ease-in-out ${index === currentWeddingIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-110'} animate-[slow-pan_20s_ease-in-out_infinite]`}
+                                            style={{
+                                                animationDelay: `${index * 2}s`,
+                                                animationDirection: index % 2 === 0 ? 'alternate' : 'alternate-reverse'
+                                            }}
+                                            onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
+                                        />
+                                        {/* Gradient Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30"></div>
+                                    </div>
+
+                                    {/* Content Overlay */}
+                                    <div className={`relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-all duration-1000 ease-in-out ${index === currentWeddingIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                                        <div className="max-w-5xl mx-auto text-center text-white">
+                                            {/* Badge */}
+                                            <div className="mb-6 inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 animate-[fadeInUp_1s_ease-out]">
+                                                <span className="text-white text-sm font-semibold tracking-widest uppercase">
+                                                    ✦ Perfect Venue ✦
+                                                </span>
+                                            </div>
+
+                                            {/* Main Title */}
+                                            <h2 className="text-3xl md:text-5xl lg:text-7xl font-extrabold mb-6 animate-[fadeInUp_1.2s_ease-out] drop-shadow-2xl leading-tight">
+                                                {wedding.title.split(' ').slice(0, 3).join(' ')}<br/>
+                                                <span className="text-white">
+                                                    {wedding.title.split(' ').slice(3).join(' ') || 'WEDDING DESTINATION'}
+                                                </span>
+                        </h2>
+
+                                            {/* Description */}
+                                            <p className="text-base md:text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 animate-[fadeInUp_1.4s_ease-out] drop-shadow-lg">
+                                                {wedding.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                            </div>
+                            ))}
+                            
+                            {/* Navigation Dots */}
+                            {planWeddings.filter(w => w.is_active).length > 1 && (
+                                <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+                                    {planWeddings.filter(w => w.is_active).map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentWeddingIndex(index)}
+                                            className={`transition-all duration-300 ${
+                                                index === currentWeddingIndex
+                                                    ? "w-12 h-1 bg-white rounded-full"
+                                                    : "w-8 h-1 bg-white/40 hover:bg-white/60 rounded-full"
+                                            }`}
+                                            aria-label={`Go to slide ${index + 1}`}
+                                        />
+                                    ))}
+                        </div>
+                            )}
+                    </section>
+                    )}
+
                     {/* Premium Cuisine Section - Mountain Shadows Style */}
                     <section className={`bg-gradient-to-b ${theme.bgCard} ${theme.bgSecondary} py-20 pb-28 transition-colors duration-500`}>
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
@@ -2570,7 +3099,7 @@ export default function App() {
                                                             {/* Image */}
                                                             <div className="relative h-40 overflow-hidden">
                                                                 <img 
-                                                                    src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${food.images?.[0]?.image_url}` : `http://localhost:8000/${food.images?.[0]?.image_url}`} 
+                                                                    src={getImageUrl(food.images?.[0]?.image_url)} 
                                                                     alt={food.name} 
                                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                                                     onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
@@ -2629,7 +3158,7 @@ export default function App() {
                                                 {/* Image */}
                                                 <div className="relative h-40 overflow-hidden">
                                                     <img 
-                                                        src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${food.images?.[0]?.image_url}` : `http://localhost:8000/${food.images?.[0]?.image_url}`} 
+                                                        src={getImageUrl(food.images?.[0]?.image_url)} 
                                                         alt={food.name} 
                                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                                         onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
@@ -2700,7 +3229,7 @@ export default function App() {
                                             style={{ height: getGalleryCardHeight(index), transitionDelay: `${(index % 5) * 70}ms` }}
                                         >
                                             <img 
-                                                src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com${image.image_url}` : `http://localhost:8000${image.image_url}`} 
+                                                src={getImageUrl(image.image_url)} 
                                                 alt={image.caption || 'Gallery image'} 
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                                 loading="lazy"
@@ -2726,81 +3255,51 @@ export default function App() {
                          </div>
                     </section>
 
-                    {/* Plan Your Wedding Section - Dynamic with Slider */}
-                    {planWeddings.length > 0 && planWeddings.some(w => w.is_active) && (
-                        <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
-                            {planWeddings.filter(w => w.is_active).map((wedding, index) => (
-                                <div key={wedding.id}>
-                                    {/* Background Images with Animation and Auto-Change */}
-                                    <div className="absolute inset-0">
-                                        <img 
-                                            src={getImageUrl(wedding.image_url)} 
-                                            alt={wedding.title} 
-                                            className={`absolute inset-0 w-[110%] h-[110%] object-cover object-center transition-all duration-[10000ms] ease-in-out ${index === currentWeddingIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-110'} animate-[slow-pan_20s_ease-in-out_infinite]`}
-                                            style={{
-                                                animationDelay: `${index * 2}s`,
-                                                animationDirection: index % 2 === 0 ? 'alternate' : 'alternate-reverse'
-                                            }}
-                                            onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
-                                        />
-                                        {/* Gradient Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30"></div>
-                                    </div>
-
-                                    {/* Content Overlay */}
-                                    <div className={`relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-all duration-1000 ease-in-out ${index === currentWeddingIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                                        <div className="max-w-5xl mx-auto text-center text-white">
-                                            {/* Badge */}
-                                            <div className="mb-6 inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 animate-[fadeInUp_1s_ease-out]">
-                                                <span className="text-white text-sm font-semibold tracking-widest uppercase">
-                                                    ✦ Perfect Venue ✦
-                                                </span>
-                                            </div>
-
-                                            {/* Main Title */}
-                                            <h2 className="text-3xl md:text-5xl lg:text-7xl font-extrabold mb-6 animate-[fadeInUp_1.2s_ease-out] drop-shadow-2xl leading-tight">
-                                                {wedding.title.split(' ').slice(0, 3).join(' ')}<br/>
-                                                <span className="text-white">
-                                                    {wedding.title.split(' ').slice(3).join(' ') || 'WEDDING DESTINATION'}
-                                                </span>
-                        </h2>
-
-                                            {/* Description */}
-                                            <p className="text-base md:text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 animate-[fadeInUp_1.4s_ease-out] drop-shadow-lg">
-                                                {wedding.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                            </div>
-                            ))}
+                    {/* Nearby Attractions Hero Banner Section - Full Screen Hero Style */}
+                    {nearbyAttractionBanner && nearbyAttractionBanner.is_active && (
+                        <div className="relative w-full h-screen overflow-hidden">
+                            {/* Background Image - from the separate nearby attraction banner API */}
+                            <img 
+                                src={getImageUrl(nearbyAttractionBanner.image_url)} 
+                                alt={nearbyAttractionBanner.title} 
+                                className="absolute inset-0 w-[110%] h-[110%] object-cover object-center transition-all duration-[10000ms] ease-in-out opacity-100 scale-100 animate-[slow-pan_20s_ease-in-out_infinite]"
+                                style={{
+                                    animationDelay: "0s",
+                                    animationDirection: "alternate"
+                                }}
+                                onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
+                            />
                             
-                            {/* Navigation Dots */}
-                            {planWeddings.filter(w => w.is_active).length > 1 && (
-                                <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-                                    {planWeddings.filter(w => w.is_active).map((_, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setCurrentWeddingIndex(index)}
-                                            className={`transition-all duration-300 ${
-                                                index === currentWeddingIndex
-                                                    ? "w-12 h-1 bg-white rounded-full"
-                                                    : "w-8 h-1 bg-white/40 hover:bg-white/60 rounded-full"
-                                            }`}
-                                            aria-label={`Go to slide ${index + 1}`}
-                                        />
-                                    ))}
+                            {/* Luxury Gradient Overlay with Premium Content */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30 flex items-center justify-center text-center px-6">
+                                <div className="relative w-full max-w-5xl">
+                                    <div className="flex flex-col items-center justify-center transition-all duration-1000 ease-in-out opacity-100 translate-y-0">
+                                        <div className="mb-4 inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 animate-[fadeInUp_1s_ease-out]">
+                                            <span className="text-white text-sm font-semibold tracking-widest uppercase">
+                                                ✦ Explore ✦
+                                            </span>
+                                        </div>
+                                        {/* Title - from the separate nearby attraction banner API */}
+                                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight drop-shadow-2xl text-white mb-6 animate-[fadeInUp_1.2s_ease-out]">
+                                            {nearbyAttractionBanner.title}
+                                        </h1>
+                                        {/* Subtitle/Description - from the separate nearby attraction banner API */}
+                                        <p className="mt-4 text-xl md:text-2xl text-white max-w-4xl mx-auto leading-relaxed drop-shadow-lg px-4 animate-[fadeInUp_1.4s_ease-out]">
+                                            {nearbyAttractionBanner.subtitle}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                            )}
-                    </section>
                     )}
 
                     {/* Nearby Attractions Section - Mountain Shadows Style */}
-                    {nearbyAttractions.length > 0 && nearbyAttractions.some(a => a.is_active) && (
+                    {nearbyAttractions && nearbyAttractions.length > 0 && nearbyAttractions.some(a => a.is_active) && (
                         <section className={`bg-gradient-to-b ${theme.bgCard} ${theme.bgSecondary} py-20 transition-colors duration-500`}>
                         <div className="w-full mx-auto px-2 sm:px-4 md:px-6">
                                 <div className="text-center mb-16">
                                     <span className="inline-block px-6 py-2 bg-green-100 text-[#0f5132] text-sm font-semibold tracking-widest uppercase rounded-full mb-4">
-                                    ✦ Explore ✦
+                                    ✦ Discover ✦
                                 </span>
                                     <h2 className={`text-4xl md:text-5xl font-extrabold ${theme.textPrimary} mb-4`}>
                                     NEARBY ATTRACTIONS
@@ -2984,10 +3483,11 @@ export default function App() {
                                         <p className={`text-sm ${theme.textSecondary} text-center`}>Continue with booking:</p>
                                 <button 
                                     onClick={() => { setIsGeneralBookingOpen(false); setIsRoomBookingFormOpen(true); }}
-                                    className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors flex items-center justify-center space-x-2`}
+                                    className="w-full py-3 rounded-full bg-white border-2 border-[#0f5132] font-bold shadow-lg hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
+                                    style={{ backgroundColor: '#ffffff', color: '#0f5132', borderColor: '#0f5132', borderWidth: '2px' }}
                                 >
-                                    <BedDouble className="w-5 h-5" />
-                                    <span>Book a Room</span>
+                                    <BedDouble className="w-5 h-5" style={{ color: '#0f5132', stroke: '#0f5132' }} />
+                                    <span style={{ color: '#0f5132', fontWeight: 'bold' }}>Book a Room</span>
                                 </button>
                                 <button 
                                             onClick={() => { 
@@ -3000,10 +3500,11 @@ export default function App() {
                                                 }));
                                                 setIsPackageSelectionOpen(true); 
                                             }}
-                                    className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors flex items-center justify-center space-x-2`}
+                                    className="w-full py-3 rounded-full bg-white border-2 border-[#0f5132] font-bold shadow-lg hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
+                                    style={{ backgroundColor: '#ffffff', color: '#0f5132', borderColor: '#0f5132', borderWidth: '2px' }}
                                 >
-                                    <Package className="w-5 h-5" />
-                                    <span>Book a Package</span>
+                                    <Package className="w-5 h-5" style={{ color: '#0f5132', stroke: '#0f5132' }} />
+                                    <span style={{ color: '#0f5132', fontWeight: 'bold' }}>Book a Package</span>
                                 </button>
                                     </div>
                                 )}
@@ -3073,23 +3574,43 @@ export default function App() {
                                         <>
                                             <p className={`text-xs ${theme.textSecondary} mb-2`}>Showing rooms available from {bookingData.check_in} to {bookingData.check_out}</p>
                                     <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl ${theme.bgSecondary}`}>
-                                                {rooms.length > 0 ? (
-                                                    rooms.map(room => (
-                                            <div key={room.id} onClick={() => handleRoomSelection(room.id)}
-                                                    className={`rounded-lg border-2 cursor-pointer transition-all duration-200 overflow-hidden ${bookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132]`}`}
-                                                >
+                                                {availableRooms.length > 0 ? (
+                                                    availableRooms.map(room => (
+                                            <div 
+                                                key={room.id} 
+                                                onClick={(e) => {
+                                                    // Prevent clicking if room is unavailable
+                                                    if (roomAvailability[room.id] !== true) {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        showBannerMessage("error", "This room is not available for the selected dates.");
+                                                        return false;
+                                                    }
+                                                    handleRoomSelection(room.id);
+                                                }}
+                                                className={`rounded-lg border-2 transition-all duration-200 overflow-hidden ${
+                                                    roomAvailability[room.id] !== true 
+                                                        ? 'opacity-50 cursor-not-allowed pointer-events-none bg-gray-100 border-gray-300' 
+                                                        : bookingData.room_ids.includes(room.id) 
+                                                            ? `${theme.buttonBg} ${theme.buttonText} border-transparent cursor-pointer` 
+                                                            : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132] cursor-pointer`
+                                                }`}
+                                                style={{
+                                                    pointerEvents: roomAvailability[room.id] !== true ? 'none' : 'auto'
+                                                }}
+                                            >
                                                     <img 
                                                         src={getImageUrl(room.image_url)} 
                                                         alt={room.type} 
                                                         className="w-full h-20 object-cover" 
                                                         onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
                                                     />
-                                                    <div className="p-2 text-center">
-                                                        <p className="font-semibold text-xs">Room {room.number}</p>
-                                                <p className="text-xs opacity-80">{room.type}</p>
-                                                <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
-                                                        <p className="text-xs font-bold mt-1">{formatCurrency(room.price)}</p>
-                                            </div>
+                                                    <div className={`p-2 text-center ${bookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>
+                                                        <p className={`font-semibold text-xs ${bookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>Room {room.number}</p>
+                                                        <p className={`text-xs ${bookingData.room_ids.includes(room.id) ? 'text-white opacity-90' : 'opacity-80'}`}>{room.type}</p>
+                                                        <p className={`text-xs mt-1 ${bookingData.room_ids.includes(room.id) ? 'text-white opacity-80' : 'opacity-60'}`}>Max: {room.adults}A, {room.children}C</p>
+                                                        <p className={`text-xs font-bold mt-1 ${bookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>{formatCurrency(room.price)}</p>
+                                                    </div>
                                     </div>
                                             ))
                                         ) : (
@@ -3125,8 +3646,8 @@ export default function App() {
                                         <input type="number" name="children" value={bookingData.children} onChange={handleRoomBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
                                     </div>
                                 </div>
-                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
-                                    {isBookingLoading ? 'Booking...' : 'Confirm Booking'}
+                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading} style={{ color: '#ffffff' }}>
+                                    <span style={{ color: '#ffffff' }}>{isBookingLoading ? 'Booking...' : 'Confirm Booking'}</span>
                                 </button>
                                 {bookingMessage.text && (
                                     <div className={`mt-4 p-3 rounded-xl text-center ${bookingMessage.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
@@ -3221,15 +3742,13 @@ export default function App() {
                                     <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl ${theme.bgSecondary}`}>
                                                 {packageAvailableRooms.length > 0 ? (
                                                     packageAvailableRooms.map(room => {
-                                                        const isAvailable = Object.keys(packageRoomAvailability).length === 0 || packageRoomAvailability[room.id] !== false;
+                                                        // All rooms in packageAvailableRooms are already filtered to be available
                                                         return (
                                                             <div
                                                                 key={room.id}
-                                                                onClick={() => isAvailable && handlePackageRoomSelection(room.id)}
-                                                                className={`rounded-lg border-2 transition-all duration-200 overflow-hidden ${
-                                                                    !isAvailable
-                                                                        ? 'opacity-50 cursor-not-allowed bg-gray-300 border-gray-400'
-                                                                        : `cursor-pointer ${packageBookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132]`}`
+                                                                onClick={() => handlePackageRoomSelection(room.id)}
+                                                                className={`rounded-lg border-2 transition-all duration-200 overflow-hidden cursor-pointer ${
+                                                                    packageBookingData.room_ids.includes(room.id) ? `${theme.buttonBg} ${theme.buttonText} border-transparent` : `${theme.bgCard} ${theme.textPrimary} ${theme.border} hover:border-[#0f5132]`
                                                                 }`}
                                                             >
                                                                 <img
@@ -3238,15 +3757,12 @@ export default function App() {
                                                                     className="w-full h-20 object-cover"
                                                                     onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
                                                                 />
-                                                                <div className="p-2 text-center">
-                                                                    <p className="font-semibold text-xs">Room {room.number}</p>
-                                                                    <p className="text-xs opacity-80">{room.type || 'Standard'}</p>
-                                                <p className="text-xs opacity-60 mt-1">Max: {room.adults}A, {room.children}C</p>
-                                                                    <p className="text-xs font-bold mt-1">{formatCurrency(room.price)}</p>
-                                                                    {!isAvailable && (
-                                                                        <p className="text-xs text-red-600 font-bold mt-1">Unavailable</p>
-                                                                    )}
-                                            </div>
+                                                                <div className={`p-2 text-center ${packageBookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>
+                                                                    <p className={`font-semibold text-xs ${packageBookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>Room {room.number}</p>
+                                                                    <p className={`text-xs ${packageBookingData.room_ids.includes(room.id) ? 'text-white opacity-90' : 'opacity-80'}`}>{room.type || 'Standard'}</p>
+                                                                    <p className={`text-xs mt-1 ${packageBookingData.room_ids.includes(room.id) ? 'text-white opacity-80' : 'opacity-60'}`}>Max: {room.adults}A, {room.children}C</p>
+                                                                    <p className={`text-xs font-bold mt-1 ${packageBookingData.room_ids.includes(room.id) ? 'text-white' : ''}`}>{formatCurrency(room.price)}</p>
+                                                                </div>
                                     </div>
                                                         );
                                                     })
@@ -3283,8 +3799,8 @@ export default function App() {
                                         <input type="number" name="children" value={packageBookingData.children} onChange={handlePackageBookingChange} min="0" required className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
                                     </div>
                                 </div>
-                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
-                                    {isBookingLoading ? 'Booking...' : 'Confirm Booking'}
+                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading} style={{ color: '#ffffff' }}>
+                                    <span style={{ color: '#ffffff' }}>{isBookingLoading ? 'Booking...' : 'Confirm Booking'}</span>
                                 </button>
                                 {bookingMessage.text && (
                                     <div className={`mt-4 p-3 rounded-xl text-center ${bookingMessage.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
@@ -3348,7 +3864,7 @@ export default function App() {
                                                     {/* Content */}
                                                     <div className="p-5">
                                                         <h3 className={`text-xl font-bold ${theme.textCardPrimary || theme.textPrimary} mb-2 line-clamp-2`}>
-                                                            {pkg.title}
+                                                            {pkg.is_full_property ? 'Whole Property (Private Function)' : pkg.title}
                                                         </h3>
                                                         <div className="flex flex-wrap gap-2 mb-3">
                                                             {pkg.is_full_property && (
@@ -3420,8 +3936,8 @@ export default function App() {
                                     <label className={`block text-sm font-medium ${theme.textSecondary}`}>Room ID (Optional)</label>
                                     <input type="number" name="room_id" value={serviceBookingData.room_id || ''} onChange={handleServiceBookingChange} placeholder="Enter your room ID if assigned" className={`w-full p-3 rounded-xl ${theme.bgSecondary} ${theme.textPrimary} border ${theme.border} focus:outline-none focus:ring-2 focus:ring-[#0f5132] transition-colors`} />
                                 </div>
-                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} ${theme.buttonText} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading}>
-                                    {isBookingLoading ? 'Booking...' : 'Confirm Booking'}
+                                <button type="submit" className={`w-full py-3 rounded-full ${theme.buttonBg} font-bold shadow-lg ${theme.buttonHover} transition-colors disabled:opacity-50`} disabled={isBookingLoading} style={{ color: '#ffffff' }}>
+                                    <span style={{ color: '#ffffff' }}>{isBookingLoading ? 'Booking...' : 'Confirm Booking'}</span>
                                 </button>
                                 {bookingMessage.text && (
                                     <div className={`mt-4 p-3 rounded-xl text-center ${bookingMessage.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
@@ -3451,7 +3967,7 @@ export default function App() {
                                     {foodItems.map(item => (
                                         <div key={item.id} className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4">
-                                                <img src={process.env.NODE_ENV === 'production' ? `https://www.teqmates.com/${item.images?.[0]?.image_url}` : `http://localhost:8000/${item.images?.[0]?.image_url}`} alt={item.name} className="w-12 h-12 object-cover rounded-full" />
+                                                <img src={getImageUrl(item.images?.[0]?.image_url)} alt={item.name} className="w-12 h-12 object-cover rounded-full" />
                                                 <div>
                                                     <p className={`font-semibold ${theme.textPrimary}`}>{item.name}</p>
                                                 </div>
@@ -3504,9 +4020,7 @@ export default function App() {
                                     <div className="w-full md:w-1/2">
                                         <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
                                             <img 
-                                                src={process.env.NODE_ENV === 'production' 
-                                                    ? `https://www.teqmates.com/${selectedFoodItem.images?.[0]?.image_url}` 
-                                                    : `http://localhost:8000/${selectedFoodItem.images?.[0]?.image_url}`} 
+                                                src={getImageUrl(selectedFoodItem.images?.[0]?.image_url)} 
                                                 alt={selectedFoodItem.name} 
                                                 className="w-full h-full object-cover" 
                                                 onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
@@ -3536,9 +4050,7 @@ export default function App() {
                                                 {selectedFoodItem.images.slice(0, 4).map((img, index) => (
                                                     <div key={index} className="relative h-20 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                                                         <img 
-                                                            src={process.env.NODE_ENV === 'production' 
-                                                                ? `https://www.teqmates.com/${img.image_url}` 
-                                                                : `http://localhost:8000/${img.image_url}`} 
+                                                            src={getImageUrl(img.image_url)} 
                                                             alt={`${selectedFoodItem.name} ${index + 1}`} 
                                                             className="w-full h-full object-cover" 
                                                             onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }} 
@@ -3690,7 +4202,7 @@ export default function App() {
                                     {/* Details Section */}
                                     <div className="w-full lg:w-1/2 flex flex-col">
                                         <h2 className={`text-3xl md:text-4xl font-extrabold ${theme.textPrimary} mb-4`}>
-                                            {selectedPackageDetails.title}
+                                            {selectedPackageDetails.is_full_property ? 'Whole Property (Private Function)' : selectedPackageDetails.title}
                                         </h2>
                                         
                                         {/* Badges */}
@@ -3758,13 +4270,69 @@ export default function App() {
                                     <div className="text-center md:text-left">
                                         <h3 className="text-xl font-bold tracking-tight" style={{ color: '#0f5132' }}>{resortInfo.name}</h3>
                                         <p className="text-sm mt-1" style={{ color: '#0f5132' }}>{resortInfo.address}</p>
-                                        <p className="text-xs mt-2" style={{ color: '#0f5132' }}>&copy; 2024 Pomma Holidays. TeqMates.</p>
+                                        <p className="text-xs mt-2" style={{ color: '#0f5132' }}>&copy; 2024 TeqMates Resort. All rights reserved.</p>
                                     </div>
                                     <div className="flex space-x-4">
-                                        <a href={formatUrl(resortInfo.facebook)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Facebook /></a>
-                                        <a href={formatUrl(resortInfo.instagram)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Instagram /></a>
-                                        <a href={formatUrl(resortInfo.twitter)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Twitter /></a>
-                                        <a href={formatUrl(resortInfo.linkedin)} target="_blank" rel="noopener noreferrer" className="text-[#0f5132] hover:text-[#136640] transition-colors"><Linkedin /></a>
+                                        {(() => {
+                                            const facebookUrl = formatUrl(resortInfo.facebook);
+                                            return facebookUrl && (
+                                                <a 
+                                                    href={facebookUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-[#0f5132] hover:text-[#136640] transition-colors cursor-pointer"
+                                                    title="Visit us on Facebook"
+                                                    aria-label="Facebook"
+                                                >
+                                                    <Facebook className="w-6 h-6" />
+                                                </a>
+                                            );
+                                        })()}
+                                        {(() => {
+                                            const instagramUrl = formatUrl(resortInfo.instagram);
+                                            return instagramUrl && (
+                                                <a 
+                                                    href={instagramUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-[#0f5132] hover:text-[#136640] transition-colors cursor-pointer"
+                                                    title="Visit us on Instagram"
+                                                    aria-label="Instagram"
+                                                >
+                                                    <Instagram className="w-6 h-6" />
+                                                </a>
+                                            );
+                                        })()}
+                                        {(() => {
+                                            const twitterUrl = formatUrl(resortInfo.twitter);
+                                            return twitterUrl && (
+                                                <a 
+                                                    href={twitterUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-[#0f5132] hover:text-[#136640] transition-colors cursor-pointer"
+                                                    title="Visit us on Twitter"
+                                                    aria-label="Twitter"
+                                                >
+                                                    <Twitter className="w-6 h-6" />
+                                                </a>
+                                            );
+                                        })()}
+                                        {(() => {
+                                            const linkedinUrl = formatUrl(resortInfo.linkedin);
+                                            return linkedinUrl && (
+                                                <a 
+                                                    href={linkedinUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-[#0f5132] hover:text-[#136640] transition-colors cursor-pointer"
+                                                    title="Visit us on LinkedIn"
+                                                    aria-label="LinkedIn"
+                                                >
+                                                    <Linkedin className="w-6 h-6" />
+                                                </a>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
                                 {/* Powered by TeqMates - Centered */}

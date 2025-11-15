@@ -835,41 +835,70 @@ const EmployeeListAndForm = () => {
 
   const fetchEmployees = async () => {
     try {
-      // Fetch both users and employees to show all users including admins
-      const [usersRes, employeesRes] = await Promise.all([
-        api.get("/users/?skip=0&limit=20", authHeader()),
-        api.get("/employees?skip=0&limit=20", authHeader())
+      // Fetch employees first (ordered by ID desc, so newest first)
+      // Then fetch users to get admins and complete user data
+      const [employeesRes, usersRes] = await Promise.all([
+        api.get("/employees?skip=0&limit=100", authHeader()),
+        api.get("/users/?skip=0&limit=100", authHeader())
       ]);
       
-      const users = usersRes.data || [];
       const employees = employeesRes.data || [];
+      const users = usersRes.data || [];
       
-      // Create a map of employees by user_id for quick lookup
-      const employeeMap = new Map();
+      // Create a map of users by id for quick lookup
+      const userMap = new Map();
+      users.forEach(user => {
+        userMap.set(user.id, user);
+      });
+      
+      // Create a set of user_ids that have employee records
+      const employeeUserIds = new Set();
       employees.forEach(emp => {
         if (emp.user_id) {
-          employeeMap.set(emp.user_id, emp);
+          employeeUserIds.add(emp.user_id);
         }
       });
       
-      // Combine users with their employee data
-      const combinedUsers = users.map(user => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role?.name || 'Unknown',
-        phone: user.phone,
-        is_active: user.is_active,
-        // Add employee-specific data if available
-        salary: employeeMap.get(user.id)?.salary || null,
-        join_date: employeeMap.get(user.id)?.join_date || null,
-        image_url: employeeMap.get(user.id)?.image_url || null,
-        has_employee_record: employeeMap.has(user.id),
-        trend: Array.from({ length: 30 }, () => Math.floor(Math.random() * 10000))
-      }));
+      // Start with employees (with their user data)
+      const employeeList = employees.map(emp => {
+        const user = emp.user_id ? userMap.get(emp.user_id) : null;
+        return {
+          id: emp.user_id || emp.id,
+          name: emp.name,
+          email: user?.email || '',
+          role: user?.role?.name || emp.role || 'Unknown',
+          phone: user?.phone || '',
+          is_active: user?.is_active ?? true,
+          salary: emp.salary || null,
+          join_date: emp.join_date || null,
+          image_url: emp.image_url || null,
+          has_employee_record: true,
+          trend: Array.from({ length: 30 }, () => Math.floor(Math.random() * 10000))
+        };
+      });
+      
+      // Add users that don't have employee records (admins)
+      const adminUsers = users
+        .filter(user => !employeeUserIds.has(user.id))
+        .map(user => ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role?.name || 'Unknown',
+          phone: user.phone || '',
+          is_active: user.is_active,
+          salary: null,
+          join_date: null,
+          image_url: null,
+          has_employee_record: false,
+          trend: Array.from({ length: 30 }, () => Math.floor(Math.random() * 10000))
+        }));
+      
+      // Combine and sort by ID descending (newest first)
+      const combinedUsers = [...employeeList, ...adminUsers].sort((a, b) => b.id - a.id);
       
       setEmployees(combinedUsers);
-      setHasMore(combinedUsers.length >= 20);
+      setHasMore(combinedUsers.length >= 100);
       setPage(1);
     } catch (err) {
       console.error("Error fetching employees:", err);

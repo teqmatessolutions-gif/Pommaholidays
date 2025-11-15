@@ -131,3 +131,23 @@ class NearbyAttractionUpdate(BaseSchema):
 
 class NearbyAttraction(NearbyAttractionBase):
     id: int
+
+
+# Nearby Attraction Banners
+class NearbyAttractionBannerBase(BaseSchema):
+    title: str
+    subtitle: str
+    image_url: str
+    map_link: str | None = None
+
+class NearbyAttractionBannerCreate(NearbyAttractionBannerBase):
+    pass
+
+class NearbyAttractionBannerUpdate(BaseSchema):
+    title: str | None = None
+    subtitle: str | None = None
+    image_url: str | None = None
+    map_link: str | None = None
+
+class NearbyAttractionBanner(NearbyAttractionBannerBase):
+    id: int

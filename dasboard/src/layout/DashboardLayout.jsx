@@ -130,8 +130,8 @@ export default function DashboardLayout({ children }) {
   const navRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
   
-  // Use full URL for logo to ensure accessibility from both /admin and /pommaadmin
-  const logoSrc = "https://www.teqmates.com/pommaholidays/logo.png";
+  // Use full URL for logo to ensure accessibility from both /admin and other paths
+  const logoSrc = "https://www.teqmates.com/static/logo.png";
 
   // Load theme from localStorage on initial render
   useEffect(() => {
@@ -306,7 +306,7 @@ export default function DashboardLayout({ children }) {
                 <img 
                   src={logoSrc}
                   className="w-full h-auto max-h-16 sm:max-h-20 md:max-h-24 object-contain" 
-                  alt="Pomma Holidays Logo"
+                  alt="TeqMates Resort Logo"
                   onError={() => setLogoError(true)}
                   style={{ 
                     filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1))'
@@ -315,7 +315,7 @@ export default function DashboardLayout({ children }) {
               ) : (
                 <div className="w-full flex items-center justify-center py-2">
                   <div className="bg-gradient-to-r from-green-600 via-green-500 to-teal-500 text-white px-4 py-2 rounded-lg shadow-lg">
-                    <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">POMMA HOLIDAYS</span>
+                    <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">TEQMATES RESORT</span>
                   </div>
                 </div>
               )}
@@ -425,10 +425,10 @@ export default function DashboardLayout({ children }) {
             <button
               onClick={() => {
                 localStorage.removeItem("token");
-                // Redirect to /pommaadmin/ for login (Pomma admin)
+                // Redirect to /admin/ for login (TeqMates Resort admin)
                 const currentPath = window.location.pathname;
-                if (currentPath.startsWith('/pommaadmin')) {
-                  window.location.href = '/pommaadmin';
+                if (currentPath.startsWith('/admin')) {
+                  window.location.href = '/admin';
                 } else {
                   // Navigate to login page within the same app
                   navigate("/", { replace: true });

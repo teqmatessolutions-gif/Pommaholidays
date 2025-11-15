@@ -11,13 +11,13 @@ const resolveBaseURL = () => {
     const origin = window.location.origin;
     const path = window.location.pathname || "";
 
-    if (path.startsWith("/pommaholidays")) {
-      return `${origin}/pommaapi/api`;
+    if (path.startsWith("/resort")) {
+      return `${origin}/api`;
     }
   }
 
   return process.env.NODE_ENV === "production"
-    ? "https://www.teqmates.com/pommaapi/api"
+    ? "https://www.teqmates.com/api"
     : "http://localhost:8000/api";
 };
 

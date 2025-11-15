@@ -246,9 +246,10 @@ def get_bookings(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
 
 
 @router.get("/", response_model=List[PackageOut])
+@router.get("", response_model=List[PackageOut])  # Accept both with and without trailing slash
 def list_packages(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     # Query directly in the endpoint to apply pagination
-    return db.query(Package).offset(skip).limit(limit).all()
+    return db.query(Package).order_by(Package.id).offset(skip).limit(limit).all()
 
 
 @router.get("/{package_id}", response_model=PackageOut)

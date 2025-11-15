@@ -38,27 +38,57 @@ def get_guest_for_room(room_id, db: Session):
     return None
 
 def create_food_order(db: Session, order_data: FoodOrderCreate):
-    order = FoodOrder(
-        room_id=order_data.room_id,
-        amount=order_data.amount,
-        assigned_employee_id=order_data.assigned_employee_id,
-        status="active",
-        billing_status="unbilled"
-    )
-    db.add(order)
-    db.commit()
-    db.refresh(order)
-
-    for item_data in order_data.items:
-        item = FoodOrderItem(
-            order_id=order.id,
-            food_item_id=item_data.food_item_id,
-            quantity=item_data.quantity,
+    try:
+        # Validate room exists
+        from app.models.room import Room
+        room = db.query(Room).filter(Room.id == order_data.room_id).first()
+        if not room:
+            raise ValueError(f"Room with ID {order_data.room_id} not found")
+        
+        # Validate employee exists
+        from app.models.employee import Employee
+        employee = db.query(Employee).filter(Employee.id == order_data.assigned_employee_id).first()
+        if not employee:
+            raise ValueError(f"Employee with ID {order_data.assigned_employee_id} not found")
+        
+        # Validate food items exist
+        from app.models.food_item import FoodItem
+        for item_data in order_data.items:
+            food_item = db.query(FoodItem).filter(FoodItem.id == item_data.food_item_id).first()
+            if not food_item:
+                raise ValueError(f"Food item with ID {item_data.food_item_id} not found")
+        
+        order = FoodOrder(
+            room_id=order_data.room_id,
+            amount=order_data.amount,
+            assigned_employee_id=order_data.assigned_employee_id,
+            status="active",
+            billing_status=order_data.billing_status or "unbilled"
         )
-        db.add(item)
-    db.commit()
-    db.refresh(order)
-    return order
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+
+        for item_data in order_data.items:
+            item = FoodOrderItem(
+                order_id=order.id,
+                food_item_id=item_data.food_item_id,
+                quantity=item_data.quantity,
+            )
+            db.add(item)
+        db.commit()
+        db.refresh(order)
+        return order
+    except ValueError as ve:
+        db.rollback()
+        raise ve
+    except Exception as e:
+        db.rollback()
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"Error in create_food_order: {str(e)}")
+        print(f"Traceback: {error_trace}")
+        raise
 
 def get_food_orders(db: Session, skip: int = 0, limit: int = 100):
     orders = db.query(FoodOrder).offset(skip).limit(limit).all()

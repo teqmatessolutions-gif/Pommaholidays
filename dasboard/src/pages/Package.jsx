@@ -178,7 +178,7 @@ const Packages = () => {
   const fetchData = async () => {
     try {
       const [packageRes, roomRes, bookingRes] = await Promise.all([
-        api.get("/packages/"),
+        api.get("/packages/?limit=1000"),
         api.get("/rooms/"),
         api.get("/packages/bookingsall")
       ]);

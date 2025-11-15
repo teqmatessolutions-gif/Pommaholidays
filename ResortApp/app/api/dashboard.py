@@ -32,17 +32,17 @@ def get_kpis(db: Session = Depends(get_db)):
     all_rooms = db.query(Room).all()
     booked_room_ids = set()
 
-    # Find rooms booked via regular bookings
+    # Find rooms booked via regular bookings (include booked and checked-in statuses)
     active_bookings = db.query(BookingRoom.room_id).join(Booking).filter(
-        Booking.status == "booked",
+        Booking.status.in_(["booked", "checked-in", "checked_in"]),
         Booking.check_in <= today,
         Booking.check_out > today,
     ).all()
     booked_room_ids.update([r.room_id for r in active_bookings])
 
-    # Find rooms booked via package bookings
+    # Find rooms booked via package bookings (include booked and checked-in statuses)
     active_package_bookings = db.query(PackageBookingRoom.room_id).join(PackageBooking).filter(
-        PackageBooking.status == "booked",
+        PackageBooking.status.in_(["booked", "checked-in", "checked_in"]),
         PackageBooking.check_in <= today,
         PackageBooking.check_out > today,
     ).all()
@@ -254,7 +254,9 @@ def get_summary(period: str = "all", db: Session = Depends(get_db)):
         "completed_services": services_query.filter(AssignedService.status == 'completed').count(),
         
         "food_orders": food_orders_query.count(),
-        "food_items_available": db.query(FoodItem).filter(FoodItem.available == "True").count(),
+        "food_items_available": db.query(FoodItem).filter(
+            func.lower(FoodItem.available).in_(["true", "1", "yes"])
+        ).count(),
         
         "total_expenses": total_expenses,
         "expense_count": expenses_query.count(),

@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [logoError, setLogoError] = useState(false);
   const navigate = useNavigate();
   
-  const logoSrc = "https://www.teqmates.com/pommaholidays/logo.png";
+  const logoSrc = "https://www.teqmates.com/static/logo.png";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,11 +18,11 @@ export default function LoginPage() {
       const response = await api.post("/auth/login", { email, password });
       if (response.data && response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
-        // Redirect to /pommaadmin/dashboard to stay under /pommaadmin/ path
+        // Redirect to /admin/dashboard to stay under /admin/ path
         const currentPath = window.location.pathname;
-        if (currentPath.startsWith('/pommaadmin')) {
-          // Redirect to /pommaadmin/dashboard (stays under /pommaadmin/ path)
-          window.location.href = '/pommaadmin/dashboard';
+        if (currentPath.startsWith('/admin')) {
+          // Redirect to /admin/dashboard (stays under /admin/ path)
+          window.location.href = '/admin/dashboard';
         } else {
           // For other paths, use React Router navigation
           navigate("/dashboard", { replace: true });
@@ -73,7 +73,7 @@ export default function LoginPage() {
               {!logoError ? (
                 <img 
                   src={logoSrc}
-                  alt="Pomma Holidays Logo"
+                  alt="TeqMates Resort Logo"
                   className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                   onError={() => setLogoError(true)}
                   style={{ filter: 'drop-shadow(0 4px 12px rgba(15, 81, 50, 0.3))' }}
@@ -127,7 +127,7 @@ export default function LoginPage() {
         </form>
 
         <div className="text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Pomma Holidays. TeqMates.
+          © {new Date().getFullYear()} TeqMates Resort. All rights reserved.
         </div>
       </div>
 

@@ -14,7 +14,8 @@ def get_role_by_name(db: Session, role_name: str):
     return db.query(Role).filter(Role.name == role_name).first()
 
 def get_employees(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Employee).offset(skip).limit(limit).all()
+    from sqlalchemy.orm import joinedload
+    return db.query(Employee).options(joinedload(Employee.user)).order_by(Employee.id.desc()).offset(skip).limit(limit).all()
 
 def create_employee(
     db: Session,

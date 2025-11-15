@@ -85,3 +85,14 @@ class NearbyAttraction(Base):
     description = Column(Text)
     image_url = Column(String(255))
     is_active = Column(Boolean, default=True)
+
+
+# Nearby Attraction Banners
+class NearbyAttractionBanner(Base):
+    __tablename__ = "nearby_attraction_banners"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255))
+    subtitle = Column(Text)
+    image_url = Column(String(255))
+    is_active = Column(Boolean, default=True)
+    map_link = Column(String(512), nullable=True)

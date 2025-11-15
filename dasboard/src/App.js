@@ -23,30 +23,23 @@ import UserHistory from "./pages/UserHistory.jsx";
 import EmployeeManagement from "./pages/EmployeeManagement.jsx";
 
 function App() {
-  // For Pomma admin, use /pommaadmin as basename
-  // This ensures all routes work under /pommaadmin/ path with pommodb
+  // For TeqMates Resort admin, use /admin as basename
+  // This ensures all routes work under /admin/ path
   const getBasename = () => {
-    // Check if we're running in Pomma context (using pommodb)
-    // If PUBLIC_URL is set to /pommaadmin, use /pommaadmin
-    if (process.env.PUBLIC_URL === '/pommaadmin') {
-      return '/pommaadmin';
+    // If PUBLIC_URL is set to /admin, use /admin
+    if (process.env.PUBLIC_URL === '/admin') {
+      return '/admin';
     }
     // Otherwise, detect from current path
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      // If accessing from /pommaadmin, use /pommaadmin as basename
-      if (path.startsWith('/pommaadmin')) {
-        return '/pommaadmin';
-      }
-      // If accessing from /admin but using pommodb (Pomma build), use /pommaadmin
+      // If accessing from /admin, use /admin as basename
       if (path.startsWith('/admin')) {
-        // Check if this is Pomma build by checking API URL
-        // For Pomma admin, always use /pommaadmin
-        return '/pommaadmin';
+        return '/admin';
       }
     }
-    // Default to /pommaadmin for Pomma admin
-    return '/pommaadmin';
+    // Default to /admin for TeqMates Resort admin
+    return '/admin';
   };
 
   const basename = getBasename();

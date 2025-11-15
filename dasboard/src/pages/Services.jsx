@@ -68,63 +68,361 @@ const Services = () => {
       setBookings([...regularBookings, ...packageBookings]);
       
       // Filter rooms to only show checked-in rooms
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set to start of day for comparison
       const checkedInRoomIds = new Set();
+      const checkedInRoomNumbers = new Set(); // Track by room number too (005, 003, etc.)
+      const allRoomsList = rRes.data || [];
       
-      // Get room IDs from checked-in regular bookings
+      // Debug: Log all data received
+      console.log('=== DEBUG: API Responses ===');
+      console.log('Regular bookings:', regularBookings.length, regularBookings);
+      console.log('Package bookings:', packageBookings.length, packageBookings);
+      console.log('All rooms:', allRoomsList.length, allRoomsList);
+      
+      // Helper function to normalize status - handle ALL case variations
+      const normalizeStatus = (status) => {
+        if (!status) return '';
+        return status.toString().toLowerCase().replace(/[-_\s]/g, '');
+      };
+      
+      // Method 1: Check rooms directly by status - most reliable
+      // Handle all variations: "Checked-in", "checked-in", "Checked-In", "CHECKED-IN", "Checked_in", etc.
+      allRoomsList.forEach(room => {
+        const roomStatus = (room.status || '').toString().trim();
+        const normalizedStatus = normalizeStatus(roomStatus);
+        
+        console.log(`Room ${room.number} (ID: ${room.id}): status="${roomStatus}" (normalized: "${normalizedStatus}")`);
+        
+        // Accept multiple variations: "Checked-in", "checked-in", "checked_in", etc.
+        if (normalizedStatus === 'checkedin') {
+          checkedInRoomIds.add(room.id);
+          checkedInRoomNumbers.add(room.number?.toString().trim());
+          console.log(`✓ Method 1: Added room ${room.number} (ID: ${room.id}) - status: "${roomStatus}"`);
+        }
+      });
+      
+      // Method 2: Get rooms from checked-in regular bookings (without date restriction)
+      // Handle all booking status variations: "checked-in", "Checked-in", "checked_in", etc.
       regularBookings.forEach(booking => {
-        const normalizedStatus = booking.status?.toLowerCase().replace(/[-_\s]/g, '');
-        if (normalizedStatus === 'checkedin' || normalizedStatus === 'checked-in') {
-          // Parse dates properly
-          const checkInDate = new Date(booking.check_in);
-          const checkOutDate = new Date(booking.check_out);
-          checkInDate.setHours(0, 0, 0, 0);
-          checkOutDate.setHours(0, 0, 0, 0);
+        if (!booking || !booking.status) return;
+        
+        const normalizedStatus = normalizeStatus(booking.status);
+        console.log(`Regular booking ${booking.id}: status="${booking.status}" (normalized: "${normalizedStatus}")`);
+        
+        // If booking status is checked-in (any case variation), add ALL its rooms regardless of dates
+        if (normalizedStatus === 'checkedin') {
+          console.log(`✓ Found checked-in regular booking ${booking.id}, rooms:`, booking.rooms);
           
-          // Check if booking is active (today is between check-in and check-out)
-          if (checkInDate <= today && checkOutDate > today) {
-            if (booking.rooms && Array.isArray(booking.rooms)) {
-              booking.rooms.forEach(room => {
-                if (room && room.id) {
-                  checkedInRoomIds.add(room.id);
-                  console.log(`Added checked-in room: ${room.number} (ID: ${room.id}) from booking ${booking.id}`);
+          if (booking.rooms && Array.isArray(booking.rooms) && booking.rooms.length > 0) {
+            booking.rooms.forEach(roomWrapper => {
+              // For regular bookings, room is usually directly the Room object
+              // But handle both structures for safety
+              const actualRoom = roomWrapper.room || roomWrapper;
+              const roomId = actualRoom?.id || roomWrapper?.room_id || roomWrapper?.id;
+              const roomNumber = actualRoom?.number || roomWrapper?.number;
+              
+              if (roomId) {
+                checkedInRoomIds.add(roomId);
+                // Normalize room number - handle "003", "3", "005", "5", etc.
+                if (roomNumber) {
+                  const roomNum = roomNumber.toString().trim();
+                  checkedInRoomNumbers.add(roomNum);
+                  // Also add zero-padded version if it's a number
+                  const numAsInt = parseInt(roomNum, 10);
+                  if (!isNaN(numAsInt)) {
+                    checkedInRoomNumbers.add(numAsInt.toString().padStart(3, '0')); // Add "003" format
+                    checkedInRoomNumbers.add(numAsInt.toString()); // Add "3" format
+                  }
                 }
+                console.log(`✓ Method 2: Added room ${roomNumber || roomId} (ID: ${roomId}) from regular booking ${booking.id}`, { roomWrapper, actualRoom, roomId, roomNumber });
+              }
+            });
+          } else {
+            console.warn(`⚠ Regular booking ${booking.id} has no rooms array:`, booking);
+            // Try to find rooms by room_ids if rooms array is missing
+            if (booking.room_ids && Array.isArray(booking.room_ids)) {
+              booking.room_ids.forEach(roomId => {
+                checkedInRoomIds.add(roomId);
+                console.log(`✓ Method 2b: Added room ID ${roomId} from booking ${booking.id} room_ids`);
               });
             }
           }
         }
       });
       
-      // Get room IDs from checked-in package bookings
+      // Method 3: Get rooms from checked-in package bookings (without date restriction)
       packageBookings.forEach(booking => {
-        const normalizedStatus = booking.status?.toLowerCase().replace(/[-_\s]/g, '');
-        if (normalizedStatus === 'checkedin' || normalizedStatus === 'checked-in') {
-          // Parse dates properly
-          const checkInDate = new Date(booking.check_in);
-          const checkOutDate = new Date(booking.check_out);
-          checkInDate.setHours(0, 0, 0, 0);
-          checkOutDate.setHours(0, 0, 0, 0);
+        if (!booking || !booking.status) return;
+        
+        const normalizedStatus = normalizeStatus(booking.status);
+        console.log(`Package booking ${booking.id}: status="${booking.status}" (normalized: "${normalizedStatus}")`);
+        
+        // If booking status is checked-in (any case variation), add ALL its rooms regardless of dates
+        if (normalizedStatus === 'checkedin') {
+          console.log(`✓ Found checked-in package booking ${booking.id}, rooms:`, booking.rooms);
           
-          // Check if booking is active (today is between check-in and check-out)
-          if (checkInDate <= today && checkOutDate > today) {
-            if (booking.rooms && Array.isArray(booking.rooms)) {
-              booking.rooms.forEach(room => {
-                if (room && room.id) {
-                  checkedInRoomIds.add(room.id);
-                  console.log(`Added checked-in package room: ${room.number} (ID: ${room.id}) from booking ${booking.id}`);
+          if (booking.rooms && Array.isArray(booking.rooms) && booking.rooms.length > 0) {
+            booking.rooms.forEach(roomWrapper => {
+              // Handle nested structure: roomWrapper.room contains the actual room data
+              const room = roomWrapper.room || roomWrapper; // Fallback to roomWrapper if room property doesn't exist
+              const roomId = room?.id || roomWrapper?.room_id; // Use room.id or roomWrapper.room_id
+              const roomNumber = room?.number;
+              
+              if (roomId) {
+                checkedInRoomIds.add(roomId);
+                // Normalize room number - handle "003", "3", "005", "5", etc.
+                if (roomNumber) {
+                  const roomNum = roomNumber.toString().trim();
+                  checkedInRoomNumbers.add(roomNum);
+                  // Also add zero-padded version if it's a number
+                  const numAsInt = parseInt(roomNum, 10);
+                  if (!isNaN(numAsInt)) {
+                    checkedInRoomNumbers.add(numAsInt.toString().padStart(3, '0')); // Add "003" format
+                    checkedInRoomNumbers.add(numAsInt.toString()); // Add "3" format
+                  }
                 }
+                console.log(`✓ Method 3: Added room ${roomNumber || roomId} (ID: ${roomId}) from package booking ${booking.id}`, { roomWrapper, room, roomId, roomNumber });
+              }
+            });
+          } else {
+            console.warn(`⚠ Package booking ${booking.id} has no rooms array:`, booking);
+            // Try to find rooms by room_ids if rooms array is missing
+            if (booking.room_ids && Array.isArray(booking.room_ids)) {
+              booking.room_ids.forEach(roomId => {
+                checkedInRoomIds.add(roomId);
+                console.log(`✓ Method 3b: Added room ID ${roomId} from package booking ${booking.id} room_ids`);
               });
             }
           }
         }
       });
       
-      console.log(`Total checked-in room IDs: ${checkedInRoomIds.size}`, Array.from(checkedInRoomIds));
+      // Method 4: Also check by room number if we found specific room numbers
+      // This helps if room IDs don't match but we know the room numbers (005, 003)
+      if (checkedInRoomNumbers.size > 0) {
+        console.log(`✓ Method 4: Looking for rooms by number:`, Array.from(checkedInRoomNumbers));
+        allRoomsList.forEach(room => {
+          const roomNumber = room.number?.toString().trim();
+          if (roomNumber) {
+            // Check exact match
+            if (checkedInRoomNumbers.has(roomNumber)) {
+              checkedInRoomIds.add(room.id);
+              console.log(`✓ Method 4a: Added room ${room.number} (ID: ${room.id}) by exact room number match: "${roomNumber}"`);
+            } else {
+              // Check normalized match (handle "003" vs "3", "005" vs "5")
+              const numAsInt = parseInt(roomNumber, 10);
+              if (!isNaN(numAsInt)) {
+                const normalizedNum = numAsInt.toString();
+                const paddedNum = numAsInt.toString().padStart(3, '0');
+                if (checkedInRoomNumbers.has(normalizedNum) || checkedInRoomNumbers.has(paddedNum)) {
+                  checkedInRoomIds.add(room.id);
+                  console.log(`✓ Method 4b: Added room ${room.number} (ID: ${room.id}) by normalized room number match: "${roomNumber}" -> "${normalizedNum}" or "${paddedNum}"`);
+                }
+              }
+            }
+          }
+        });
+      }
       
-      // Filter rooms to only show checked-in rooms
-      const checkedInRooms = rRes.data.filter(room => checkedInRoomIds.has(room.id));
-      console.log(`Filtered checked-in rooms: ${checkedInRooms.length}`, checkedInRooms.map(r => r.number));
+      console.log(`=== FINAL: Found ${checkedInRoomIds.size} checked-in room(s) ===`, Array.from(checkedInRoomIds));
+      console.log(`=== FINAL: Room numbers found:`, Array.from(checkedInRoomNumbers));
+      
+      // Build a map of all available rooms (from rooms API and from bookings)
+      const allRoomsMap = new Map();
+      
+      // First, add all rooms from the rooms API
+      allRoomsList.forEach(room => {
+        allRoomsMap.set(room.id, room);
+      });
+      
+      // Then, add rooms from checked-in bookings that might not be in the rooms API response
+      regularBookings.forEach(booking => {
+        if (booking && booking.status) {
+          const normalizedStatus = normalizeStatus(booking.status);
+          if (normalizedStatus === 'checkedin' && booking.rooms && Array.isArray(booking.rooms)) {
+            booking.rooms.forEach(roomWrapper => {
+              // For regular bookings, room is directly the Room object
+              // Extract actual room data
+              const actualRoom = roomWrapper.room || roomWrapper;
+              const roomId = actualRoom?.id || roomWrapper?.room_id || roomWrapper?.id;
+              const roomNumber = actualRoom?.number;
+              
+              if (roomId) {
+                // Create a room object with the correct data
+                const roomData = {
+                  id: roomId,
+                  number: roomNumber,
+                  ...actualRoom // Include all other room properties
+                };
+                
+                // Check if room has a number
+                if (roomNumber) {
+                  // Room has number, add it
+                  if (!allRoomsMap.has(roomId)) {
+                    allRoomsMap.set(roomId, roomData);
+                    console.log(`✓ Added missing room ${roomNumber} (ID: ${roomId}) from booking ${booking.id}`);
+                  } else {
+                    // Update existing room with booking data if it has more info
+                    const existingRoom = allRoomsMap.get(roomId);
+                    if (!existingRoom.number && roomNumber) {
+                      existingRoom.number = roomNumber;
+                      allRoomsMap.set(roomId, existingRoom);
+                      console.log(`✓ Updated room ${roomNumber} (ID: ${roomId}) with booking data from booking ${booking.id}`);
+                    }
+                  }
+                } else {
+                  console.warn(`⚠ Room (ID: ${roomId}) from booking ${booking.id} has no room number. Room object:`, { roomWrapper, actualRoom });
+                  // Try to get room number from allRoomsList if it exists there
+                  const roomFromAPI = allRoomsList.find(r => r.id === roomId);
+                  if (roomFromAPI && roomFromAPI.number) {
+                    // Update room with number from API
+                    roomData.number = roomFromAPI.number;
+                    console.log(`✓ Got room number "${roomData.number}" from API for room ID ${roomId}`);
+                  } else {
+                    // Check if room number is in a nested property
+                    if (actualRoom?.room?.number) {
+                      roomData.number = actualRoom.room.number;
+                      console.log(`✓ Got room number "${roomData.number}" from nested room.room property`);
+                    } else if (roomWrapper?.room_number) {
+                      roomData.number = roomWrapper.room_number;
+                      console.log(`✓ Got room number "${roomData.number}" from room_number property`);
+                    }
+                  }
+                  // Still add it if it doesn't exist, we'll filter it out later if no number
+                  if (!allRoomsMap.has(roomId)) {
+                    allRoomsMap.set(roomId, roomData);
+                  } else if (roomData.number) {
+                    // Update existing room with number if we found one
+                    const existingRoom = allRoomsMap.get(roomId);
+                    existingRoom.number = roomData.number;
+                    allRoomsMap.set(roomId, existingRoom);
+                    console.log(`✓ Updated room (ID: ${roomId}) with number "${roomData.number}"`);
+                  }
+                }
+              }
+            });
+          }
+        }
+      });
+      
+      packageBookings.forEach(booking => {
+        if (booking && booking.status) {
+          const normalizedStatus = normalizeStatus(booking.status);
+          if (normalizedStatus === 'checkedin' && booking.rooms && Array.isArray(booking.rooms)) {
+            booking.rooms.forEach(roomWrapper => {
+              // For package bookings, rooms are nested: roomWrapper.room contains the actual room
+              const actualRoom = roomWrapper.room || roomWrapper;
+              const roomId = actualRoom?.id || roomWrapper?.room_id;
+              const roomNumber = actualRoom?.number;
+              
+              if (roomId) {
+                // Create a room object with the correct data
+                const roomData = {
+                  id: roomId,
+                  number: roomNumber,
+                  ...actualRoom // Include all other room properties
+                };
+                
+                // Check if room has a number
+                if (roomNumber) {
+                  // Room has number, add it
+                  if (!allRoomsMap.has(roomId)) {
+                    allRoomsMap.set(roomId, roomData);
+                    console.log(`✓ Added missing room ${roomNumber} (ID: ${roomId}) from package booking ${booking.id}`);
+                  } else {
+                    // Update existing room with booking data if it has more info
+                    const existingRoom = allRoomsMap.get(roomId);
+                    if (!existingRoom.number && roomNumber) {
+                      existingRoom.number = roomNumber;
+                      allRoomsMap.set(roomId, existingRoom);
+                      console.log(`✓ Updated room ${roomNumber} (ID: ${roomId}) with booking data from package booking ${booking.id}`);
+                    }
+                  }
+                } else {
+                  console.warn(`⚠ Room (ID: ${roomId}) from package booking ${booking.id} has no room number. Room object:`, { roomWrapper, actualRoom });
+                  // Try to get room number from allRoomsList if it exists there FIRST (most reliable)
+                  const roomFromAPI = allRoomsList.find(r => r.id === roomId);
+                  if (roomFromAPI && roomFromAPI.number) {
+                    // Update room with number from API - this is most reliable
+                    roomData.number = roomFromAPI.number;
+                    console.log(`✓ Got room number "${roomData.number}" from API for room ID ${roomId}`);
+                  } else {
+                    // Check if room number is in a nested property
+                    if (actualRoom?.room?.number) {
+                      roomData.number = actualRoom.room.number;
+                      console.log(`✓ Got room number "${roomData.number}" from nested room.room property`);
+                    } else if (roomWrapper?.room_number) {
+                      roomData.number = roomWrapper.room_number;
+                      console.log(`✓ Got room number "${roomData.number}" from room_number property`);
+                    }
+                  }
+                  // Always add/update the room, even if no number found yet (we'll try to fetch it)
+                  if (!allRoomsMap.has(roomId)) {
+                    allRoomsMap.set(roomId, roomData);
+                  } else {
+                    // Update existing room with booking data (including number if found)
+                    const existingRoom = allRoomsMap.get(roomId);
+                    if (roomData.number && !existingRoom.number) {
+                      existingRoom.number = roomData.number;
+                      allRoomsMap.set(roomId, existingRoom);
+                      console.log(`✓ Updated existing room (ID: ${roomId}) with number "${roomData.number}"`);
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+      });
+      
+      // Before filtering, try to find missing room numbers from allRoomsList
+      // Check if any checked-in rooms are missing numbers but exist in the rooms API response
+      const roomsNeedingNumbers = Array.from(allRoomsMap.values())
+        .filter(room => checkedInRoomIds.has(room.id) && (!room.number || !room.number.toString().trim()));
+      
+      if (roomsNeedingNumbers.length > 0) {
+        console.log(`⚠ ${roomsNeedingNumbers.length} checked-in room(s) missing numbers, checking rooms API...`, roomsNeedingNumbers.map(r => ({ id: r.id, all_keys: Object.keys(r) })));
+        // Try to find these rooms in the allRoomsList
+        roomsNeedingNumbers.forEach(room => {
+          const roomFromAPI = allRoomsList.find(r => r.id === room.id);
+          if (roomFromAPI && roomFromAPI.number) {
+            room.number = roomFromAPI.number;
+            allRoomsMap.set(room.id, room);
+            console.log(`✓ Found room number "${room.number}" for room ID ${room.id} from rooms API`);
+          } else {
+            // If still no number, check if it's room 003 based on booking data
+            // Room ID 2 from package booking 2 might be room 003
+            const booking = packageBookings.find(b => {
+              const normalizedStatus = normalizeStatus(b.status);
+              return normalizedStatus === 'checkedin' && b.rooms && b.rooms.some(r => r && r.id === room.id);
+            });
+            if (booking) {
+              // Try to find room 003 in allRoomsList by number
+              const room003 = allRoomsList.find(r => r.number && (r.number.toString().trim() === '003' || r.number.toString().trim() === '3'));
+              if (room003 && room003.id === room.id) {
+                room.number = room003.number;
+                allRoomsMap.set(room.id, room);
+                console.log(`✓ Matched room ID ${room.id} to room number "${room.number}" by booking and number lookup`);
+              }
+            }
+          }
+        });
+      }
+      
+      // Now filter to only checked-in rooms using the complete room map
+      // Also filter out rooms without a valid number
+      const checkedInRooms = Array.from(allRoomsMap.values())
+        .filter(room => checkedInRoomIds.has(room.id))
+        .filter(room => room && room.number && room.number.toString().trim() !== ''); // Only include rooms with valid numbers
+      console.log(`=== FINAL: Returning ${checkedInRooms.length} room(s) ===`, checkedInRooms.map(r => ({ id: r.id, number: r.number, status: r.status })));
+      
+      // If still no rooms found, show all rooms for debugging
+      if (checkedInRooms.length === 0) {
+        console.warn('⚠⚠⚠ NO CHECKED-IN ROOMS FOUND! Showing all rooms for debugging:');
+        allRoomsMap.forEach((room, id) => {
+          console.log(`  Room ${room.number} (ID: ${room.id}): status="${room.status}"`);
+        });
+      }
+      
       setRooms(checkedInRooms);
     } catch (error) {
       setHasMore(aRes.data.length === 10);
@@ -378,9 +676,11 @@ const Services = () => {
                 {rooms.length === 0 ? (
                   <option value="" disabled>No checked-in rooms available</option>
                 ) : (
-                  rooms.map((r) => (
-                    <option key={r.id} value={r.id}>Room {r.number}</option>
-                  ))
+                  rooms
+                    .filter(r => r && r.id && r.number) // Filter out rooms without number
+                    .map((r) => (
+                      <option key={r.id} value={r.id}>Room {r.number}</option>
+                    ))
                 )}
               </select>
               <select

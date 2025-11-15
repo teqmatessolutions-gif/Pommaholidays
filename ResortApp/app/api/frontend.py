@@ -24,6 +24,7 @@ print(f"Upload directory set to: {UPLOAD_DIR}")  # Debug log
 
 # ---------- Header & Banner ----------
 @router.get("/header-banner/", response_model=list[schemas.HeaderBanner])
+@router.get("/header-banner", response_model=list[schemas.HeaderBanner])  # Accept both with and without trailing slash
 def list_header_banner(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     return crud.get_all(db, models.HeaderBanner, skip=skip, limit=limit)
 
@@ -185,6 +186,7 @@ def delete_check_availability(item_id: int, db: Session = Depends(get_db), curre
 
 # ---------- Gallery ----------
 @router.get("/gallery/", response_model=list[schemas.Gallery])
+@router.get("/gallery", response_model=list[schemas.Gallery])  # Accept both with and without trailing slash
 def list_gallery(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     return crud.get_all(db, models.Gallery, skip=skip, limit=limit)
 
@@ -311,6 +313,7 @@ def delete_gallery(item_id: int, db: Session = Depends(get_db), current_user: Us
 
 # ---------- Reviews ----------
 @router.get("/reviews/", response_model=list[schemas.Review])
+@router.get("/reviews", response_model=list[schemas.Review])  # Accept both with and without trailing slash
 def list_reviews(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     return crud.get_all(db, models.Review, skip=skip, limit=limit)
 
@@ -344,8 +347,10 @@ def delete_review(item_id: int, db: Session = Depends(get_db), current_user: Use
 
 # ---------- Resort Info ----------
 @router.get("/resort-info/", response_model=list[schemas.ResortInfo])
-def list_resort_info(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
-    return crud.get_all(db, models.ResortInfo, skip=skip, limit=limit)
+@router.get("/resort-info", response_model=list[schemas.ResortInfo])  # Accept both with and without trailing slash
+def list_resort_info(db: Session = Depends(get_db), skip: int = 0, limit: int = 1000):
+    # Return all resort info ordered by ID
+    return db.query(models.ResortInfo).order_by(models.ResortInfo.id).offset(skip).limit(limit).all()
 
 
 @router.post("/resort-info/", response_model=schemas.ResortInfo)
@@ -374,8 +379,10 @@ def delete_resort_info(item_id: int, db: Session = Depends(get_db), current_user
 
 # ---------- Signature Experiences ----------
 @router.get("/signature-experiences/", response_model=list[schemas.SignatureExperience])
-def list_signature_experiences(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
-    return crud.get_all(db, models.SignatureExperience, skip=skip, limit=limit)
+@router.get("/signature-experiences", response_model=list[schemas.SignatureExperience])  # Accept both with and without trailing slash
+def list_signature_experiences(db: Session = Depends(get_db), skip: int = 0, limit: int = 1000):
+    # Return all signature experiences ordered by ID
+    return db.query(models.SignatureExperience).order_by(models.SignatureExperience.id).offset(skip).limit(limit).all()
 
 
 @router.post("/signature-experiences/", response_model=schemas.SignatureExperience)
@@ -504,8 +511,17 @@ def delete_signature_experience(item_id: int, db: Session = Depends(get_db), cur
 
 # ---------- Plan Your Wedding ----------
 @router.get("/plan-weddings/", response_model=list[schemas.PlanWedding])
-def list_plan_weddings(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
-    return crud.get_all(db, models.PlanWedding, skip=skip, limit=limit)
+@router.get("/plan-weddings", response_model=list[schemas.PlanWedding])  # Accept both with and without trailing slash
+def list_plan_weddings(db: Session = Depends(get_db), skip: int = 0, limit: int = 1000):
+    try:
+        # Return all wedding banners ordered by ID
+        return db.query(models.PlanWedding).order_by(models.PlanWedding.id).offset(skip).limit(limit).all()
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"Error listing plan weddings: {str(e)}")
+        print(f"Traceback: {error_trace}")
+        raise HTTPException(status_code=500, detail=f"Failed to list plan weddings: {str(e)}")
 
 
 @router.post("/plan-weddings/", response_model=schemas.PlanWedding)
@@ -634,8 +650,10 @@ def delete_plan_wedding(item_id: int, db: Session = Depends(get_db), current_use
 
 # ---------- Nearby Attractions ----------
 @router.get("/nearby-attractions/", response_model=list[schemas.NearbyAttraction])
-def list_nearby_attractions(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
-    return crud.get_all(db, models.NearbyAttraction, skip=skip, limit=limit)
+@router.get("/nearby-attractions", response_model=list[schemas.NearbyAttraction])  # Accept both with and without trailing slash
+def list_nearby_attractions(db: Session = Depends(get_db), skip: int = 0, limit: int = 1000):
+    # Return all active attractions ordered by ID
+    return db.query(models.NearbyAttraction).order_by(models.NearbyAttraction.id).offset(skip).limit(limit).all()
 
 
 @router.post("/nearby-attractions/", response_model=schemas.NearbyAttraction)
@@ -760,3 +778,14 @@ async def update_nearby_attraction(
 @router.delete("/nearby-attractions/{item_id}")
 def delete_nearby_attraction(item_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return crud.delete(db, models.NearbyAttraction, item_id)
+
+
+# ---------- Nearby Attraction Banners ----------
+# Support both singular and plural forms to avoid 404 errors
+@router.get("/nearby-attraction-banner/", response_model=list[schemas.NearbyAttractionBanner])
+@router.get("/nearby-attraction-banner", response_model=list[schemas.NearbyAttractionBanner])  # Accept both with and without trailing slash
+@router.get("/nearby-attraction-banners/", response_model=list[schemas.NearbyAttractionBanner])  # Plural form
+@router.get("/nearby-attraction-banners", response_model=list[schemas.NearbyAttractionBanner])  # Plural form without trailing slash
+def list_nearby_attraction_banner(db: Session = Depends(get_db), skip: int = 0, limit: int = 1000):
+    # Return all active banners ordered by ID
+    return db.query(models.NearbyAttractionBanner).filter(models.NearbyAttractionBanner.is_active == True).order_by(models.NearbyAttractionBanner.id).offset(skip).limit(limit).all()

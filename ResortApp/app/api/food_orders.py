@@ -8,11 +8,19 @@ from typing import List
 
 router = APIRouter(prefix="/food-orders", tags=["Food Orders"])
 
-@router.post("/", response_model=FoodOrderOut)
+# Use route without trailing slash to avoid redirects on POST requests
+@router.post("", response_model=FoodOrderOut)
 def create_order(order: FoodOrderCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return crud.create_food_order(db, order)
+    try:
+        return crud.create_food_order(db, order)
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"Error creating food order: {str(e)}")
+        print(f"Traceback: {error_trace}")
+        raise HTTPException(status_code=500, detail=f"Failed to create food order: {str(e)}")
 
-@router.get("/", response_model=List[FoodOrderOut])
+@router.get("", response_model=List[FoodOrderOut])
 def get_orders(db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
     return crud.get_food_orders(db, skip=skip, limit=limit)
 
